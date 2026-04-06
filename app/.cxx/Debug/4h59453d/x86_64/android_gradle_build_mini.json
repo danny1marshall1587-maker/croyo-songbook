@@ -1,0 +1,29 @@
+{
+  "buildFiles": [
+    "/home/dan/Documents/croyo songbook/app/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/dan/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/dan/Documents/croyo songbook/app/.cxx/Debug/4h59453d/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/dan/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/dan/Documents/croyo songbook/app/.cxx/Debug/4h59453d/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "cryoprompter::@6890427a1f51a3e7e1df": {
+      "artifactName": "cryoprompter",
+      "abi": "x86_64",
+      "output": "/home/dan/Documents/croyo songbook/app/build/intermediates/cxx/Debug/4h59453d/obj/x86_64/libcryoprompter.so",
+      "runtimeFiles": [
+        "/home/dan/.gradle/caches/transforms-3/e8a77bb17abccc35dffcd0c3df6754a0/transformed/jetified-oboe-1.8.0/prefab/modules/oboe/libs/android.x86_64/liboboe.so"
+      ]
+    }
+  }
+}

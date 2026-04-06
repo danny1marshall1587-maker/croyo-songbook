@@ -1,0 +1,64 @@
+/**
+ * CRYO-PROMPTER: JSx-Style Denoise Engine (Contact Mic Optimized)
+ * Logic: Ported from JSFX "Listen & Gate" Script
+ * Calibration: 20-Second Deep Fingerprint
+ */
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+class JsxDenoiseEngine {
+private:
+    float threshold = 0.001f; 
+    float noiseFloor = 0.0f;
+    bool isCalibrating = false;
+    long calibrationSamples = 0;
+    // UPDATED: 20 seconds @ 44.1k = 882,000 samples
+    const long maxCalibrationSamples = 882000; 
+    float sumSquares = 0.0f;
+
+    // JSx Smoothing parameters (Hysteresis)
+    float attack = 0.9995f;  // Smooth onset
+    float release = 0.992f;  // Gentle tail
+    float envelope = 0.0f;
+
+public:
+    void startCalibration() {
+        isCalibrating = true;
+        calibrationSamples = 0;
+        sumSquares = 0.0f;
+    }
+
+    float processSample(float input) {
+        // 1. DEEP CALIBRATION PHASE (20 Seconds)
+        if (isCalibrating) {
+            sumSquares += (input * input);
+            calibrationSamples++;
+            
+            if (calibrationSamples >= maxCalibrationSamples) {
+                float rms = std::sqrt(sumSquares / maxCalibrationSamples);
+                // Set threshold 4dB above the measured noise floor for high-gain safety
+                threshold = rms * 1.585f; 
+                isCalibrating = false;
+            }
+            return 0.0f; // Mute while fingerprinting
+        }
+
+        // 2. JSx GATE LOGIC
+        float absInput = std::abs(input);
+        
+        // Dynamic Envelope Tracking
+        if (absInput > envelope) {
+            envelope = absInput * (1.0f - attack) + envelope * attack;
+        } else {
+            envelope = absInput * (1.0f - release) + envelope * release;
+        }
+
+        // Output only if above the 20-second fingerprint threshold
+        return (envelope > threshold) ? input : 0.0f;
+    }
+
+    bool calibrating() const { return isCalibrating; }
+    float getProgress() const { return (float)calibrationSamples / maxCalibrationSamples; }
+};

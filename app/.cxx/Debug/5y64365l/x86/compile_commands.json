@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/dan/Documents/croyo songbook/app/.cxx/Debug/5y64365l/x86",
+  "command": "/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=i686-none-linux-android26 --sysroot=/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dcryoprompter_EXPORTS -isystem /home/dan/.gradle/caches/9.3.1/transforms/3229b9f2e645d5433b8a6f7963c77254/transformed/jetified-oboe-1.8.0/prefab/modules/oboe/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -o CMakeFiles/cryoprompter.dir/AudioEngine.cpp.o -c \"/home/dan/Documents/croyo songbook/app/src/main/cpp/AudioEngine.cpp\"",
+  "file": "/home/dan/Documents/croyo songbook/app/src/main/cpp/AudioEngine.cpp"
+},
+{
+  "directory": "/home/dan/Documents/croyo songbook/app/.cxx/Debug/5y64365l/x86",
+  "command": "/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=i686-none-linux-android26 --sysroot=/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dcryoprompter_EXPORTS -isystem /home/dan/.gradle/caches/9.3.1/transforms/3229b9f2e645d5433b8a6f7963c77254/transformed/jetified-oboe-1.8.0/prefab/modules/oboe/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -o CMakeFiles/cryoprompter.dir/JsxDeepCalibrator.cpp.o -c \"/home/dan/Documents/croyo songbook/app/src/main/cpp/JsxDeepCalibrator.cpp\"",
+  "file": "/home/dan/Documents/croyo songbook/app/src/main/cpp/JsxDeepCalibrator.cpp"
+},
+{
+  "directory": "/home/dan/Documents/croyo songbook/app/.cxx/Debug/5y64365l/x86",
+  "command": "/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=i686-none-linux-android26 --sysroot=/home/dan/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dcryoprompter_EXPORTS -isystem /home/dan/.gradle/caches/9.3.1/transforms/3229b9f2e645d5433b8a6f7963c77254/transformed/jetified-oboe-1.8.0/prefab/modules/oboe/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -o CMakeFiles/cryoprompter.dir/jni_bridge.cpp.o -c \"/home/dan/Documents/croyo songbook/app/src/main/cpp/jni_bridge.cpp\"",
+  "file": "/home/dan/Documents/croyo songbook/app/src/main/cpp/jni_bridge.cpp"
+}
+]
