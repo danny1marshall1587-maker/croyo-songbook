@@ -31,12 +31,15 @@ jobs:
     - name: Extract Project Version
       id: get_version
       run: |
-        VERSION=$(grep "versionName =" opensong_tablet/app/build.gradle | head -n 1 | cut -d"'" -f2)
+        VERSION=$(grep "versionName =" opensong_tablet/app/build.gradle | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/' | sed -E "s/.*'([^']+)'.*/\1/")
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Project Version: $VERSION"
 
     - name: Remove local java.home for CI
-      run: sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
+      run: |
+        if [ -f opensong_tablet/gradle.properties ]; then
+          sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
+        fi
 
     - name: Run Lint
       run: cd opensong_tablet && ./gradlew lint${{ matrix.flavor }}Debug --no-daemon
