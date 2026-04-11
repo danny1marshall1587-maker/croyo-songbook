@@ -61,34 +61,41 @@ jobs:
         cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon
 
     - name: Prepare Artifacts
+      if: always()
       run: |
         VERSION=${{ steps.get_version.outputs.VERSION }}
         FLAVOR=${{ matrix.flavor }}
         
-        # Move Debug
+        # Ensure target directory exists for artifacts if previous steps failed
+        mkdir -p artifacts_out
+        
+        # Move Debug (search robustly)
         DEBUG_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/debug -name "*.apk" | head -n 1)
-        cp "$DEBUG_APK" "CryoSongbook-v$VERSION-$FLAVOR-debug.apk"
+        if [ -f "$DEBUG_APK" ]; then
+          cp "$DEBUG_APK" "artifacts_out/CryoSongbook-v$VERSION-$FLAVOR-debug.apk"
+        fi
         
         # Move Release if exists
         RELEASE_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/release -name "*.apk" | head -n 1)
         if [ -f "$RELEASE_APK" ]; then
-          # Check if it was signed (if base64 was present)
+          # Check if it was signed
           if [ -f "opensong_tablet/app/release-keystore.jks" ]; then
-            cp "$RELEASE_APK" "CryoSongbook-v$VERSION-$FLAVOR-release-signed.apk"
+            cp "$RELEASE_APK" "artifacts_out/CryoSongbook-v$VERSION-$FLAVOR-release-signed.apk"
           else
-            cp "$RELEASE_APK" "CryoSongbook-v$VERSION-$FLAVOR-release-unsigned.apk"
+            cp "$RELEASE_APK" "artifacts_out/CryoSongbook-v$VERSION-$FLAVOR-release-unsigned.apk"
           fi
         fi
 
     - name: Upload Debug Artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-debug
-        path: CryoSongbook-v${{ steps.get_version.outputs.VERSION }}-${{ matrix.flavor }}-debug.apk
+        path: artifacts_out/*debug.apk
 
     - name: Upload Release Artifacts (on tag)
-      if: startsWith(github.ref, 'refs/tags/v')
+      if: always() && startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@v4
       with:
         name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-release
-        path: CryoSongbook-v${{ steps.get_version.outputs.VERSION }}-${{ matrix.flavor }}-release-*.apk
+        path: artifacts_out/*release-*.apk
