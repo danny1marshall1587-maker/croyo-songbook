@@ -219,36 +219,65 @@ public class StorageAccess {
     private Uri homeFolder_SAF(Uri treeUri) {
         if (treeUri == null) return null;
 
-        // Get the DocumentFile for the folder the user actually picked
-        DocumentFile pickedDir = DocumentFile.fromTreeUri(c, treeUri);
-
-        if (pickedDir == null || !pickedDir.exists()) {
-            Log.e(TAG, "Picked directory does not exist or permission lost");
+        // Verify we actually have access before trying to resolve DocumentFile
+        if (!isUriAccessible(treeUri)) {
+            Log.e(TAG, "URI is not accessible: " + treeUri);
             return null;
         }
 
-        // Check: Did they pick "OpenSong" itself, or the parent folder?
-        // pickedDir.getName() returns the visible folder name (e.g., "OpenSong")
-        if (appFolder.equalsIgnoreCase(pickedDir.getName())) {
-            // They picked the OpenSong folder directly
-            return pickedDir.getUri();
-        } else {
-            // They picked a parent folder (like 'Documents' or 'SD Card')
-            // We look for "OpenSong" inside it
-            DocumentFile openSongDir = pickedDir.findFile(appFolder);
+        try {
+            // Get the DocumentFile for the folder the user actually picked
+            DocumentFile pickedDir = DocumentFile.fromTreeUri(c, treeUri);
 
-            if (openSongDir == null) {
-                // It doesn't exist yet, so we create it inside the parent they picked
-                Log.d(TAG, "OpenSong folder not found, creating it...");
-                openSongDir = pickedDir.createDirectory(appFolder);
+            if (pickedDir == null || !pickedDir.exists() || !pickedDir.canWrite()) {
+                Log.e(TAG, "Picked directory does not exist, permission lost, or not writable");
+                return null;
             }
 
-            if (openSongDir != null) {
-                return openSongDir.getUri();
+            // Check: Did they pick "OpenSong" itself, or the parent folder?
+            // pickedDir.getName() returns the visible folder name (e.g., "OpenSong")
+            if (appFolder.equalsIgnoreCase(pickedDir.getName())) {
+                // They picked the OpenSong folder directly
+                return pickedDir.getUri();
+            } else {
+                // They picked a parent folder (like 'Documents' or 'SD Card')
+                // We look for "OpenSong" inside it
+                DocumentFile openSongDir = pickedDir.findFile(appFolder);
+
+                if (openSongDir == null) {
+                    // It doesn't exist yet, so we create it inside the parent they picked
+                    Log.d(TAG, "OpenSong folder not found, creating it...");
+                    openSongDir = pickedDir.createDirectory(appFolder);
+                }
+
+                if (openSongDir != null && openSongDir.exists() && openSongDir.canWrite()) {
+                    return openSongDir.getUri();
+                } else {
+                    Log.e(TAG, "Failed to create or access the OpenSong child directory");
+                }
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in homeFolder_SAF", e);
         }
 
         return null;
+    }
+
+    /**
+     * Checks if the app has persistable permission for the given URI
+     * and if the system still honors it.
+     */
+    public boolean isUriAccessible(Uri uri) {
+        if (uri == null) return false;
+        try {
+            int takeFlags = getTakePersistentWriteUriFlags();
+            c.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+            return true;
+        } catch (SecurityException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Uri homeFolder_File(String uriTree_String) {

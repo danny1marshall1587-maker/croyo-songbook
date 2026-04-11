@@ -246,6 +246,7 @@ public class BootUpFragment extends Fragment {
                     // There was a problem with the folders, so restart the app!
                     mainActivityInterface.getMainHandler().post(() -> {
                         if (isAdded()) {
+                            mainActivityInterface.getShowToast().doIt("Storage Error: Folder access denied. Please re-select.");
                             requireActivity().recreate();
                         }
                     });

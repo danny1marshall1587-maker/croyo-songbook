@@ -543,16 +543,32 @@ public class SetStorageLocationFragment extends Fragment {
         } else {
             uriTree = null;
         }
-        if (uriTree != null && getActivity()!=null) {
-            getActivity().getContentResolver().takePersistableUriPermission(uriTree,
-                    mainActivityInterface.getStorageAccess().getTakePersistentWriteUriFlags());
+
+        Log.d(TAG, "Selected URI: " + (uriTree != null ? uriTree.toString() : "null"));
+
+        if (uriTree != null && getActivity() != null) {
+            try {
+                // IMPORTANT: This call can throw SecurityException on Android 11+ if picking restricted folders
+                getActivity().getContentResolver().takePersistableUriPermission(uriTree,
+                        mainActivityInterface.getStorageAccess().getTakePersistentWriteUriFlags());
+            } catch (SecurityException e) {
+                Log.e(TAG, "SecurityException: Permission denied for URI: " + uriTree, e);
+                mainActivityInterface.getShowToast().doIt(getString(R.string.permissions_refused) + " (Restricted folder)");
+                uriTree = null;
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to take persistable URI permission", e);
+                uriTree = null;
+            }
         }
+
         uriTreeHome = mainActivityInterface.getStorageAccess().homeFolder(uriTree);
+
         if (uriTree == null || uriTreeHome == null) {
             notWriteable();
         }
+
         if (uriTree != null) {
-            mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed",false);
+            mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", false);
             checkStatus();
         }
     }
