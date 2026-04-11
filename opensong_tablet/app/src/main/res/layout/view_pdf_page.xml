@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pdfPage"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    style="@style/pdfPage">
+
+    <ImageView
+        android:id="@+id/pdfPageImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/pdf" />
+
+    <ImageView
+        android:id="@+id/pdfPageHighlight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/highlight" />
+
+    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        android:id="@+id/pdfPageNumText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:focusableInTouchMode="false"
+        android:focusable="false"/>
+
+</androidx.cardview.widget.CardView>

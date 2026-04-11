@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">ultimate-guitar.com</domain>
+        <domain includeSubdomains="true">chordie.com</domain>
+        <domain includeSubdomains="true">worshiptogether.com</domain>
+        <domain includeSubdomains="true">worshipready.com</domain>
+        <domain includeSubdomains="true">ccli.com</domain>
+        <domain includeSubdomains="true">ukutabs.com</domain>
+        <domain includeSubdomains="true">holychords.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">opensongapp.com</domain>
+        <domain includeSubdomains="true">twitter.com</domain>
+        <domain includeSubdomains="true">paypal.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <!-- Bible downloads -->
+        <domain includeSubdomains="true">opensong.org</domain>
+        <domain includeSubdomains="true">emp1.net</domain>
+        <domain includeSubdomains="true">dropbox.com</domain>
+        <!-- Had to include ads from some of the chord websites-->
+        <domain includeSubdomains="true">amazon-adsystem.com</domain>
+    </domain-config>
+</network-security-config>

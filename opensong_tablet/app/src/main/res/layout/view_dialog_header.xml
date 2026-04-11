@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    android:orientation="horizontal">
+
+    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        style="@style/largeText"
+        tools:text="Title"/>
+
+    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        android:id="@+id/webHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/help_outline"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="0dp"
+        android:contentDescription="@string/help"
+        app:backgroundTint="@color/transparent"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:pressedTranslationZ="0dp"
+        android:visibility="gone"
+        app:fabSize="mini"/>
+
+    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        android:id="@+id/minimiseButtonDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/minimise"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/hide"
+        app:backgroundTint="@color/transparent"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:pressedTranslationZ="0dp"
+        android:visibility="gone"
+        app:fabSize="mini"/>
+
+    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        android:id="@+id/closeButtonDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close"
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:contentDescription="@string/close"
+        app:backgroundTint="@color/transparent"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:pressedTranslationZ="0dp"
+        app:fabSize="mini"/>
+</LinearLayout>

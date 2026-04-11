@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nextPrev"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="96dp">
+<LinearLayout
+    android:id="@+id/nextPrevInfoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:paddingBottom="12dp"
+    android:layout_alignParentBottom="true"
+    android:minHeight="64dp"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/prevHolder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingTop="12dp">
+
+        <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            android:id="@+id/prevButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|bottom"
+            android:textAllCaps="false"
+            android:text="@string/previous"
+            android:ellipsize="middle"
+            android:minWidth="0dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            app:iconPadding="8dp"
+            android:textSize="12sp"
+            app:icon="@drawable/arrow_left"
+            app:iconGravity="start"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="12dp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/nextHolder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingTop="12dp">
+
+        <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:textAllCaps="false"
+            android:text="@string/next"
+            android:ellipsize="middle"
+            android:textSize="12sp"
+            android:minWidth="0dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            app:iconPadding="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="12dp"
+            app:icon="@drawable/arrow_right"
+            app:iconGravity="end" />
+    </FrameLayout>
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nextPrevInfoFABLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:paddingBottom="4dp"
+        android:minHeight="48dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/prevFABHolder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+    <com.garethevans.church.opensongtablet.customviews.MyFAB
+        android:id="@+id/prevButtonFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        app:srcCompat="@drawable/arrow_left"
+        app:fab_padding="12dp"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/nextFABHolder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+    <com.garethevans.church.opensongtablet.customviews.MyFAB
+        android:id="@+id/nextButtonFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        app:srcCompat="@drawable/arrow_right"
+        app:fab_padding="12dp"/>
+    </FrameLayout>
+    </LinearLayout>
+</RelativeLayout>

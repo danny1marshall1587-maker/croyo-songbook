@@ -1,0 +1,126 @@
+package com.garethevans.church.opensongtablet.appdata;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.garethevans.church.opensongtablet.BuildConfig;
+import com.garethevans.church.opensongtablet.customviews.BottomSheetCommon;
+import com.garethevans.church.opensongtablet.databinding.BottomSheetInformationBinding;
+import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+
+public class InformationBottomSheet extends BottomSheetCommon {
+
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "InfoBottomSheet";
+
+    private MainActivityInterface mainActivityInterface;
+
+    private final String title, information, buttonText, deepLink;
+
+    public InformationBottomSheet() {
+        // Default constructor required to avoid re-instantiation failures
+        // Just close the bottom sheet
+        title = null;
+        information = null;
+        buttonText = null;
+        deepLink = null;
+        try {
+            dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public InformationBottomSheet(String title, String information, String buttonText,
+                                  String deepLink) {
+        this.title = title;
+        this.information = information;
+        this.buttonText = buttonText;
+        this.deepLink = deepLink;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivityInterface = (MainActivityInterface) context;
+    }
+
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        com.garethevans.church.opensongtablet.databinding.BottomSheetInformationBinding myView = BottomSheetInformationBinding.inflate(inflater, container, false);
+        myView.dialogHeading.setClose(this);
+        if (information!=null) {
+            myView.dialogHeading.setText(title);
+        }
+
+        if (buttonText!=null) {
+            myView.actionButton.setText(buttonText);
+        } else {
+            myView.actionButton.setVisibility(View.GONE);
+        }
+
+        if (deepLink!=null) {
+            switch (deepLink) {
+                case "restart":
+                    myView.actionButton.setOnClickListener((view) -> {
+                        if (getActivity() != null) {
+                            dismiss();
+                            Intent intent = getActivity().getBaseContext().getPackageManager().getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                            System.exit(0);
+                        }
+                    });
+                    break;
+                case "locPrefs":
+                    // Open the location settings to allow the user to check their settings
+                    myView.actionButton.setOnClickListener((view) -> {
+                        if (getContext()!=null) {
+                            getContext().startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            dismiss();
+                        }
+                    });
+                    break;
+                case "appPrefs":
+                    // Open the app settings to allow the user to check their settings
+                    myView.actionButton.setOnClickListener((view) -> {
+                        if (getContext()!=null) {
+                            getContext().startActivity(new Intent(
+                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)));
+                            dismiss();
+                        }
+                    });
+                    break;
+                default:
+                    myView.actionButton.setOnClickListener((view) -> {
+                        if (deepLink.contains("groups.google.com")) {
+                            mainActivityInterface.openDocument(deepLink);
+                        } else {
+                            mainActivityInterface.navigateToFragment(deepLink, -1);
+                        }
+                        dismiss();
+                    });
+                    break;
+            }
+        } else {
+            myView.actionButton.setVisibility(View.GONE);
+        }
+
+        myView.infoText.setText(information);
+
+        return myView.getRoot();
+    }
+}

@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- The ActionBar -->
+    <style name="ActionBar">
+        <item name="android:background">@color/transparent</item>
+        <item name="background">@color/transparent</item>
+        <item name="windowActionBarOverlay">false</item>
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
+    <style name="ActionButtonStyle">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+    </style>
+
+    <!-- Button shapes -->
+    <!-- ShapeAppearance for rounded corners -->
+    <style name="ShapeAppearance.MyApp.Button.Rounded" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">8dp</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeBottomLeft">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+    </style>
+
+    <!-- Filled MaterialButton style -->
+    <style name="FilledButton" parent="Widget.MaterialComponents.Button">
+        <!-- hook in the ShapeAppearance -->
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyApp.Button.Rounded</item>
+
+        <!-- colors -->
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+
+        <!-- spacing -->
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <!-- Outlined MaterialButton -->
+    <style name="OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">?attr/colorSecondary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyApp.Button.Rounded</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <!-- Icon only button -->
+    <style name="IconOnlyButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <!-- Left, right and middle buttons -->
+    <style name="LeftButton" parent="FilledButton">
+        <item name="shapeAppearanceOverlay">@style/LeftButtonOverlay</item>
+    </style>
+    <style name="LeftButtonOverlay" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeTopLeft">8dp</item>
+        <item name="cornerSizeBottomLeft">8dp</item>
+    </style>
+    <style name="RightButton" parent="FilledButton">
+        <item name="shapeAppearanceOverlay">@style/RightButtonOverlay</item>
+    </style>
+    <style name="RightButtonOverlay" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+    <style name="MiddleButton" parent="FilledButton">
+        <item name="shapeAppearanceOverlay">@style/MiddleButtonOverlay</item>
+    </style>
+    <style name="MiddleButtonOverlay" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+    <!-- FloatingActionButton -->
+    <style name="FABStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="rippleColor">?attr/colorSecondaryVariant</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyApp.Button.Rounded</item>
+    </style>
+
+    <!-- Extended FAB -->
+    <style name="ExtendedFABStyle" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="rippleColor">?attr/colorSecondaryVariant</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyApp.Button.Rounded</item>
+    </style>
+
+    <!-- Default view for all fragments -->
+    <style name="DefaultView">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <!-- Divider line to separate items in lists -->
+    <style name="MyDividerLine">
+        <item name="android:layout_height">2dp</item>
+        <!-- Use the android attribute so we don't get into recursive issues -->
+        <item name="android:alpha">0.2</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <!-- Bottom sheets -->
+    <style name="BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MyApp.RoundedBottomSheet</item>
+
+        <!-- Inherit app’s button style -->
+        <item name="materialButtonStyle">@style/FilledButton</item>
+
+        <!-- Inherit TextInputLayouts (outlined style, exposed dropdowns) -->
+        <item name="textInputStyle">@style/EditTextLayout</item>
+        <item name="textInputOutlinedStyle">@style/EditTextLayout</item>
+        <item name="textInputOutlinedExposedDropdownMenuStyle">@style/ExposedDropDown</item>
+
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="behavior_skipCollapsed">true</item>
+        <item name="behavior_fitToContents">true</item>
+        <item name="behavior_peekHeight">0dp</item>
+        <item name="paddingBottomSystemWindowInsets">true</item>
+        <item name="paddingTopSystemWindowInsets">false</item>
+        <item name="marginTopSystemWindowInsets">false</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="behavior_hideable">true</item>
+        <item name="enableEdgeToEdge">true</item>
+        <item name="android:itemPadding">16dp</item>
+        <item name="expanded">true</item>
+        <item name="android:windowAnimationStyle">@style/Animation.MaterialComponents.BottomSheetDialog</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">?attr/colorSurface</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:state_expanded">true</item>
+        <item name="android:maxWidth">1600dp</item>
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+    <!-- The rounded corners -->
+    <style name="Widget.MyApp.RoundedBottomSheet" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+
+    <!-- Large text -->
+    <style name="largeText" parent="AppTheme">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+    </style>
+
+    <!-- Set item -->
+    <style name="setItem" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="contentPadding">4dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="elevation">8dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="strokeColor">@color/transparent</item>
+        <item name="cardBackgroundColor">?attr/colorSecondary</item>
+    </style>
+
+    <!--> For the new settings menus -->
+    <style name="SettingsCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">12dp</item>
+    </style>
+    <style name="SettingsCardContent">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">16dp</item>
+    </style>
+    <style name="SettingsCardIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">?attr/colorOnSurface</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+    <style name="SettingsCardTitle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!-- For the song and set menu -->
+    <style name="SongMenuItem" parent="Widget.MaterialComponents.CardView">
+        <item name="strokeWidth">0dp</item>
+        <item name="strokeColor">@color/transparent</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@color/transparent</item>
+    </style>
+    <style name="cardView_Title">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+    <style name="cardView_Subtitle">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">?attr/hintTextColor</item>
+    </style>
+
+    <!-- Recycler view items -->
+    <style name="recyclerItem" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="contentPadding">8dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="elevation">8dp</item>
+        <item name="cardBackgroundColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- PDF view pages -->
+    <style name="pdfPage" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="contentPadding">0dp</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="android:padding">0dp</item>
+        <item name="cardUseCompatPadding">false</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardPreventCornerOverlap">false</item>
+    </style>
+
+    <!-- Stage view sections -->
+    <style name="stageSection" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="contentPadding">0dp</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorSecondary</item>
+        <item name="android:padding">0dp</item>
+        <item name="cardUseCompatPadding">false</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardPreventCornerOverlap">false</item>
+    </style>
+
+    <!-- The MaterialEditText -->
+    <style name="EditTextLayoutOutline" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- The basic properties -->
+        <item name="layout_gravity">start</item>
+        <item name="android:gravity">start</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="android:isScrollContainer">true</item>
+        <item name="textInputLayoutFocusedRectEnabled">false</item>
+        <item name="hintTextColor">?attr/hintTextColor</item>
+        <item name="hintEnabled">true</item>
+        <item name="endIconTint">?attr/hintTextColor</item>
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!-- The box around the text -->
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxStrokeColor">?attr/hintTextColor</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxBackgroundColor">@color/transparent</item>
+
+        <item name="materialThemeOverlay">@style/TextInputOverlay</item>
+    </style>
+
+    <style name="ExposedDropDownLayoutOutline" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- The basic properties -->
+        <item name="layout_gravity">start</item>
+        <item name="android:gravity">start</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="android:isScrollContainer">true</item>
+        <item name="textInputLayoutFocusedRectEnabled">false</item>
+        <!--<item name="hintTextColor">?attr/hintTextColor</item>-->
+        <item name="hintEnabled">true</item>
+        <!--<item name="endIconTint">?attr/hintTextColor</item>-->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!-- The box around the text -->
+        <item name="boxBackgroundMode">outline</item>
+        <!--<item name="boxStrokeColor">?attr/hintTextColor</item>-->
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxBackgroundColor">@color/transparent</item>
+
+        <!--<item name="materialThemeOverlay">@style/TextInputOverlay</item>-->
+    </style>
+    <style name="AutoCompleteTextView">
+
+    </style>
+    <style name="EditTextLayout" parent="Widget.MaterialComponents.TextView">
+        <!-- The basic properties -->
+        <item name="layout_gravity">start</item>
+        <item name="android:gravity">start</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="android:isScrollContainer">true</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="textInputLayoutFocusedRectEnabled">false</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+
+        <!-- Max lines = 1 and set Enter to complete entry -->
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:imeOptions">actionDone|flagNoExtractUi</item>
+        <item name="android:overScrollMode">always</item>
+        <item name="android:scrollbarStyle">insideInset</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:layout_gravity">top</item>
+
+        <!-- The text position thumb and trailing icon colours -->
+        <item name="colorPrimary">?attr/hintTextColor</item>
+        <item name="colorOnSurface">?attr/hintTextColor</item>
+
+        <item name="backgroundColor">@color/transparent</item>
+    </style>
+
+    <style name="TextInputOverlay">
+        <!-- Because the overlay doesn't inherit the theme, we need to redeclare some things -->
+
+        <!-- The box background -->
+        <item name="boxBackgroundMode">outline</item>
+        <!--<item name="boxBackgroundColor">@color/transparent</item>-->
+        <!--<item name="boxStrokeColor">?attr/hintTextColor</item>-->
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <!-- The highlights -->
+        <!--<item name="colorControlActivated">?attr/colorAccent</item>-->
+        <!--<item name="colorControlNormal">?attr/colorAccent</item>-->
+    </style>
+
+    <!-- Menu tabs -->
+    <style name="menuTabs" parent="@style/Widget.MaterialComponents.TabLayout">
+        <item name="tabIndicatorHeight">8dp</item>
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabPaddingTop">16dp</item>
+        <item name="tabPaddingBottom">12dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+    </style>
+    <style name="menuToggle" parent="Widget.MaterialComponents.MaterialButtonToggleGroup">
+        <item name="singleSelection">true</item>
+    </style>
+
+    <!-- Popup window for toast, etc -->
+    <style name="popupWindow">
+        <item name="contentPadding">@dimen/box_padding</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="elevation">16dp</item>
+        <item name="android:background">@drawable/popup_bg</item>
+    </style>
+
+    <!-- Exposed dropdowns -->
+    <style name="ExposedDropDown" parent="Widget.AppCompat.AutoCompleteTextView">
+        <!-- The basic properties -->
+        <item name="android:padding">16dp</item>
+        <item name="android:inputType">none</item>
+        <item name="android:ellipsize">end</item>
+        <item name="maxLines">1</item>
+        <item name="singleLine">true</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="hintEnabled">true</item>
+
+        <!-- The dropdown -->
+        <item name="android:dropDownHeight">@dimen/exposed_dropdown_height</item>
+        <item name="background">@null</item>
+        <item name="android:popupBackground">@drawable/exposed_popup</item>
+
+        <item name="materialThemeOverlay">@style/TextInputOverlay</item>
+    </style>
+
+    <!-- Helper text -->
+    <style name="helperText">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Progress bar -->
+    <style name="progressBarOnPrimary" parent="">
+        <item name="android:background">@color/black</item>
+        <item name="android:alpha">0.4</item>
+    </style>
+
+    <!-- MyMaterialTextView -->
+    <style name="Widget.MyApp.MyMaterialTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.MyApp.Body</item>
+    </style>
+
+    <style name="TextAppearance.MyApp.Body" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColorHint">?attr/hintTextColor</item>
+    </style>
+
+    <!-- Slider style -->
+    <style name="MySliderStyle" parent="Widget.MaterialComponents.Slider">
+        <!--<item name="materialThemeOverlay">@style/SliderOverlay</item>-->
+        <item name="labelStyle">@style/SliderLabel</item>
+        <item name="trackColor">?attr/colorSecondary</item>
+        <item name="thumbColor">?attr/colorSecondaryVariant</item>
+        <item name="trackColorActive">?attr/colorSecondary</item>
+        <item name="trackColorInactive">?attr/colorSecondary</item>
+        <item name="tickColor">?attr/colorSecondaryVariant</item>
+        <item name="tickColorActive">?attr/colorSecondaryVariant</item>
+        <item name="tickColorInactive">?attr/colorSecondaryVariant</item>
+    </style>
+    <!--
+    <style name="SliderOverlay">
+        <item name="colorPrimary">?attr/colorPrimary</item>
+        <item name="colorOnPrimary">?attr/colorOnPrimary</item>
+        <item name="colorOnSurface">?attr/colorOnSurface</item>
+    </style>
+-->
+    <style name="SliderLabel" parent="Widget.MaterialComponents.Tooltip">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:textAppearance">@style/SliderLabelText</item>
+    </style>
+    <style name="SliderLabelText" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!-- Window animations -->
+    <style name="WindowAnimationTransition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <!-- Material Switch -->
+    <style name="MySwitchStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
+
+    </style>
+
+    <!-- Material Checkbox -->
+    <style name="MyCheckboxStyle" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="buttonTint">?attr/hintTextColor</item>
+    </style>
+
+
+    <style name="MyAlertDialogTheme"
+        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Optional customizations -->
+        <item name="colorPrimary">?attr/colorOnPrimary</item>
+        <item name="colorOnPrimary">?attr/colorOnSurface</item>
+        <item name="buttonBarPositiveButtonStyle">@style/MyDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/MyDialogButton</item>
+    </style>
+
+    <style name="MyDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+
+    <!-- Manual themes for BottomSheets -->
+    <style name="MyManualBottomSheetTheme.Light" parent="BottomSheetDialogTheme">
+        <item name="colorSurface">@color/light_primary_variant</item>
+        <item name="colorOnSurface">@color/light_color</item>
+        <item name="colorPrimary">@color/light_primary</item>
+        <item name="bottomSheetStyle">@style/MyManualBottomSheetStyle</item>
+    </style>
+
+    <style name="MyManualBottomSheetTheme.Dark" parent="BottomSheetDialogTheme">
+        <item name="colorSurface">@color/dark_primary_variant</item>
+        <item name="colorOnSurface">@color/dark_color</item>
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="bottomSheetStyle">@style/MyManualBottomSheetStyle</item>
+    </style>
+    <style name="MyManualBottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+    <style name="BottomSheetPadding" parent="">
+        <item name="android:paddingBottom">80dp</item>
+    </style>
+
+    <style name="ScrimBackground" parent="">
+        <item name="android:background">@color/black</item>
+        <item name="android:alpha">0.4</item>
+    </style>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:drawablePadding="8dp"
+    android:gravity="center_vertical"
+    android:padding="8dp"
+    android:text="@string/folder"
+    app:drawableStartCompat="@drawable/folder_open" />

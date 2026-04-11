@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/DefaultView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/extra_scroll_space_large">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/fileWriteLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/file_log_info"
+                android:text="@string/file_log" />
+
+            <LinearLayout
+                android:id="@+id/fileWriteLogLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/fileWriteReset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/reset"
+                    android:contentDescription="@string/reset"
+                    app:icon="@drawable/delete" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/fileWriteShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/share"
+                    android:contentDescription="@string/share"
+                    app:icon="@drawable/share" />
+            </LinearLayout>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/fileViewLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/file_view_log_info"
+                android:text="@string/file_view_log" />
+
+            <LinearLayout
+                android:id="@+id/fileViewLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/fileViewReset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/reset"
+                    app:icon="@drawable/delete" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/fileViewShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/share"
+                    app:icon="@drawable/share" />
+            </LinearLayout>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:id="@+id/crashView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/crash_log_hint"
+                android:text="@string/crash_log" />
+
+            <LinearLayout
+                android:id="@+id/crashLogLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/crashLogReset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/reset"
+                    app:icon="@drawable/delete" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/crashLogShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/share"
+                    app:icon="@drawable/share" />
+            </LinearLayout>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

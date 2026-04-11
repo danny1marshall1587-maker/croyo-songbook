@@ -1,0 +1,718 @@
+package com.garethevans.church.opensongtablet.chords;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+
+import androidx.core.graphics.BitmapCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
+import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Locale;
+
+public class ChordDisplayProcessing {
+
+    private ArrayList<String> instruments, songinstruments, chordsInSong, fingerings, pianoNotesArray;
+    private ArrayList<Integer> pianoKeysArray;
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "ChordDisplayProcessing";
+    private final Context c;
+    private final MainActivityInterface mainActivityInterface;
+
+    public ChordDisplayProcessing(Context c) {
+        this.c = c;
+        mainActivityInterface = (MainActivityInterface) c;
+        initialiseArrays();
+    }
+
+    public void initialiseArrays() {
+        chordsInSong = new ArrayList<>();
+        fingerings   = new ArrayList<>();
+        pianoKeysArray = new ArrayList<>();
+        pianoNotesArray = new ArrayList<>();
+        instruments = new ArrayList<>();
+        addPianoKeys();
+        setupInstruments();
+    }
+
+    public void setupInstruments() {
+        instruments = new ArrayList<>();
+        instruments.add(c.getString(R.string.guitar));
+        instruments.add(c.getString(R.string.ukulele));
+        instruments.add(c.getString(R.string.mandolin));
+        instruments.add(c.getString(R.string.banjo4));
+        instruments.add(c.getString(R.string.banjo5));
+        instruments.add(c.getString(R.string.cavaquinho));
+        instruments.add(c.getString(R.string.piano));
+    }
+    public void setupSongInstruments() {
+        songinstruments = new ArrayList<>();
+        songinstruments.add(c.getString(R.string.use_default));
+        songinstruments.add(c.getString(R.string.guitar));
+        songinstruments.add(c.getString(R.string.ukulele));
+        songinstruments.add(c.getString(R.string.mandolin));
+        songinstruments.add(c.getString(R.string.banjo4));
+        songinstruments.add(c.getString(R.string.banjo5));
+        songinstruments.add(c.getString(R.string.cavaquinho));
+        songinstruments.add(c.getString(R.string.piano));
+    }
+    public ArrayList<String> getInstruments() {
+        if (instruments==null || instruments.isEmpty()) {
+            setupInstruments();
+        }
+        return instruments;
+    }
+    public ArrayList<String> getSongInstruments() {
+        if (songinstruments==null || songinstruments.isEmpty()) {
+            setupSongInstruments();
+        }
+        return songinstruments;
+    }
+    public String getPrefFromInstrument(String instrument) {
+        String pref;
+        if (instrument.equals(instruments.get(0))) {
+            pref = "g";
+        } else if (instrument.equals(instruments.get(1))) {
+            pref = "u";
+        } else if (instrument.equals(instruments.get(2))) {
+            pref = "m";
+        } else if (instrument.equals(instruments.get(3))) {
+            pref = "b";
+        } else if (instrument.equals(instruments.get(4))) {
+            pref = "B";
+        } else if (instrument.equals(instruments.get(5))) {
+            pref = "c";
+        } else if (instrument.equals(instruments.get(6))) {
+            pref = "p";
+        } else {
+            pref = "g";
+        }
+        return pref;
+    }
+    public String getInstrumentFromPref(String pref) {
+        switch (pref) {
+            case "g":
+            default:
+                return instruments.get(0);
+            case "u":
+                return instruments.get(1);
+            case "m":
+                return instruments.get(2);
+            case "b":
+                return instruments.get(3);
+            case "B":
+                return instruments.get(4);
+            case "c":
+                return instruments.get(5);
+            case "p":
+                return instruments.get(6);
+        }
+    }
+    public ArrayList<String> getChordsInSong() {
+        return chordsInSong;
+    }
+    public ArrayList<String> getFingerings() {
+        return fingerings;
+    }
+    private void addPianoKeys() {
+        pianoKeysArray.add(R.id.c0);
+        pianoKeysArray.add(R.id.csharp0);
+        pianoKeysArray.add(R.id.d0);
+        pianoKeysArray.add(R.id.dsharp0);
+        pianoKeysArray.add(R.id.e0);
+        pianoKeysArray.add(R.id.f0);
+        pianoKeysArray.add(R.id.fsharp0);
+        pianoKeysArray.add(R.id.g0);
+        pianoKeysArray.add(R.id.gsharp0);
+        pianoKeysArray.add(R.id.a0);
+        pianoKeysArray.add(R.id.asharp0);
+        pianoKeysArray.add(R.id.b0);
+        pianoKeysArray.add(R.id.c1);
+        pianoKeysArray.add(R.id.csharp1);
+        pianoKeysArray.add(R.id.d1);
+        pianoKeysArray.add(R.id.dsharp1);
+        pianoKeysArray.add(R.id.e1);
+        pianoKeysArray.add(R.id.f1);
+        pianoKeysArray.add(R.id.fsharp1);
+        pianoKeysArray.add(R.id.g1);
+        pianoKeysArray.add(R.id.gsharp1);
+        pianoKeysArray.add(R.id.a1);
+        pianoKeysArray.add(R.id.asharp1);
+        pianoKeysArray.add(R.id.b1);
+        pianoKeysArray.add(R.id.c2);
+        pianoKeysArray.add(R.id.csharp2);
+        pianoKeysArray.add(R.id.d2);
+        pianoKeysArray.add(R.id.dsharp2);
+        pianoKeysArray.add(R.id.e2);
+
+        pianoNotesArray.add("C");
+        pianoNotesArray.add("C#");
+        pianoNotesArray.add("D");
+        pianoNotesArray.add("D#");
+        pianoNotesArray.add("E");
+        pianoNotesArray.add("F");
+        pianoNotesArray.add("F#");
+        pianoNotesArray.add("G");
+        pianoNotesArray.add("G#");
+        pianoNotesArray.add("A");
+        pianoNotesArray.add("A#");
+        pianoNotesArray.add("B");
+        pianoNotesArray.add("C");
+        pianoNotesArray.add("C#");
+        pianoNotesArray.add("D");
+        pianoNotesArray.add("D#");
+        pianoNotesArray.add("E");
+        pianoNotesArray.add("F");
+        pianoNotesArray.add("F#");
+        pianoNotesArray.add("G");
+        pianoNotesArray.add("G#");
+        pianoNotesArray.add("A");
+        pianoNotesArray.add("A#");
+        pianoNotesArray.add("B");
+        pianoNotesArray.add("C");
+        pianoNotesArray.add("C#");
+        pianoNotesArray.add("D");
+        pianoNotesArray.add("D#");
+        pianoNotesArray.add("E");
+    }
+    public ArrayList<Integer> getPianoKeysArray() {
+        return pianoKeysArray;
+    }
+    public ArrayList<String> getPianoNotesArray() {
+        return pianoNotesArray;
+    }
+
+    public void findChordsInSong() {
+        // First up, parse the lyrics for the chord lines and add them together
+        String[] lines = mainActivityInterface.getSong().getLyrics().split("\n");
+        StringBuilder chordsOnly = new StringBuilder();
+        for (String thisline : lines) {
+            if (thisline.startsWith(".")) {
+                chordsOnly.append(thisline).append(" ");
+            }
+        }
+        String everyChord = chordsOnly.toString().replace(".", " ");
+        // Replace characters with spaces (but not slashes)
+        everyChord = everyChord.replace("("," ");
+        everyChord = everyChord.replace(")"," ");
+        everyChord = everyChord.replace("|"," ");
+        // Now split the chords individually and add unique ones to an array
+        // Encode them for fixing later $..$
+        chordsInSong = new ArrayList<>();
+        String[] allChords = everyChord.split(" ");
+        for (String chord:allChords) {
+            if (!chord.trim().isEmpty() && !chordsInSong.contains("$"+chord+"$")) {
+                chordsInSong.add("$"+chord+"$");
+            }
+        }
+    }
+    public void transposeChordsInSong() {
+        // Go through each chord and transpose it
+        for (int i=0; i<chordsInSong.size(); i++) {
+            chordsInSong.set(i, mainActivityInterface.getTranspose().getKeyBeforeCapo(
+                    Integer.parseInt(mainActivityInterface.getSong().getCapo()),chordsInSong.get(i)));
+        }
+    }
+    public void addCustomChordFingering(String forInstrument) {
+        // If we have custom chords in the song add them (they are split by a space)
+        // Only add this instrument though
+        if (!mainActivityInterface.getSong().getCustomchords().isEmpty()) {
+            String[] customChords = mainActivityInterface.getSong().getCustomchords().split(" ");
+            for (String customChord:customChords) {
+                String chordName = "$"+customChord.substring(customChord.lastIndexOf("_")+1)+"$";
+                if (customChord.contains("_"+forInstrument+"_") && !fingerings.contains((chordName))) {
+                    String chordFingering = customChord.substring(0,customChord.indexOf("_"+forInstrument+"_"));
+                    int index = chordsInSong.indexOf(chordName);
+                    if (index>=0) {
+                        fingerings.set(index,chordFingering);
+                    } else {
+                        fingerings.add(chordFingering);
+                        chordsInSong.add(chordName);
+                    }
+                }
+            }
+        }
+    }
+    public void setFingerings(ChordDirectory chordDirectory, String instrument, ArrayList<String> instruments, int chordFormat) {
+        for (String chord : chordsInSong) {
+            if (instrument.equals(instruments.get(0))) {
+                // Guitar chords
+                addFingeringOrNull(chordDirectory.guitarChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(1))) {
+                // Ukelele chords
+                addFingeringOrNull(chordDirectory.ukuleleChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(2))) {
+                // Mandolin chords
+                addFingeringOrNull(chordDirectory.mandolinChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(3))) {
+                // Banjo 4 chords
+                addFingeringOrNull(chordDirectory.banjo4stringChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(4))) {
+                // Banjo 5 chords
+                addFingeringOrNull(chordDirectory.banjo5stringChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(5))) {
+                // Cavaqhino chords
+                addFingeringOrNull(chordDirectory.cavaquinhoChords(chordFormat, chord));
+            } else if (instrument.equals(instruments.get(6))) {
+                // Piano chords
+                addFingeringOrNull(chordDirectory.pianoChords(chordFormat, chord));
+            }
+        }
+        // Add custom chords if they exist
+        String songInstrument = mainActivityInterface.getSong().getPreferredInstrument();
+        if (songInstrument==null || songInstrument.isEmpty()) {
+            songInstrument = "";
+        }
+        if (songInstrument.isEmpty()) {
+            songInstrument = mainActivityInterface.getPreferences().getMyPreferenceString("chordInstrument","g");
+        }
+        addCustomChordFingering(songInstrument);
+    }
+    private void addFingeringOrNull(String fingering) {
+        if (fingering!=null && !fingering.isEmpty() && !fingering.startsWith("_")) {
+            fingerings.add(fingering);
+        } else {
+            fingerings.add(null);
+        }
+    }
+    public String getCapoPosition() {
+        // Decide if the capo position is a number or a numeral
+        String capoPosition = mainActivityInterface.getSong().getCapo();
+        if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("capoInfoAsNumerals", false)) {
+            String[] numerals = new String[] {"","I","II","III","IV","V","VI","VII","VIII","IX","X","XI,","XII"};
+            int pos = Integer.parseInt(capoPosition);
+            if (pos>=0 && pos<=12) {
+                return numerals[pos];
+            } else {
+                return capoPosition;
+            }
+        } else {
+            return capoPosition;
+        }
+    }
+
+    // The display for stringed instruments
+    @SuppressLint("InflateParams")
+    public LinearLayout getChordDiagram(LayoutInflater inflater, String chordName, String chordString) {
+        int padding = c.getResources().getDimensionPixelSize(R.dimen.chord_padding);
+        LinearLayout chordLayout = getChordLayout(padding);
+
+        // Set the chord name
+        // Make sure it is the preferred format though (e.g. Eb/D#)
+        // If it isn't a valid chord, it will be null, in which case, ignore
+        MyMaterialSimpleTextView chordNameTextView = getChordName(chordName);
+        if (chordNameTextView!=null && chordString!=null) {
+            chordNameTextView.setTag("chordNameTextView");
+            chordLayout.addView(chordNameTextView);
+
+            // Get chord table layout
+            TableLayout chordTable = getTableLayout();
+
+            // The guitarstring will be in the format of 002220, xx0232, 113331_4_g_C#
+            boolean fretLabel = false;
+            String fretMarker = "";
+            String[] chordBits = chordString.split("_");
+            if (chordBits.length > 1) {
+                fretMarker = chordBits[1];
+                if (!fretMarker.equals("0")) {
+                    fretLabel = true;
+                }
+            }
+
+            // The first bit of chordBits is the fingering.  Get the number of strings
+            char[] stringPositions = chordBits[0].toCharArray();
+            ArrayList<Integer> stringPosArray = new ArrayList<>();
+            int maxFrets = 4;
+            for (int x = 0; x <= 6; x++) {
+                if (stringPositions.length > x) {
+                    try {
+                        int fret = Integer.parseInt(Character.toString(stringPositions[x]));
+                        maxFrets = Math.max(fret, maxFrets);
+                        stringPosArray.add(x, fret);
+                    } catch (Exception e) {
+                        // It was likely an x
+                        stringPosArray.add(x, -1);
+                    }
+                }
+            }
+            TableRow stringMarkers = new TableRow(c);
+            stringMarkers.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+            // Now go through the frets and build the chords
+            for (int fret = 0; fret < maxFrets; fret++) {
+                if (fret == 0) {
+                    // We should show the string markers (x, o or "")
+                    MyMaterialSimpleTextView spacer = new MyMaterialSimpleTextView(c);
+                    setColumnIndex(spacer, 0);
+                    if (!fretLabel) {
+                        spacer.setVisibility(View.GONE);
+                    }
+                    chordTable.addView(spacer);
+                    for (int pos = 0; pos < 6; pos++) {
+                        @SuppressLint("InflateParams") MyMaterialSimpleTextView markerTextView = inflater.inflate(R.layout.view_string_marker, null).findViewById(R.id.stringMarker);
+                        markerTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                        markerTextView.setText(getStringTopMarker(markerTextView, stringPosArray, pos));
+                        setColumnIndex(markerTextView, pos + 1);
+                        stringMarkers.addView(markerTextView);
+                    }
+                    chordTable.addView(stringMarkers, fret);
+                }
+
+                // Now build the string row
+                TableRow guitarFret = new TableRow(c);
+                guitarFret.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+                // Start with the fret label if any
+                MyMaterialSimpleTextView markerTextView = (MyMaterialSimpleTextView) inflater.inflate(R.layout.view_string_marker, null);
+                if (fret == 0 && fretLabel) {
+                    markerTextView.setText(fretMarker);
+                } else if (fretLabel) {
+                    markerTextView.setText("");
+                } else {
+                    markerTextView.setVisibility(View.GONE);
+                }
+                setColumnIndex(markerTextView, 0);
+                guitarFret.addView(markerTextView);
+
+                // Now go through the strings
+                for (int string = 0; string < 6; string++) {
+                    FrameLayout stringView;
+                    if (string == 0) {
+                        stringView = (FrameLayout) inflater.inflate(R.layout.view_chord_string_left, null);
+                    } else if (stringPosArray.size() == string + 1) {
+                        stringView = (FrameLayout) inflater.inflate(R.layout.view_chord_string_right, null);
+                    } else {
+                        stringView = (FrameLayout) inflater.inflate(R.layout.view_chord_string_middle, null);
+                    }
+                    highlightStringFingering(stringView, stringPosArray, fret, string);
+                    guitarFret.addView(stringView);
+                }
+                chordTable.addView(guitarFret, fret + 1);
+            }
+            chordLayout.addView(chordTable);
+            if (chordBits[0].isEmpty() || chordBits[0].equals("xxxxxx") || chordBits[0].equals("xxxxx") || chordBits[0].equals("xxxx")) {
+                // Allow clicking on this view to open a custom chord designer
+                chordLayout.setOnClickListener(view -> {
+                    mainActivityInterface.setWhattodo("customChord_"+chordName);
+                    mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_chords_custom),0);
+                });
+            }
+            return chordLayout;
+        } else {
+            return null;
+        }
+    }
+
+    public void createChordImages(String instrument, int chordFormat, float scale, boolean capochords) {
+        boolean piano = instrument.equals("p");
+        for (int i=0; i<chordsInSong.size(); i++) {
+            String chordName = chordsInSong.get(i);
+            LinearLayout v;
+            String fingeringToUse = fingerings.get(i);
+            if (capochords) {
+                String capoString = mainActivityInterface.getSong().getCapo().replaceAll("\\D","");
+                if (!capoString.isEmpty()) {
+                    chordName = "." + chordName.replace("$","");
+                    chordName = mainActivityInterface.getTranspose().transposeChordForCapo(Integer.parseInt(capoString), chordName);
+                    chordName = chordName.replace(".","");
+                    switch (instrument) {
+                        case "g":
+                            // Guitar chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().guitarChords(chordFormat, chordName);
+                            break;
+                        case "u":
+                            // Ukelele chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().ukuleleChords(chordFormat, chordName);
+                            break;
+                        case "m":
+                            // Mandolin chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().mandolinChords(chordFormat, chordName);
+                            break;
+                        case "b":
+                            // Banjo 4 chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().banjo4stringChords(chordFormat, chordName);
+                            break;
+                        case "B":
+                            // Banjo 5 chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().banjo5stringChords(chordFormat, chordName);
+                            break;
+                        case "c":
+                            // Cavaqhino chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().cavaquinhoChords(chordFormat, chordName);
+                            break;
+                        case "p":
+                            // Piano chords
+                            fingeringToUse = mainActivityInterface.getChordDirectory().pianoChords(chordFormat, chordName);
+                            break;
+                    }
+                    chordName = "$"+chordName+"$";
+                }
+            }
+            if (piano) {
+                v = getChordDiagramPiano(LayoutInflater.from(c), chordName, fingeringToUse);
+            } else {
+                v = getChordDiagram(LayoutInflater.from(c), chordName, fingeringToUse);
+            }
+            if (v!=null) {
+                // Set the chord text colour to match the theme
+                if (capochords) {
+                    ((MyMaterialSimpleTextView) v.findViewWithTag("chordNameTextView")).setTextColor(mainActivityInterface.getMyThemeColors().getLyricsCapoColor());
+                } else {
+                    ((MyMaterialSimpleTextView) v.findViewWithTag("chordNameTextView")).setTextColor(mainActivityInterface.getMyThemeColors().getLyricsChordsColor());
+                }
+                v.setPadding(0,0,0,0);
+                v.getChildAt(0).setPadding(0,0,0,0);
+                // Get the size of the view by adding it to a canvas and measure the specs
+                int specSize = View.MeasureSpec.makeMeasureSpec(0 /* any */, View.MeasureSpec.UNSPECIFIED);
+                v.measure(specSize, specSize);
+                int questionWidth = v.getMeasuredWidth();
+                int questionHeight = v.getMeasuredHeight();
+                v.layout(0, 0, questionWidth, questionHeight);
+                Bitmap b = Bitmap.createBitmap(questionWidth, questionHeight, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(b);
+                v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                v.draw(canvas);
+
+                // Make a scaled bitmap (reduce memory requirement!)
+                int newWidth = Math.round(questionWidth * scale);
+                int newHeight = Math.round(questionHeight * scale);
+
+                Bitmap scaledBitmap = BitmapCompat.createScaledBitmap(b, newWidth, newHeight, null, false);
+                b.recycle();
+
+                // Get the pixels for recoloring if not piano
+                int[] pixels;
+                if (!piano) {
+                    pixels = new int[newWidth * newHeight];
+                    //get pixels
+                    scaledBitmap.getPixels(pixels, 0, newWidth, 0, 0, newWidth, newHeight);
+
+                    int targetColor;
+                    if (mainActivityInterface.getMyThemeColors().isDyslexiaModeEnabled()) {
+                        targetColor = mainActivityInterface.getMyThemeColors().getChordColor(chordsInSong.get(i).replace("$",""));
+                    } else if (capochords) {
+                        targetColor = mainActivityInterface.getMyThemeColors().getLyricsCapoColor();
+                    } else {
+                        targetColor = mainActivityInterface.getMyThemeColors().getLyricsChordsColor();
+                    }
+
+                    // Change the pixels
+                    for (int x = 0; x < pixels.length; ++x) {
+                        if (pixels[x] == c.getResources().getColor(R.color.white)) {
+                            pixels[x] = targetColor;
+                        }
+                    }
+                    scaledBitmap.setPixels(pixels, 0, newWidth, 0, 0, newWidth, newHeight);
+                }
+
+                chordName = chordName.replace("$","").replace("/","_");
+                String capobit = "";
+                if (capochords) {
+                    capobit = "capo_";
+                }
+                File file = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords","",capobit + chordName+".png");
+                if (file!=null) {
+                    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+                        mainActivityInterface.getStorageAccess().writeImage(outputStream, scaledBitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private LinearLayout getChordLayout(int padding) {
+        LinearLayout linearLayout = new TableLayout(c);
+        ViewGroup.LayoutParams layoutParams1 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(padding,padding,padding,padding);
+        linearLayout.setLayoutParams(layoutParams1);
+        return linearLayout;
+    }
+
+    private MyMaterialSimpleTextView getChordName(String chordName) {
+        chordName = chordName.replace("$", "");
+        if (isValidChord(chordName)) {
+            chordName = mainActivityInterface.getTranspose().convertToPreferredChord(chordName);
+            MyMaterialSimpleTextView textView = new MyMaterialSimpleTextView(c);
+            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(layoutParams2);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextSize(24);
+            textView.setText(chordName);
+            textView.setTextColor(mainActivityInterface.getMyThemeColors().getLyricsChordsColor());
+            return textView;
+        } else {
+            return null;
+        }
+    }
+
+    private TableLayout getTableLayout() {
+        TableLayout chordTable = new TableLayout(c);
+        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        chordTable.setLayoutParams(layoutParams3);
+        return chordTable;
+    }
+
+    private String getStringTopMarker(MyMaterialSimpleTextView textView, ArrayList<Integer> stringPosArray, int position) {
+        if (stringPosArray.size()>position) {
+            if (stringPosArray.get(position) == -1) {
+                return "x";
+            } else if (stringPosArray.get(position) == 0) {
+                return "o";
+            } else {
+                return "";
+            }
+        } else {
+            textView.setVisibility(View.GONE);
+            return "";
+        }
+    }
+
+    private void setColumnIndex(View view, int index) {
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(index);
+        view.setLayoutParams(layoutParams);
+    }
+
+    private void highlightStringFingering(FrameLayout frameLayout, ArrayList<Integer> stringPosArray, int fret, int string) {
+        if (stringPosArray.size()>string && stringPosArray.get(string).equals(fret+1)) {
+            frameLayout.findViewById(R.id.stringOn).setVisibility(View.VISIBLE);
+        } else if (stringPosArray.size()>string) {
+            frameLayout.findViewById(R.id.stringOn).setVisibility(View.INVISIBLE);
+        } else {
+            frameLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isValidChord(String chord) {
+        if (!chord.isEmpty()) {
+            char char1 = chord.charAt(0);
+            return "abcdefgh".contains(Character.toString(char1).toLowerCase(Locale.ROOT));
+        }
+        return false;
+    }
+
+    // The display for piano
+    @SuppressLint("InflateParams")
+    public LinearLayout getChordDiagramPiano(LayoutInflater inflater, String chordName, String chordString) {
+        int padding = c.getResources().getDimensionPixelSize(R.dimen.chord_padding);
+        LinearLayout chordLayout = getChordLayout(padding);
+
+        // Set the chord name
+        // Make sure it is the preferred format though (e.g. Eb/D#)
+        // If it isn't a valid chord, it will be null, in which case, ignore
+        MyMaterialSimpleTextView chordNameTextView = getChordName(chordName);
+        if (chordNameTextView!=null && chordString!=null) {
+            chordNameTextView.setTag("chordNameTextView");
+            chordLayout.addView(chordNameTextView);
+
+            // The piano notes will be in the format of A,C#,E_p
+            String[] chordBits = chordString.split("_");
+            String[] notes = chordBits[0].split(",");
+
+            // Get piano layout
+            @SuppressLint("InflateParams") View pianoChord = inflater.inflate(R.layout.view_chord_piano, chordLayout);
+
+            // Go through each note and colour tint the view
+            // Get the starting position for the first note in the array
+            int start = pianoNotesArray.indexOf(notes[0]);
+            if (start!=-1) {
+                int noteToFind = 0;
+                for (int x = start; x < pianoNotesArray.size(); x++) {
+                    // Look for the remaining positions in the notesArray
+                    if (noteToFind < notes.length && pianoNotesArray.get(x).equals(notes[noteToFind])) {
+                        tintDrawable(pianoChord.findViewById(pianoKeysArray.get(x)), notes[noteToFind], true);
+                        noteToFind++;  // Once we've found them all, this won't get called again
+                    }
+                }
+            }
+            return chordLayout;
+        } else {
+            return null;
+        }
+    }
+
+    public void tintDrawable(ImageView imageView, String note, boolean on) {
+        Drawable drawable;
+        if (imageView!=null) {
+            if (on && note.contains("#")) {
+                //drawable = ContextCompat.getDrawable(c, R.drawable.piano_note_black_on);
+                drawable = VectorDrawableCompat.create(c.getResources(),R.drawable.piano_note_black_on,null);
+            } else if (!on && note.contains("#")) {
+                //drawable = ContextCompat.getDrawable(c, R.drawable.piano_note_black);
+                drawable = VectorDrawableCompat.create(c.getResources(),R.drawable.piano_note_black,null);
+            } else if (on && !note.contains("#")) {
+                //drawable = ContextCompat.getDrawable(c, R.drawable.piano_note_white_on);
+                drawable = VectorDrawableCompat.create(c.getResources(),R.drawable.piano_note_white_on,null);
+            } else {
+                //drawable = ContextCompat.getDrawable(c, R.drawable.piano_note_white);
+                drawable = VectorDrawableCompat.create(c.getResources(),R.drawable.piano_note_white,null);
+            }
+            imageView.setImageDrawable(drawable);
+        }
+    }
+
+    public boolean codeMatchesInstrument(String code, String instrument) {
+        String instrumentLetter = getPrefFromInstrument(instrument);
+        return code.contains("_"+instrumentLetter+"_");
+    }
+
+    // The logic to convert between preferred instrument saved value and nice text
+    public String getSongInstrumentNice(String pref) {
+        String instrument;
+        if (pref!=null) {
+            // If no preferred instrument is saved with the song, it will show as 'Use default'
+            switch (pref) {
+                default:
+                    instrument = c.getString(R.string.use_default);
+                    break;
+                case "g":
+                    instrument = c.getString(R.string.guitar);
+                    break;
+                case "u":
+                    instrument = c.getString(R.string.ukulele);
+                    break;
+                case "m":
+                    instrument = c.getString(R.string.mandolin);
+                    break;
+                case "b":
+                    instrument = c.getString(R.string.banjo4);
+                    break;
+                case "B":
+                    instrument = c.getString(R.string.banjo5);
+                    break;
+                case "c":
+                    instrument = c.getString(R.string.cavaquinho);
+                    break;
+                case "p":
+                    instrument = c.getString(R.string.piano);
+                    break;
+            }
+        } else {
+            // If it wasn't set, or null, use this value
+            instrument = c.getString(R.string.use_default);
+        }
+        return instrument;
+    }
+}

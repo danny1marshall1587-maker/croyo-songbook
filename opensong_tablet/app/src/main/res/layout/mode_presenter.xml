@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="0dp">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/presenterTabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/menuTabs"
+        android:soundEffectsEnabled="false"
+        android:background="@color/transparent"
+        android:contentDescription="@string/presenter_mode"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <com.garethevans.church.opensongtablet.customviews.InlineSetList
+            android:id="@+id/inlineSetList"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:elevation="8dp"/>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:soundEffectsEnabled="false"
+            tools:ignore="NestedWeights" />
+
+        <LinearLayout
+            android:id="@+id/sideBit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/showLogoSide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:padding="0dp"
+                android:text="@string/show_logo" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/blackScreenSide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="0dp"
+                android:text="@string/black_screen" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/blankScreenSide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="0dp"
+                android:text="@string/blank_screen" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1">
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/panicSide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/panic"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:soundEffectsEnabled="false"
+                    android:text="@string/panic"
+                    app:icon="@drawable/projector"
+                    app:iconGravity="top" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomBit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/showLogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:padding="0dp"
+                android:text="@string/show_logo" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/blackScreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="0dp"
+                android:text="@string/black_screen" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/blankScreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="0dp"
+                android:text="@string/blank_screen" />
+        </LinearLayout>
+
+        <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            android:id="@+id/panicBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/project"
+            android:gravity="center"
+            android:padding="16dp"
+            android:soundEffectsEnabled="false"
+            android:text="@string/panic"
+            app:icon="@drawable/projector"
+            app:iconGravity="top" />
+    </LinearLayout>
+</LinearLayout>

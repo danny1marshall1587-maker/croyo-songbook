@@ -1,0 +1,256 @@
+plugins {
+    id 'com.android.application'
+    id 'androidx.navigation.safeargs'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// --- Load local.properties ---
+def localProps = new Properties()
+def localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localProps.load(new FileInputStream(localPropsFile))
+}
+
+android {
+    namespace = "com.garethevans.church.opensongtablet"
+    compileSdk = 36
+
+    // --- Signing configuration ---
+    signingConfigs {
+        release {
+            if (localProps.containsKey("MYAPP_STORE_FILE")) {
+                storeFile file(localProps["MYAPP_STORE_FILE"])
+                storePassword localProps["MYAPP_STORE_PASSWORD"]
+                keyAlias localProps["MYAPP_KEY_ALIAS"]
+                keyPassword localProps["MYAPP_KEY_PASSWORD"]
+            } else if (System.getenv("MYAPP_STORE_FILE_BASE64") != null) {
+                // CI Environment (GitHub Actions)
+                storeFile file("release-keystore.jks")
+                storePassword System.getenv("MYAPP_STORE_PASSWORD")
+                keyAlias System.getenv("MYAPP_KEY_ALIAS")
+                keyPassword System.getenv("MYAPP_KEY_PASSWORD")
+            } else {
+                println("⚠️ No signing info found — release build will be unsigned.")
+            }
+        }
+    }
+
+    defaultConfig {
+        applicationId = "com.garethevans.church.opensongtablet"
+        minSdk = 24
+        targetSdk = 36
+        multiDexEnabled = true
+        vectorDrawables.useSupportLibrary = true
+        versionCode = 440     // Also change in wear
+        versionName = '6.6.9' // Also change in wear
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        /*externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+                cppFlags ''
+            }
+        }*/
+
+    }
+
+    // --- Product flavors for dual build targets ---
+    flavorDimensions "distribution"
+
+    productFlavors {
+        mobileOnly {
+            dimension "distribution"
+        }
+        withWear {
+            dimension "distribution"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            shrinkResources = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig = signingConfigs.release
+        }
+        beta {
+            initWith release
+            matchingFallbacks = ['release']
+        }
+        debug {
+            minifyEnabled = false
+            shrinkResources = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
+
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled = true
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+
+    buildFeatures {
+        viewBinding = true
+        prefab = true
+        buildConfig = true
+        resValues = true
+    }
+
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    /*externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }*/
+
+    lint {
+        disable "AutoboxingStateCreation"
+        abortOnError false
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven {
+        url = "https://jitpack.io"
+    }
+}
+
+dependencies {
+    implementation 'androidx.test.ext:junit:1.3.0'
+
+    //withWearWearApp project(':wear')
+    //add("withWearWearApp", project(":wear"))
+
+    // Only include wearable APK in the withWear flavor
+    //withWearWearApp project(":wear")
+    //"withWearWearApp" project(path: ":wear", configuration: "release")
+
+    // Age verification API for recent law changes in Texas
+    implementation 'com.google.android.play:age-signals:0.0.3' // Or latest version
+    implementation 'com.google.android.gms:play-services-tasks:18.4.1'
+
+    // Kotlin requirements
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.1.0'
+
+    // Activity and fragments
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'                  // Lifecycle for fragment control
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.7'
+    implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.9.7'
+    implementation 'androidx.preference:preference-ktx:1.2.1'                       // The app preferences
+    implementation 'androidx.multidex:multidex:2.0.1'                               // Allow splitting of file for older devices
+    implementation 'androidx.fragment:fragment-ktx:1.8.5'
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'                // To allow Java time/date utilities on <Android 8
+
+    // Material design and layouts
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.2.0' // RecyclerView (obviously)
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'           // Use this version with SDK 34
+    implementation 'androidx.gridlayout:gridlayout:1.1.0'               // GridLayout (obviously)
+    implementation 'androidx.cardview:cardview:1.0.0'                   // Cardview for recycler list items
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'   // Constraint layouts with FAB
+    implementation 'androidx.webkit:webkit:1.15.0'
+
+    // Google Play services (Play store, casting, fonts, etc.)
+    implementation 'androidx.mediarouter:mediarouter:1.8.1'                             // For casting obviously!
+    implementation 'com.google.android.gms:play-services-cast:22.3.0'
+    // For casting obviously!
+    implementation 'com.google.android.gms:play-services-cast-framework:22.3.0'
+    // For casting obviously!
+    implementation 'com.google.android.gms:play-services-nearby:19.3.0'                 // For Google Nearby Connect devices
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1' // For OCR text recognition (PDF/Camera)
+    implementation 'com.google.android.play:feature-delivery:2.1.0'                     // For updated resources
+    implementation 'com.google.android.play:feature-delivery-ktx:2.1.0'                 // For updated resources
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
+    implementation 'com.google.android.play:app-update:2.1.0'                           // For updated resources
+    implementation 'com.google.android.play:review-ktx:2.0.2'                           // For updated resources
+    implementation 'androidx.documentfile:documentfile:1.1.0'                           // Document file dependency
+    implementation 'androidx.browser:browser:1.9.0'
+    implementation 'androidx.annotation:annotation:1.9.1'                               // Allows annotations in code
+    annotationProcessor 'androidx.annotation:annotation:1.9.1'                          // Allows annotations in code
+
+    // App features
+    implementation 'org.apache.commons:commons-compress:1.28.0'         // For creating and editing compressed files (osb, backup)
+    implementation files('libs/TarsosDSP-Android-2.4.jar')              // For the pitch detection in the tuner
+    implementation 'com.github.bumptech.glide:glide:5.0.5'              // For better setting of images
+    annotationProcessor 'com.github.bumptech.glide:compiler:5.0.5'      // For better setting of images
+    implementation 'com.github.deano2390:MaterialShowcaseView:1.3.7'    // To highlight new features in the app
+    //implementation 'org.nanohttpd:nanohttpd:2.3.1'                      // For a webserver to display songs for non OpenSongApp users
+    implementation 'com.vanniktech:android-image-cropper:4.7.0'         // For image cropping/rotation
+    implementation 'com.google.zxing:core:3.5.4'                        // To generate QR code
+    implementation 'com.caverock:androidsvg-aar:1.4'                    // To convert SVG from abc notation into ImageView
+    implementation 'com.gu.android:toolargetool:0.3.2'                  // To attempt to log transaction too large crashes
+    //implementation 'com.google.oboe:oboe:1.7.0'                       // Low latency audio
+    implementation 'androidx.exifinterface:exifinterface:1.4.2'         // To get image exif data (orientation for camera)
+    implementation 'com.google.code.gson:gson:2.13.2'                   // GSon for JSON conversion of Song/Set objects
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'              // Retrofit for web access
+    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'        // Retrofit for web access
+    //noinspection NewerVersionAvailable,GradleDependency - Updating this above 1.5.0 breaks it!!!
+    implementation 'org.zwobble.mammoth:mammoth:1.5.0'
+    // Don't UPDATE                 // To extract text from docx files
+
+
+    // Vosk Voice Recognition (Dyslexia First)
+    implementation 'com.alphacephei:vosk-android:0.3.38'
+
+    // To include jar libraries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    testImplementation 'org.mockito:mockito-core:5.22.0'
+
+    // 1. Ktor 2.3.x is the stable choice for Android
+    implementation "io.ktor:ktor-server-core:2.3.12"
+    implementation "io.ktor:ktor-server-netty:2.3.12"
+    //implementation "io.ktor:ktor-server-cio:2.3.12"
+    implementation "io.ktor:ktor-server-websockets:2.3.12"
+    implementation "org.slf4j:slf4j-android:1.7.36"
+
+    // 2. Align Coroutines to a version compatible with Ktor 2.3.x
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+    // This waits until flavors are evaluated before trying to link the wear app
+    configurations.maybeCreate("withWearWearApp")
+    add("withWearWearApp", project(":wear"))
+
+    // Mediapipe (Hand-free page flip)
+    implementation 'com.google.mediapipe:tasks-vision:0.10.14'
+
+    // CameraX (For Face Gesture detection)
+    def camerax_version = "1.4.1"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    implementation "androidx.camera:camera-view:${camerax_version}"
+}
+
+kotlin {
+    jvmToolchain(21)
+}

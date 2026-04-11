@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        android:id="@+id/dialogHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tag_song" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/currentTags"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            android:id="@+id/newTag"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:hint="@string/new_something"
+            app:endIconMode="clear_text"
+            android:padding="16dp" />
+
+        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            android:id="@+id/insertTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/new_something"
+            android:src="@drawable/plus"
+            app:fabSize="mini"
+            app:useCompatPadding="true" />
+    </LinearLayout>
+</LinearLayout>

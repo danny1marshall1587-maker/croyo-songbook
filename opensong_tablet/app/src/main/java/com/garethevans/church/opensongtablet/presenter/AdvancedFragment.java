@@ -1,0 +1,100 @@
+package com.garethevans.church.opensongtablet.presenter;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.databinding.ModePresenterAdvancedBinding;
+import com.garethevans.church.opensongtablet.interfaces.DisplayInterface;
+import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+
+public class AdvancedFragment extends Fragment {
+
+    private ModePresenterAdvancedBinding myView;
+    private MainActivityInterface mainActivityInterface;
+    private DisplayInterface displayInterface;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivityInterface = (MainActivityInterface) context;
+        displayInterface = (DisplayInterface) context;
+    }
+
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        myView = ModePresenterAdvancedBinding.inflate(inflater,container,false);
+
+        setValues();
+
+        setListeners();
+
+        return myView.getRoot();
+    }
+
+    private void setValues() {
+        myView.alertText.setText(mainActivityInterface.getPreferences().getMyPreferenceString("presoAlertText",""));
+        myView.alertSwitch.setChecked(mainActivityInterface.getPresenterSettings().getAlertOn());
+        myView.presoAlertTextSize.setValue((int)mainActivityInterface.getPresenterSettings().getPresoAlertTextSize());
+        myView.presoAlertTextSize.setHint((int)mainActivityInterface.getPresenterSettings().getPresoAlertTextSize() + "sp");
+        myView.presoAlertTextSize.setLabelFormatter(value -> ((int)value)+"sp");
+        myView.presoAlertTextSize.setAdjustableButtons(true);
+        myView.presenterViewContentSize.setValue((int)mainActivityInterface.getPresenterSettings().getPresenterViewContentSize());
+        myView.presenterViewContentSize.setHint((int)mainActivityInterface.getPresenterSettings().getPresenterViewContentSize() + "sp");
+        myView.presenterViewContentSize.setLabelFormatter(value -> ((int)value)+"sp");
+        myView.presenterViewContentSize.setAdjustableButtons(true);
+    }
+
+    private void setListeners() {
+        myView.displaySettings.setOnClickListener(view -> {
+            if (getContext()!=null) {
+                mainActivityInterface.navigateToFragment(getString(R.string.deeplink_connected_display),0);
+            }
+        });
+        myView.alertText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = "";
+                if (editable!=null) {
+                    text = editable.toString();
+                }
+                mainActivityInterface.getPreferences().setMyPreferenceString("presoAlertText",text);
+                mainActivityInterface.getPresenterSettings().setPresoAlertText(text);
+                displayInterface.updateDisplay("updateAlert");
+            }
+        });
+        myView.alertSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            mainActivityInterface.getPresenterSettings().setAlertOn(b);
+            displayInterface.updateDisplay("showAlert");
+        });
+        myView.presoAlertTextSize.addOnChangeListener((slider, value, fromUser) -> {
+            myView.presoAlertTextSize.setHint((int)slider.getValue() + "sp");
+            mainActivityInterface.getPreferences().setMyPreferenceFloat("presoAlertTextSize",slider.getValue());
+            mainActivityInterface.getPresenterSettings().setPresoAlertTextSize(slider.getValue());
+            displayInterface.updateDisplay("updateAlert");
+        });
+        myView.presenterViewContentSize.addOnChangeListener((slider, value, fromUser) -> {
+            myView.presenterViewContentSize.setHint((int)slider.getValue() + "sp");
+            mainActivityInterface.getPreferences().setMyPreferenceFloat("presenterViewContentSize",slider.getValue());
+            mainActivityInterface.getPresenterSettings().setPresenterViewContentSize(slider.getValue());
+        });
+    }
+
+}

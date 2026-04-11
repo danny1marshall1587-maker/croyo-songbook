@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <HorizontalScrollView
+        android:id="@+id/testScrollLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                android:id="@+id/previewLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <LinearLayout
+                    android:id="@+id/hiddenHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/hiddenSections"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+        </ScrollView>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/scaledScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <RelativeLayout
+                android:id="@+id/scaledPageHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/scaledHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="vertical" />
+
+                <com.garethevans.church.opensongtablet.customviews.SongContent
+                    android:id="@+id/scaledSongContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/scaledHeader"
+                    android:clipChildren="false"
+                    android:clipToPadding="false" />
+            </RelativeLayout>
+        </ScrollView>
+    </HorizontalScrollView>
+
+    <com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/extra_scroll_space_large">
+
+            <LinearLayout
+                android:id="@+id/setOptionsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    style="@style/largeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_xlarge"
+                    android:text="@string/set_packages" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/setBundle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_bundle_opensongapp"
+                    android:hint="@string/set_bundle_opensongapp_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/justChordsBundle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_bundle_justchords"
+                    android:hint="@string/justchords_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="visible"/>
+                <com.garethevans.church.opensongtablet.customviews.MyDivider
+                    style="@style/MyDividerLine"
+                    android:layout_marginTop="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    style="@style/largeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_xlarge"
+                    android:text="@string/set_list_separate" />
+
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/setPDF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pdf"
+                    android:hint="@string/pdf_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/openSongAppSet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_set"
+                    android:hint="@string/app_specific_file"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/openSongSet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_desktop"
+                    android:hint="@string/desktop_specific_file"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/textSet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_text"
+                    android:hint="@string/text_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/setPNG"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_image"
+                    android:hint="@string/image_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+                <com.garethevans.church.opensongtablet.customviews.MyDivider
+                    style="@style/MyDividerLine"
+                    android:layout_marginTop="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    style="@style/largeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_xlarge"
+                    android:text="@string/song_files_separate" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                    android:id="@+id/includeSongs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/export_include_set_songs"
+                    android:hint="@string/export_include_set_songs_info"
+                    android:layout_marginBottom="16dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/songOptionsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/currentFormat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_current_format"
+                    android:hint="@string/export_current_format_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    android:id="@+id/setExportInfo"
+                    style="@style/largeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="@dimen/text_xlarge"
+                    android:text="@string/export_convert_song" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/pdf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pdf"
+                    android:hint="@string/pdf_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/image"
+                    android:hint="@string/image_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/screenShot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/screenshot"
+                    android:hint="@string/screenshot_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/openSongApp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_ost"
+                    android:hint="@string/app_specific_file"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/openSong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_desktop"
+                    android:hint="@string/desktop_specific_file"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/justChords"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/justchords"
+                    android:hint="@string/justchords_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/onSong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_onsong"
+                    android:hint="@string/onsong_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/chordPro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_chordpro"
+                    android:hint="@string/chordpro_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_text"
+                    android:hint="@string/text_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/merged"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/merged_text_file"
+                    android:hint="@string/merged_text_file_info"
+                    app:showCheckBox="true"
+                    android:layout_marginBottom="16dp"/>
+
+            </LinearLayout>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"
+                android:layout_marginTop="16dp"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                style="@style/largeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xlarge"
+                android:text="@string/settings" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/exportTextAsMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_as_message_info"
+                android:text="@string/text_as_message"/>
+
+            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                android:id="@+id/pdfTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/theme_pdf_image"
+                android:text="@string/use_default"
+                android:layout_marginBottom="16dp"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                android:id="@+id/maxPDFScaling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/max_pdf_scale"
+                app:infoText="@string/max_pdf_scale_info"
+                android:layout_marginBottom="16dp"
+                android:valueFrom="20"
+                android:valueTo="150"
+                android:stepSize="5"
+                android:value="75" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/forceSinglePage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/force_single_page_pdf"
+                android:hint="@string/force_single_page_pdf_info"/>
+
+        </LinearLayout>
+    </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
+
+    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+        android:id="@+id/shareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/export"
+        android:text="@string/share"
+        app:icon="@drawable/share"
+        app:useCompatPadding="true" />
+
+    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+        android:id="@+id/print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_toStartOf="@id/shareButton"
+        android:contentDescription="@string/print"
+        android:text="@string/print"
+        app:icon="@drawable/print"
+        app:useCompatPadding="true" />
+
+    <FrameLayout
+        android:id="@+id/scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        style="@style/ScrimBackground"
+        android:visibility="gone" />
+
+    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+        android:id="@+id/progressText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="32dp"
+        android:background="@drawable/popup_bg"
+        android:gravity="center"
+        android:hint="@string/processing"
+        android:minHeight="120dp"
+        android:padding="16dp"
+        android:text="@string/processing"
+        android:visibility="gone"
+        app:mydrawable="@drawable/timer" />
+
+</RelativeLayout>

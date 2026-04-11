@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="@style/setItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <RelativeLayout
+        android:id="@+id/cardview_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+            android:id="@+id/cardview_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:visibility="gone"
+            app:buttonTint="?attr/colorOnPrimary"/>
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/cardview_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/cardview_checkbox"
+            android:drawablePadding="16dp"
+            android:padding="4dp"
+            android:text="@string/number_1"
+            app:drawableStartCompat="@drawable/music_note" />
+
+        <FrameLayout
+            android:id="@+id/fileOrTitle"
+            android:layout_width="match_parent"
+            android:layout_toEndOf="@+id/cardview_item"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/cardview_edit">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/cardview_songtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:text="@string/title"
+                android:textColor="?attr/colorOnPrimary"
+                android:visibility="visible"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/cardview_songfilename"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:text="@string/filename"
+                android:textColor="?attr/colorOnPrimary"
+                android:visibility="gone"/>
+
+        </FrameLayout>
+
+        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            android:id="@+id/cardview_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            android:src="@drawable/pen"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/edit"
+            android:visibility="gone"/>
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/cardview_folder"
+            android:layout_width="match_parent"
+            android:layout_toEndOf="@+id/cardview_item"
+            android:layout_toStartOf="@+id/cardview_edit"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fileOrTitle"
+            android:layout_alignParentTop="false"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="4dp"
+            android:text="@string/mainfoldername"
+            android:textColor="?attr/colorOnPrimary" />
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/cardview_exists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorError"
+            android:textColor="?attr/colorOnError"
+            android:text="@string/included_songs_already_have"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/cardview_folder"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

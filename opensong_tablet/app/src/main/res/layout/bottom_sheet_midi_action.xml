@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        android:id="@+id/dialogHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/midi_action_assign" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/extra_scroll_space">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/midi_action_info"/>
+
+            <androidx.gridlayout.widget.GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:rowCount="2"
+                app:columnCount="4">
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action1"
+                    android:text="1"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action2"
+                    android:text="2"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action3"
+                    android:text="3"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action4"
+                    android:text="4"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action5"
+                    android:text="5"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action6"
+                    android:text="6"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action7"
+                    android:text="7"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/action8"
+                    android:text="8"
+                    android:layout_margin="4dp"
+                    tools:ignore="HardcodedText" />
+            </androidx.gridlayout.widget.GridLayout>
+
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/nearbyMessageMIDIAction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nearby_messages_include"
+                android:hint="@string/nearby_messages_include_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:id="@+id/nearbyMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nearby_message"
+                android:layout_marginBottom="8dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="top">
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    android:id="@+id/currentCode"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/midi_code_current"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                    android:id="@+id/editMidi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/edit"
+                    app:icon="@drawable/pen"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

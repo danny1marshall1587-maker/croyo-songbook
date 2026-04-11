@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/searchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            android:id="@+id/searchPhrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:endIconMode="clear_text"
+            android:text="@null"
+            android:hint="@string/search" />
+
+        <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            android:id="@+id/onlineSource"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:hint="@string/website" />
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/songSelectInfo2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/song_select_warning_more"/>
+
+        <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            android:id="@+id/importDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginTop="16dp"
+            android:text="@string/import_download"
+            app:icon="@drawable/import_file"/>
+
+        <LinearLayout
+            android:id="@+id/googleInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/chordinatorCredit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/chordinator"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/chordinatorInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/chordinator_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/clipboardInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/clipboard_info"/>
+        </LinearLayout>
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            android:id="@+id/webViewDesktop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/web_view_desktop"
+            android:hint="@string/web_view_desktop_info"/>
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            android:id="@+id/searchButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/search" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/webLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/topButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    android:id="@+id/backButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/back"
+                    android:src="@drawable/arrow_left"
+                    app:fabSize="mini"
+                    app:useCompatPadding="false" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    android:id="@+id/closeSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/close"
+                    android:src="@drawable/close"
+                    app:fabSize="mini"
+                    app:useCompatPadding="false" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    android:id="@+id/saveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/save"
+                    app:fabSize="mini"
+                    android:src="@drawable/download"
+                    app:useCompatPadding="false"
+                    tools:ignore="DuplicateClickableBoundsCheck" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    android:id="@+id/grabText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/text_extract_check"
+                    app:fabSize="mini"
+                    android:src="@drawable/search"
+                    app:useCompatPadding="false"
+                    tools:ignore="RedundantDescriptionCheck" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/webViewHolder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.garethevans.church.opensongtablet.customviews.SafeWebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="@style/ThemeOverlay.MaterialComponents"/>
+            </FrameLayout>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/saveLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/extra_scroll_space_large">
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            android:id="@+id/saveFilename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:endIconMode="clear_text"
+            android:hint="@string/filename" />
+
+        <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            android:id="@+id/folderChoice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:hint="@string/choose_folder" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:textSize="@dimen/text_small"
+                android:fontFamily="monospace"
+                android:textColor="@color/lightgrey" />
+
+        </LinearLayout>
+        </ScrollView>
+        <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            android:id="@+id/saveSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:text="@string/save"
+            app:icon="@drawable/save"/>
+
+    </FrameLayout>
+</LinearLayout>

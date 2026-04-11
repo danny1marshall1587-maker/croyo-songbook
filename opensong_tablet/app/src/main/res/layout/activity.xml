@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <com.garethevans.church.opensongtablet.customviews.NoFocusFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_page_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:contentDescription="@null"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:keepScreenOn="true"
+    android:descendantFocusability="beforeDescendants">
+
+    <View
+        android:id="@+id/focusDummy"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:visibility="invisible"
+        android:importantForAccessibility="no" />
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:contentDescription="@null"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:keepScreenOn="true">
+
+        <FrameLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:elevation="0dp">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/myAppBarLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:visibility="gone">
+<!--android:theme="?attr/actionBarStyle"-->
+
+                <com.garethevans.church.opensongtablet.customviews.MyToolbar
+                    android:id="@+id/myToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.ActionBar"/>
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <!--The main fragments get loaded up here-->
+            <RelativeLayout
+                android:id="@+id/fragmentView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/myAppBarLayout">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/nav_host_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    app:defaultNavHost="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:navGraph="@navigation/navigation" />
+
+                <com.garethevans.church.opensongtablet.customviews.OnScreenInfo
+                    android:id="@+id/onScreenInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- The page buttons -->
+                <include
+                    android:id="@+id/pageButtonRight"
+                    layout="@layout/view_page_buttons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/actionFAB"
+                    android:layout_below="@+id/onScreenInfo"
+                    android:layout_alignParentEnd="true"
+                    android:clipChildren="true" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyFAB
+                    android:id="@+id/actionFAB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginTop="12dp"
+                    android:contentDescription="@string/action"
+                    app:fab_padding="16dp"
+                    app:srcCompat="@drawable/plus" />
+
+
+                <!-- The previous and next info -->
+                <include
+                    android:id="@+id/nextPrevInfo"
+                    layout="@layout/view_prev_next"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toStartOf="@+id/actionFAB" />
+            </RelativeLayout>
+        </FrameLayout>
+
+        <!--The left song and set menu-->
+        <LinearLayout
+            android:id="@+id/songMenuLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/transparent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:orientation="vertical"
+            tools:ignore="VisualLintBounds">
+            <!--android:background="@color/colorAltPrimary"-->
+
+
+            <RelativeLayout
+                android:id="@+id/cutoutRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <!-- This bit draws a background for cutouts if required -->
+                <View
+                    android:id="@+id/cutoutView"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/transparent" />
+                <include
+                    android:id="@+id/menu_top"
+                    layout="@layout/menu_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom" />
+            </RelativeLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent" />
+        </LinearLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        android:id="@+id/toastBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="32dp"
+        android:visibility="gone"
+        app:elevation="128dp" />
+</com.garethevans.church.opensongtablet.customviews.NoFocusFrameLayout>
