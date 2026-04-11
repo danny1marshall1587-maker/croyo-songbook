@@ -3,6 +3,8 @@ name: Android CI (Cryo-Songbook)
 on:
   push:
     branches: [ "master", "main" ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ "master", "main" ]
 
@@ -23,11 +25,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-
     - name: Grant execute permission for gradlew
       run: chmod +x opensong_tablet/gradlew
+
+    - name: Extract Project Version
+      id: get_version
+      run: |
+        VERSION=$(grep "versionName =" opensong_tablet/app/build.gradle | head -n 1 | cut -d"'" -f2)
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Project Version: $VERSION"
 
     - name: Remove local java.home for CI
       run: sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
@@ -38,12 +44,48 @@ jobs:
     - name: Build Debug APK
       run: cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Debug --no-daemon
 
-    - name: Rename APK for identification
+    - name: Build Release APK (on tag)
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        MYAPP_STORE_FILE_BASE64: ${{ secrets.MYAPP_STORE_FILE_BASE64 }}
+        MYAPP_STORE_PASSWORD: ${{ secrets.MYAPP_STORE_PASSWORD }}
+        MYAPP_KEY_ALIAS: ${{ secrets.MYAPP_KEY_ALIAS }}
+        MYAPP_KEY_PASSWORD: ${{ secrets.MYAPP_KEY_PASSWORD }}
       run: |
-        find opensong_tablet/app/build/outputs/apk -name "*.apk" -exec mv {} CryoSongbook-${{ matrix.flavor }}-debug.apk \;
+        if [ -n "$MYAPP_STORE_FILE_BASE64" ]; then
+          echo "$MYAPP_STORE_FILE_BASE64" | base64 -d > opensong_tablet/app/release-keystore.jks
+        fi
+        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon
 
-    - name: Upload APK
+    - name: Prepare Artifacts
+      run: |
+        VERSION=${{ steps.get_version.outputs.VERSION }}
+        FLAVOR=${{ matrix.flavor }}
+        
+        # Move Debug
+        DEBUG_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/debug -name "*.apk" | head -n 1)
+        cp "$DEBUG_APK" "CryoSongbook-v$VERSION-$FLAVOR-debug.apk"
+        
+        # Move Release if exists
+        RELEASE_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/release -name "*.apk" | head -n 1)
+        if [ -f "$RELEASE_APK" ]; then
+          # Check if it was signed (if base64 was present)
+          if [ -f "opensong_tablet/app/release-keystore.jks" ]; then
+            cp "$RELEASE_APK" "CryoSongbook-v$VERSION-$FLAVOR-release-signed.apk"
+          else
+            cp "$RELEASE_APK" "CryoSongbook-v$VERSION-$FLAVOR-release-unsigned.apk"
+          fi
+        fi
+
+    - name: Upload Debug Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: CryoSongbook-${{ matrix.flavor }}-debug
-        path: CryoSongbook-${{ matrix.flavor }}-debug.apk
+        name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-debug
+        path: CryoSongbook-v${{ steps.get_version.outputs.VERSION }}-${{ matrix.flavor }}-debug.apk
+
+    - name: Upload Release Artifacts (on tag)
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@v4
+      with:
+        name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-release
+        path: CryoSongbook-v${{ steps.get_version.outputs.VERSION }}-${{ matrix.flavor }}-release-*.apk
