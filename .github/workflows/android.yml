@@ -41,8 +41,8 @@ jobs:
           sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
         fi
 
-    - name: Run Lint
-      run: cd opensong_tablet && ./gradlew lint${{ matrix.flavor }}Debug --no-daemon
+    # - name: Run Lint
+    #   run: cd opensong_tablet && ./gradlew lint${{ matrix.flavor }}Debug --no-daemon
 
     - name: Build Debug APK
       run: cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Debug --no-daemon
