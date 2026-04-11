@@ -1,2 +1,0 @@
-ninja: Entering directory `/home/dan/Documents/croyo songbook/app/.cxx/Debug/5y64365l/x86_64'
-ninja: no work to do.

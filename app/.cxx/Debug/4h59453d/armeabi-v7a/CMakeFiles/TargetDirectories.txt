@@ -1,3 +1,0 @@
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/4h59453d/armeabi-v7a/CMakeFiles/cryoprompter.dir
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/4h59453d/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/4h59453d/armeabi-v7a/CMakeFiles/rebuild_cache.dir

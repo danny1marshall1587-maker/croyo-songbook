@@ -1,0 +1,3739 @@
+Project Path: dyslexia_temp
+
+Source Tree:
+
+```txt
+dyslexia_temp
+└── opensong_tablet
+    └── app
+        └── src
+            └── main
+                ├── java
+                │   └── com
+                │       └── garethevans
+                │           └── church
+                │               └── opensongtablet
+                │                   └── screensetup
+                │                       ├── DisplayExtraFragment.java
+                │                       └── ThemeColors.java
+                └── res
+                    ├── layout
+                    │   └── settings_display_extra.xml
+                    └── values
+                        └── strings.xml
+
+```
+
+`opensong_tablet/app/src/main/java/com/garethevans/church/opensongtablet/screensetup/DisplayExtraFragment.java`:
+
+```java
+package com.garethevans.church.opensongtablet.screensetup;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.customviews.ExposedDropDownArrayAdapter;
+import com.garethevans.church.opensongtablet.databinding.SettingsDisplayExtraBinding;
+import com.garethevans.church.opensongtablet.interfaces.DisplayInterface;
+import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+import com.google.android.material.slider.Slider;
+
+public class DisplayExtraFragment extends Fragment {
+
+    private MainActivityInterface mainActivityInterface;
+    private DisplayInterface displayInterface;
+    private SettingsDisplayExtraBinding myView;
+    private String[] bracketStyles_Names;
+    private int[] bracketStyles_Ints;
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "DisplayExtraFrag";
+    private String song_display_string="", website_song_display_string="", save_string="",
+            filters_string="", format_text_normal_string="", format_text_italic_string="",
+            format_text_bold_string="", format_text_bolditalic_string="";
+    private String webAddress;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainActivityInterface.updateToolbar(song_display_string);
+        mainActivityInterface.updateToolbarHelp(webAddress);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivityInterface = (MainActivityInterface) context;
+        displayInterface = (DisplayInterface) mainActivityInterface;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        myView = SettingsDisplayExtraBinding.inflate(inflater,container,false);
+
+        myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
+
+        prepareStrings();
+
+        if (getActivity()!=null) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        }
+
+        webAddress = website_song_display_string;
+
+        // Set up views
+        setViews();
+
+        // Set up listeners
+        setListeners();
+
+        return myView.getRoot();
+    }
+
+    private void prepareStrings() {
+        if (getContext()!=null) {
+            song_display_string = getString(R.string.song_display);
+            website_song_display_string = getString(R.string.website_song_display);
+            save_string = getString(R.string.save);
+            filters_string = getString(R.string.filters);
+            format_text_normal_string = getString(R.string.format_text_normal);
+            format_text_italic_string = getString(R.string.format_text_italic);
+            format_text_bold_string = getString(R.string.format_text_bold);
+            format_text_bolditalic_string = getString(R.string.format_text_bolditalic);
+        }
+    }
+    private void setViews() {
+        // Set the checkboxes
+        myView.songSheet.setChecked(getChecked("songSheet",false));
+        myView.nextInSet.setChecked(getChecked("nextInSet",true));
+        myView.prevInSet.setChecked(getChecked("prevInSet",false));
+        myView.prevNextSongMenu.setChecked(getChecked("prevNextSongMenu",false));
+        myView.prevNextTextButtons.setChecked(getChecked("prevNextTextButtons",true));
+        myView.prevNextHide.setChecked(getChecked("prevNextHide",true));
+        myView.onscreenAutoscrollHide.setChecked(getChecked("onscreenAutoscrollHide",true));
+        myView.onscreenCapoHide.setChecked(getChecked("onscreenCapoHide", true));
+        myView.onscreenPadHide.setChecked(getChecked("onscreenPadHide",true));
+        myView.boldChordsHeadings.setChecked(getChecked("displayBoldChordsHeadings",false));
+        myView.boldChorus.setChecked(getChecked("displayBoldChorus",false));
+        myView.showChords.setChecked(getChecked("displayChords",true));
+        myView.showLyrics.setChecked(getChecked("displayLyrics",true));
+        myView.presoOrder.setChecked(getChecked("usePresentationOrder",false));
+        myView.keepMultiline.setChecked(getChecked("multiLineVerseKeepCompact",false));
+        myView.trimSections.setChecked(getChecked("trimSections",true));
+        myView.addSectionSpace.setChecked(getChecked("addSectionSpace",true));
+        myView.trimLineSpacing.setChecked(getChecked("trimLines",false));
+        visibilityByBoolean(myView.trimLineSpacingSlider,myView.trimLineSpacing.getChecked());
+        float lineSpacing = mainActivityInterface.getPreferences().getMyPreferenceFloat("lineSpacing",0.1f);
+        int percentage = (int)(lineSpacing * 100);
+        myView.trimLineSpacingSlider.setValue(percentage);
+        myView.trimLineSpacingSlider.setLabelFormatter(value -> ((int)value)+"%");
+        sliderValToText(percentage);
+        myView.trimWordSpacing.setChecked(getChecked("trimWordSpacing", true));
+        myView.dyslexiaMode.setChecked(getChecked("dyslexiaMode", false));
+        myView.highContrastLyrics.setChecked(getChecked("highContrastLyrics", false));
+        myView.voiceControl.setChecked(getChecked("voiceControlEnabled", false));
+        float masterT = mainActivityInterface.getPreferences().getMyPreferenceFloat("jsxMasterThreshold", -60.0f);
+        myView.jsxMasterThreshold.setValue(masterT);
+        myView.jsxMasterThresholdLabel.setText("JSx Master Threshold: " + (int)masterT + " dB");
+        // JSx Calibrate button doesn't need checked state
+        // TODO Maybe add later
+        // myView.addSectionBox.setChecked(getChecked("addSectionBox",false));
+        myView.filterSwitch.setChecked(getChecked("filterSections",false));
+        visibilityByBoolean(myView.filterLayout,myView.filterSwitch.getChecked());
+        myView.filterShow.setChecked(getChecked("filterShow",false));
+        String text = save_string + " (" + filters_string + ")";
+        myView.filterSave.setText(text);
+        mainActivityInterface.getProcessSong().editBoxToMultiline(myView.filters);
+        mainActivityInterface.getProcessSong().stretchEditBoxToLines(myView.filters,4);
+        myView.filters.setText(mainActivityInterface.getPreferences().getMyPreferenceString("filterText",""));
+        bracketStyles_Names = new String[] {format_text_normal_string,format_text_italic_string,
+                format_text_bold_string,format_text_bolditalic_string};
+        bracketStyles_Ints = new int[] {Typeface.NORMAL,Typeface.ITALIC,Typeface.BOLD,Typeface.BOLD_ITALIC};
+        if (getContext()!=null) {
+            ExposedDropDownArrayAdapter exposedDropDownArrayAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.bracketsStyle, R.layout.view_exposed_dropdown_item, bracketStyles_Names);
+            myView.bracketsStyle.setAdapter(exposedDropDownArrayAdapter);
+        }
+        myView.bracketsStyle.setText(getBracketStringFromValue(mainActivityInterface.getPreferences().getMyPreferenceInt("bracketsStyle",Typeface.NORMAL)));
+        myView.curlyBrackets.setChecked(getChecked("curlyBrackets",true));
+        myView.curlyBracketsDevice.setChecked(getChecked("curlyBracketsDevice",false));
+        myView.pdfHorizontal.setChecked(getChecked("pdfLandscapeView",true));
+    }
+
+    private int getBracketValueFromString(String string) {
+        int value = 0;
+        for (int x=0; x<bracketStyles_Names.length; x++) {
+            if (bracketStyles_Names[x].equals(string)) {
+                value = bracketStyles_Ints[x];
+            }
+        }
+        return value;
+    }
+
+    private String getBracketStringFromValue(int value) {
+        String string = format_text_normal_string;
+        for (int x=0; x<bracketStyles_Ints.length; x++) {
+            if (bracketStyles_Ints[x]==value) {
+                string = bracketStyles_Names[x];
+            }
+        }
+        return string;
+    }
+
+    private boolean getChecked(String prefName, boolean fallback) {
+        return mainActivityInterface.getPreferences().getMyPreferenceBoolean(prefName,fallback);
+    }
+    private void visibilityByBoolean(View view, boolean visible) {
+        if (visible) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+    private void sliderValToText(float value) {
+        String hint = ((int)value) + "%";
+        myView.trimLineSpacingSlider.setHint(hint);
+    }
+    private void setListeners() {
+        // The switches
+        myView.songSheet.setOnCheckedChangeListener((buttonView, isChecked) -> updateBooleanPreference("songSheet",isChecked,null));
+        myView.prevInSet.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("prevInSet",isChecked,null);
+            mainActivityInterface.getDisplayPrevNext().updateShow();
+        });
+        myView.nextInSet.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("nextInSet",isChecked,null);
+            mainActivityInterface.getDisplayPrevNext().updateShow();
+        });
+        myView.prevNextSongMenu.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("prevNextSongMenu", isChecked, null);
+            mainActivityInterface.getDisplayPrevNext().updateShow();
+        });
+        myView.prevNextTextButtons.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("prevNextTextButtons", isChecked, null);
+            mainActivityInterface.getDisplayPrevNext().updateShow();
+        });
+        myView.prevNextHide.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("prevNextHide", isChecked, null);
+            mainActivityInterface.getDisplayPrevNext().updateShow();
+        });
+        myView.onscreenAutoscrollHide.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("onscreenAutoscrollHide", isChecked, null);
+            mainActivityInterface.updateOnScreenInfo("setpreferences");
+        });
+        myView.onscreenCapoHide.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("onscreenCapoHide", isChecked, null);
+            mainActivityInterface.updateOnScreenInfo("setpreferences");
+        });
+        myView.onscreenPadHide.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("onscreenPadHide", isChecked, null);
+            mainActivityInterface.updateOnScreenInfo("setpreferences");
+        });
+        myView.boldChordsHeadings.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("displayBoldChordsHeadings",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        });
+        myView.boldChorus.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("displayBoldChorus", isChecked, null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        });
+        myView.showChords.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("displayChords",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.showLyrics.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("displayLyrics",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.dyslexiaMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("dyslexiaMode", isChecked, null);
+            mainActivityInterface.getMyThemeColors().setDyslexiaModeEnabled(isChecked);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        });
+        myView.highContrastLyrics.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("highContrastLyrics", isChecked, null);
+            mainActivityInterface.getMyThemeColors().setHighContrastLyricsEnabled(isChecked);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        });
+        myView.voiceControl.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("voiceControlEnabled", isChecked, null);
+            if (getActivity() instanceof com.garethevans.church.opensongtablet.MainActivity) {
+                ((com.garethevans.church.opensongtablet.MainActivity) getActivity()).toggleVoiceControl(isChecked);
+            }
+        });
+        myView.jsxCalibrate.setOnClickListener(v -> {
+            if (getActivity() instanceof com.garethevans.church.opensongtablet.MainActivity) {
+                ((com.garethevans.church.opensongtablet.MainActivity) getActivity()).startJsxCalibration();
+            }
+        });
+        myView.jsxMasterThreshold.addOnChangeListener((slider, value, fromUser) -> {
+            myView.jsxMasterThresholdLabel.setText("JSx Master Threshold: " + (int)value + " dB");
+        });
+        myView.jsxMasterThreshold.addOnSliderTouchListener(new com.google.android.material.slider.Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull com.google.android.material.slider.Slider slider) {}
+
+            @Override
+            public void onStopTrackingTouch(@NonNull com.google.android.material.slider.Slider slider) {
+                float val = slider.getValue();
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("jsxMasterThreshold", val);
+                if (getActivity() instanceof com.garethevans.church.opensongtablet.MainActivity) {
+                    ((com.garethevans.church.opensongtablet.MainActivity) getActivity()).setJsxMasterThreshold(val);
+                }
+            }
+        });
+        myView.presoOrder.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("usePresentationOrder",isChecked,null);
+            mainActivityInterface.getPresenterSettings().setUsePresentationOrder(isChecked);
+        });
+        myView.keepMultiline.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+            updateBooleanPreference("multiLineVerseKeepCompact",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        }));
+        myView.trimSections.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("trimSections",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.addSectionSpace.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("addSectionSpace",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.trimLineSpacing.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("trimLines",isChecked,myView.trimLineSpacingSlider);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.trimWordSpacing.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("trimWordSpacing",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.bracketsStyle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int value = getBracketValueFromString(myView.bracketsStyle.getText().toString());
+                mainActivityInterface.getPreferences().setMyPreferenceInt("bracketsStyle",value);
+                mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            }
+        });
+        myView.curlyBrackets.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+            updateBooleanPreference("curlyBrackets",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        }));
+        myView.curlyBracketsDevice.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+            updateBooleanPreference("curlyBracketsDevice",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            displayInterface.updateDisplay("setSongContentPrefs");
+        }));
+        // TODO Maybe add later?
+        /*myView.addSectionBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("addSectionBox",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });*/
+        myView.filterSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("filterSections",isChecked,myView.filterLayout);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+        myView.filterShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("filterShow",isChecked,null);
+            mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        });
+
+        // The slider
+        myView.trimLineSpacingSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) { }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                // Save the new value
+                float percentage = slider.getValue()/100f;
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("lineSpacing",percentage);
+                mainActivityInterface.getProcessSong().updateProcessingPreferences();
+            }
+        });
+        myView.trimLineSpacingSlider.addOnChangeListener((slider, value, fromUser) -> sliderValToText(value));
+
+        // The button
+        myView.filterSave.setOnClickListener(v -> {
+            // Get the text from the edittext
+            Log.d(TAG,"myView.filters.getText():"+myView.filters.getText());
+            if (myView.filters.getText()!=null) {
+                String s = myView.filters.getText().toString();
+                // Split by line in order to trim
+                String[] lines = s.split("\n");
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String line:lines) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        stringBuilder.append(line).append("\n");
+                    }
+                }
+                String newText = stringBuilder.toString().trim();
+                // Put the corrected text back in
+                myView.filters.setText(newText);
+                // Save it
+                mainActivityInterface.getPreferences().setMyPreferenceString("filterText",newText);
+            }
+        });
+        myView.pdfHorizontal.setOnCheckedChangeListener((compoundButton, b) -> mainActivityInterface.getPreferences().setMyPreferenceBoolean("pdfLandscapeView", b));
+    }
+
+    private void updateBooleanPreference(String prefName, boolean isChecked, View viewToShowHide) {
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean(prefName,isChecked);
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        if (viewToShowHide!=null) {
+            visibilityByBoolean(viewToShowHide,isChecked);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        myView = null;
+    }
+}
+
+```
+
+`opensong_tablet/app/src/main/java/com/garethevans/church/opensongtablet/screensetup/ThemeColors.java`:
+
+```java
+package com.garethevans.church.opensongtablet.screensetup;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
+
+import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.customviews.MyMaterialTextView;
+import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+
+public class ThemeColors {
+
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "ThemeColors";
+    private final Context c;
+    private final MainActivityInterface mainActivityInterface;
+
+    // This object holds the user theme colours
+    private String themeName, pdfTheme;
+
+    // Set the colours from preferences
+    private boolean invertPDF;
+    private int lyricsTextColor;
+    private int multilingualTextColor;
+    private int lyricsBackgroundColor;
+    private int lyricsCapoColor;
+    private int lyricsVerseColor;
+    private int lyricsChorusColor;
+    private int lyricsBridgeColor;
+    private int lyricsCommentColor;
+    private int lyricsPreChorusColor;
+    private int lyricsTagColor;
+    private int lyricsChordsColor;
+    private int lyricsCustomColor;
+    private int presoFontColor;
+    private int presoMultilingualColor;
+    private int presoChordColor;
+    private int presoInfoFontColor;
+    private int presoAlertColor;
+    private int presoCapoColor;
+    private int presoShadowColor;
+    private int metronomeColor;
+    private float pageButtonAlpha;
+    private int stickyTextColor;
+    private int stickyBackgroundColor;
+    private int highlightChordColor;
+    private int highlightHeadingColor;
+    private int hotZoneColor;
+    private int pdfTextColor, pdfMultilingualColor, pdfCapoColor, pdfBackgroundColor, pdfVerseColor, pdfChorusColor,
+            pdfBridgeColor, pdfCommentColor, pdfPreChorusColor, pdfTagColor, pdfChordsColor,
+            pdfCustomColor, pdfHighlightChordColor, pdfHighlightHeadingColor;
+    private int abcPopupColor, abcPopupTextColor;
+    private int appCompatDelegate = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+    private boolean isDyslexiaModeEnabled = false;
+    private boolean isHighContrastLyricsEnabled = false;
+
+    public ThemeColors(Context c) {
+        this.c = c;
+        mainActivityInterface = (MainActivityInterface) c;
+        pageButtonAlpha = mainActivityInterface.getPreferences().getMyPreferenceFloat("pageButtonAlpha",0.75f);
+        getDefaultTheme();
+    }
+
+    // Set the values with updates
+    public void setThemeName(String themeName) {
+        this.themeName = themeName;
+    }
+    public void setInvertPDF(boolean invertPDF) {
+        String theme = mainActivityInterface.getPreferences().getMyPreferenceString("appTheme","dark");
+        theme = theme + "_";
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean(theme+"invertPDF", invertPDF);
+        this.invertPDF = invertPDF;
+    }
+    public void setLyricsTextColor(int i) {
+        this.lyricsTextColor = i;
+    }
+    public void setMultilingualTextColor(int i) {
+        this.multilingualTextColor = i;
+    }
+    public void setLyricsBackgroundColor(int i) {
+        this.lyricsBackgroundColor = i;
+    }
+    public void setLyricsCapoColor(int i) {
+        this.lyricsCapoColor = i;
+    }
+    public void setLyricsVerseColor(int i) {
+        this.lyricsVerseColor = i;
+    }
+    public void setLyricsChorusColor(int i) {
+        this.lyricsChorusColor = i;
+    }
+    public void setLyricsBridgeColor(int i) {
+        this.lyricsBridgeColor = i;
+    }
+    public void setLyricsCommentColor(int i) {
+        this.lyricsCommentColor = i;
+    }
+    public void setLyricsPreChorusColor(int i) {
+        this.lyricsPreChorusColor = i;
+    }
+    public void setLyricsTagColor(int i) {
+        this.lyricsTagColor = i;
+    }
+    public void setLyricsChordsColor(int i) {
+        this.lyricsChordsColor = i;
+    }
+    public void setLyricsCustomColor(int i) {
+        this.lyricsCustomColor = i;
+    }
+    public void setPresoFontColor(int i) {
+        this.presoFontColor = i;
+    }
+    public void setPresoMultilingualColor(int i) {
+        this.presoMultilingualColor = i;
+    }
+    public void setPresoChordColor(int i) {
+        this.presoChordColor = i;
+    }
+    public void setPresoInfoFontColor(int i) {
+        this.presoInfoFontColor = i;
+    }
+    public void setPresoAlertColor(int i) {
+        this.presoAlertColor = i;
+    }
+    public void setPresoCapoColor(int i) {
+        this.presoCapoColor = i;
+    }
+    public void setPresoShadowColor(int i) {
+        this.presoShadowColor = i;
+    }
+    public void setPageButtonAlpha(float f) {
+        this.pageButtonAlpha = f;
+    }
+    public void setMetronomeColor(int i) {
+        this.metronomeColor = i;
+    }
+    public void setStickyTextColor(int i) {
+        this.stickyTextColor = i;
+    }
+    public void setStickyBackgroundColor(int i) {
+        this.stickyBackgroundColor = i;
+    }
+    public void setHighlightChordColor(int i) {
+        this.highlightChordColor = i;
+    }
+    public void setHighlightHeadingColor(int i) {
+        this.highlightHeadingColor = i;
+    }
+    public void setHotZoneColor(int i) {
+        this.hotZoneColor = i;
+    }
+    public void setAbcPopupColor(int i) {
+        this.abcPopupColor = i;
+    }
+    public void setAbcPopupTextColor(int i) {
+        this.abcPopupTextColor = i;
+    }
+
+    public void setDyslexiaModeEnabled(boolean enabled) {
+        this.isDyslexiaModeEnabled = enabled;
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("dyslexiaMode", enabled);
+    }
+
+    public void setHighContrastLyricsEnabled(boolean enabled) {
+        this.isHighContrastLyricsEnabled = enabled;
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("highContrastLyrics", enabled);
+    }
+    
+    // Get the values
+    public String getThemeName() {
+        return themeName;
+    }
+    public boolean getInvertPDF() {
+        return invertPDF;
+    }
+    public int getLyricsTextColor() {
+        return lyricsTextColor;
+    }
+    public int getMultilingualTextColor() {
+        return multilingualTextColor;
+    }
+    public int getLyricsBackgroundColor() {
+        return lyricsBackgroundColor;
+    }
+    public int getLyricsCapoColor() {
+        return lyricsCapoColor;
+    }
+    public int getLyricsVerseColor() {
+        return lyricsVerseColor;
+    }
+    public int getLyricsChorusColor() {
+        return lyricsChorusColor;
+    }
+    public int getLyricsBridgeColor() {
+        return lyricsBridgeColor;
+    }
+    public int getLyricsCommentColor() {
+        return lyricsCommentColor;
+    }
+    public int getLyricsPreChorusColor() {
+        return lyricsPreChorusColor;
+    }
+    public int getLyricsTagColor() {
+        return lyricsTagColor;
+    }
+    public int getLyricsChordsColor() {
+        return lyricsChordsColor;
+    }
+    public int getLyricsCustomColor() {
+        return lyricsCustomColor;
+    }
+    public int getPresoFontColor() {
+        return presoFontColor;
+    }
+    public int getPresoMultilingualColor() {
+        return presoMultilingualColor;
+    }
+    public int getPresoChordColor() {
+        return presoChordColor;
+    }
+    public int getPresoInfoFontColor() {
+        return presoInfoFontColor;
+    }
+    public int getPresoAlertColor() {
+        return presoAlertColor;
+    }
+    public int getPresoCapoColor() {
+        return presoCapoColor;
+    }
+    public int getPresoShadowColor() {
+        return presoShadowColor;
+    }
+    public float getPageButtonAlpha() {
+        return pageButtonAlpha;
+    }
+    public int getMetronomeColor() {
+        return metronomeColor;
+    }
+    public int getStickyBackgroundColor() {
+        return stickyBackgroundColor;
+    }
+    public int getStickyTextColor() {
+        return stickyTextColor;
+    }
+    public int getHighlightChordColor() {
+        return highlightChordColor;
+    }
+    public int getHighlightHeadingColor() {
+        return highlightHeadingColor;
+    }
+    public int getHotZoneColor() {
+        return hotZoneColor;
+    }
+    public int getAbcPopupColor() {
+        return abcPopupColor;
+    }
+    public int getAbcPopupTextColor() {
+        return abcPopupTextColor;
+    }
+
+    public boolean isDyslexiaModeEnabled() {
+        return isDyslexiaModeEnabled;
+    }
+
+    public boolean isHighContrastLyricsEnabled() {
+        return isHighContrastLyricsEnabled;
+    }
+
+    public int getChordColor(String chord) {
+        if (!isDyslexiaModeEnabled) {
+            return getLyricsChordsColor();
+        }
+        
+        // Clean the chord string: get the root note (A, B, C, D, E, F, G)
+        if (chord == null || chord.isEmpty()) return getLyricsChordsColor();
+        
+        String root = chord.substring(0, 1).toUpperCase();
+        switch (root) {
+            case "C": return Color.parseColor("#3B82F6"); // Blue
+            case "G": return Color.parseColor("#22C55E"); // Green
+            case "D": return Color.parseColor("#F97316"); // Orange
+            case "A": return Color.parseColor("#EF4444"); // Red
+            case "E": return Color.parseColor("#A855F7"); // Purple
+            case "F": return Color.parseColor("#EAB308"); // Yellow
+            case "B": return Color.parseColor("#EC4899"); // Pink
+            default: return getLyricsChordsColor();
+        }
+    }
+
+    public void getDefaultTheme() {
+        int nightModeFlags = c.getApplicationContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+
+        String fallback = "dark";
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                // Dark mode is active
+                fallback = "dark";
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                // Light mode is active
+                fallback = "light";
+                break;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                // Mode is unknown (very rare)
+                fallback = "dark";
+        }
+        themeName = mainActivityInterface.getPreferences().getMyPreferenceString("appTheme","");
+        // If there wasn't a value set, set it now
+        if (themeName.isEmpty()) {
+            Log.d(TAG,"no theme was currently set, so setting it to "+fallback);
+            themeName = fallback;
+            mainActivityInterface.getPreferences().setMyPreferenceString("appTheme",themeName);
+            mainActivityInterface.getPalette().savePref(c,fallback.equals("dark"));
+        }
+    }
+
+    public void getDefaultColors() {
+        getDefaultTheme();
+        switch (themeName) {
+            case "light":
+                setThemeLight();
+                //setSytemDayNight(false);
+                break;
+            case "custom1":
+                setThemeCustom1();
+                //setSytemDayNight(true);
+                break;
+            case "custom2":
+                setThemeCustom2();
+                //setSytemDayNight(false);
+                break;
+            case "dark":
+            default:
+                setThemeDark();
+                //setSytemDayNight(true);
+                break;
+        }
+        pageButtonAlpha = mainActivityInterface.getPreferences().getMyPreferenceFloat("pageButtonAlpha",0.75f);
+        // Update the theme colours for the PDF/Print outputs when exporting
+        updatePDFTheme(mainActivityInterface.getPreferences().getMyPreferenceString("pdfTheme","default"),false);
+
+        isDyslexiaModeEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("dyslexiaMode", false);
+        isHighContrastLyricsEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("highContrastLyrics", false);
+    }
+
+    /*public void setSytemDayNight(boolean useDark) {
+        AppCompatActivity activity = (AppCompatActivity) c;
+        appCompatDelegate = useDark ? AppCompatDelegate.MODE_NIGHT_YES:AppCompatDelegate.MODE_NIGHT_NO;
+        AppCompatDelegate.setDefaultNightMode(useDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        activity.getDelegate().applyDayNight();
+    }*/
+
+    public int getAppCompatDelegate() {
+        return appCompatDelegate;
+    }
+
+    public void updatePDFTheme(String pdfTheme, boolean savePref) {
+        this.pdfTheme = pdfTheme;
+        if (savePref) {
+            mainActivityInterface.getPreferences().setMyPreferenceString("pdfTheme",pdfTheme);
+        }
+        switch (pdfTheme) {
+            case "dark":
+                setPDFThemeDark();
+                break;
+            case "light":
+                setPDFThemeLight();
+                break;
+            case "custom1":
+                setPDFThemeCustom1();
+                break;
+            case "custom2":
+                setPDFThemeCustom2();
+                break;
+            case "default":
+            default:
+                setPDFThemeDefault();
+                break;
+        }
+    }
+
+    public void resetTheme() {
+        String theme = mainActivityInterface.getPreferences().getMyPreferenceString("appTheme","dark");
+
+        // Some colours are the same regardless of mode
+        theme = theme + "_";
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"metronomeColor",             darkishred);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"stickyTextColor",            black);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"stickyBackgroundColor",      lightyellow);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"extraInfoBgColor",           grey);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"extraInfoTextColor",         white);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCapoColor",            red);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoAlertColor",            red);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoCapoColor",             red);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoHighlightChordColor",   transparent);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoHighlightHeadingColor", transparent);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoFontColor",             white);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoMultilingualColor",     vlightgrey);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoChordColor",            yellow);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoInfoFontColor",         white);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"hotZoneColor",               transparent);
+
+        // Others are theme specific
+        switch(theme) {
+            case "dark_":
+                mainActivityInterface.getPreferences().setMyPreferenceBoolean(theme+"invertPDF",          true);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTextColor",        white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"multilingualTextColor",  vlightgrey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBackgroundColor",  black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsVerseColor",       black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChorusColor",      vdarkblue);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBridgeColor",      vdarkred);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCommentColor",     vdarkgreen);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsPreChorusColor",   darkishgreen);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTagColor",         darkpurple);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChordsColor",      yellow);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCustomColor",      vdarkyellow);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoShadowColor",       translucentDark);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupColor",          white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupTextColor",      black);
+                break;
+
+            case "light_":
+                mainActivityInterface.getPreferences().setMyPreferenceBoolean(theme+"invertPDF",          false);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTextColor",        black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"multilingualTextColor",  grey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBackgroundColor",  white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsVerseColor",       white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChorusColor",      vlightpurple);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBridgeColor",      vlightcyan);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCommentColor",     vlightblue);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsPreChorusColor",   lightgreen);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTagColor",         vlightgreen);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChordsColor",      darkblue);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCustomColor",      lightishcyan);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoShadowColor",       translucentLight);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupColor",          vvlightgrey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupTextColor",      black);
+                break;
+
+            case "custom1_":
+                mainActivityInterface.getPreferences().setMyPreferenceBoolean(theme+"invertPDF",          true);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTextColor",        white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"multilingualTextColor",  vlightgrey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBackgroundColor",  black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsVerseColor",       black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChorusColor",      black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBridgeColor",      black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCommentColor",     black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsPreChorusColor",   black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTagColor",         black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChordsColor",      white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCustomColor",      black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoShadowColor",       translucentDark);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupColor",          white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupTextColor",      black);
+                break;
+
+            case "custom2_":
+                mainActivityInterface.getPreferences().setMyPreferenceBoolean(theme+"invertPDF",          false);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTextColor",        black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"multilingualTextColor",  grey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBackgroundColor",  white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsVerseColor",       white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChorusColor",      white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsBridgeColor",      white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCommentColor",     white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsPreChorusColor",   white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsTagColor",         white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsChordsColor",      black);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"lyricsCustomColor",      white);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"presoShadowColor",       translucentLight);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupColor",          vvlightgrey);
+                mainActivityInterface.getPreferences().setMyPreferenceInt(theme+"abcPopupTextColor",      black);
+                break;
+
+        }
+
+    }
+    private void setThemeDark() {
+        setInvertPDF(mainActivityInterface.getPreferences().getMyPreferenceBoolean("dark_invertPDF",             true));
+        setMetronomeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_metronomeColor",               darkishred));
+        setStickyTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_stickyTextColor",             black));
+        setStickyBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_stickyBackgroundColor", stickybg));
+        setLyricsTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsTextColor",             white));
+        setMultilingualTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_multilingualTextColor", vlightgrey));
+        setLyricsCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCapoColor",             red));
+        setLyricsBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsBackgroundColor", black));
+        setLyricsVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsVerseColor",           black));
+        setLyricsChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsChorusColor",         vdarkblue));
+        setLyricsBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsBridgeColor",         vdarkred));
+        setLyricsCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCommentColor",       vdarkgreen));
+        setLyricsPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsPreChorusColor",   darkishgreen));
+        setLyricsTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsTagColor",               darkpurple));
+        setLyricsChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsChordsColor",         yellow));
+        setLyricsCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCustomColor",         vdarkyellow));
+        setPresoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoFontColor",               white));
+        setPresoMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoMultilingualColor", vlightgrey));
+        setPresoChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoChordColor",             yellow));
+        setPresoInfoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoInfoFontColor",       white));
+        setPresoAlertColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoAlertColor",             red));
+        setPresoCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoCapoColor",               red));
+        setPresoShadowColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_presoShadowColor",           translucentDark));
+        setHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_highlightChordColor",     transparent));
+        setHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_highlightHeadingColor", transparent));
+        setHotZoneColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_hotZoneColor",                   transparent));
+        setAbcPopupColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_abcPopupColor",                 white));
+        setAbcPopupTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_abcPopupTextColor",         black));
+    }
+    private void setThemeLight() {
+        setInvertPDF(mainActivityInterface.getPreferences().getMyPreferenceBoolean("light_invertPDF",             false));
+        setMetronomeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_metronomeColor",               darkishred));
+        setStickyTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_stickyTextColor",             black));
+        setStickyBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_stickyBackgroundColor", stickybg));
+        setLyricsTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsTextColor",             black));
+        setMultilingualTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_multilingualTextColor", grey));
+        setLyricsCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCapoColor",             red));
+        setLyricsBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsBackgroundColor", white));
+        setLyricsVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsVerseColor",           white));
+        setLyricsChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsChorusColor",         vlightpurple));
+        setLyricsBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsBridgeColor",         vlightcyan));
+        setLyricsCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCommentColor",       vlightblue));
+        setLyricsPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsPreChorusColor",   lightgreen));
+        setLyricsTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsTagColor",               vlightgreen));
+        setLyricsChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsChordsColor",         darkblue));
+        setLyricsCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCustomColor",         lightishcyan));
+        setPresoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoFontColor",               white));
+        setPresoMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoMultilingualColor", vlightgrey));
+        setPresoChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoChordColor",             yellow));
+        setPresoInfoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoInfoFontColor",       white));
+        setPresoAlertColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoAlertColor",             red));
+        setPresoCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoCapoColor",               red));
+        setPresoShadowColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_presoShadowColor",           translucentLight));
+        setHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_highlightChordColor",     transparent));
+        setHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_highlightHeadingColor", transparent));
+        setHotZoneColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_hotZoneColor",                   transparent));
+        setAbcPopupColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_abcPopupColor",                 vvlightgrey));
+        setAbcPopupTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_abcPopupTextColor",         black));
+    }
+    private void setThemeCustom1() {
+        setInvertPDF(mainActivityInterface.getPreferences().getMyPreferenceBoolean("custom1_invertPDF",           true));
+        setMetronomeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_metronomeColor",             darkishred));
+        setStickyTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_stickyTextColor",           black));
+        setStickyBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_stickyBackgroundColor",stickybg));
+        setLyricsTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsTextColor",           white));
+        setMultilingualTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_multilingualTextColor",vlightgrey));
+        setLyricsCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCapoColor",           red));
+        setLyricsBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsBackgroundColor",black));
+        setLyricsVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsVerseColor",         black));
+        setLyricsChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsChorusColor",       black));
+        setLyricsBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsBridgeColor",       black));
+        setLyricsCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCommentColor",     black));
+        setLyricsPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsPreChorusColor", black));
+        setLyricsTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsTagColor",             black));
+        setLyricsChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsChordsColor",       yellow));
+        setLyricsCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCustomColor",       black));
+        setPresoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoFontColor",             white));
+        setPresoMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoMultilingualColor",vlightgrey));
+        setPresoChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoChordColor",           yellow));
+        setPresoInfoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoInfoFontColor",     white));
+        setPresoAlertColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoAlertColor",           red));
+        setPresoCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoCapoColor",             red));
+        setPresoShadowColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_presoShadowColor",         translucentDark));
+        setHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_highlightChordColor",   transparent));
+        setHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_highlightHeadingColor",transparent));
+        setHotZoneColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_hotZoneColor",                 transparent));
+        setAbcPopupColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_abcPopupColor",               white));
+        setAbcPopupTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_abcPopupTextColor",       black));
+    }
+    private void setThemeCustom2() {
+        setInvertPDF(mainActivityInterface.getPreferences().getMyPreferenceBoolean("custom2_invertPDF",           false));
+        setMetronomeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_metronomeColor",             darkishred));
+        setStickyTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_stickyTextColor",           black));
+        setStickyBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_stickyBackgroundColor",stickybg));
+        setLyricsTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsTextColor",           black));
+        setMultilingualTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_multilingualTextColor",grey));
+        setLyricsCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCapoColor",           red));
+        setLyricsBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsBackgroundColor",white));
+        setLyricsVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsVerseColor",         white));
+        setLyricsChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsChorusColor",       white));
+        setLyricsBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsBridgeColor",       white));
+        setLyricsCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCommentColor",     white));
+        setLyricsPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsPreChorusColor", white));
+        setLyricsTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsTagColor",             white));
+        setLyricsChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsChordsColor",       darkblue));
+        setLyricsCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCustomColor",       white));
+        setPresoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoFontColor",             white));
+        setPresoMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoMultilingualColor",vlightgrey));
+        setPresoChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoChordColor",           yellow));
+        setPresoInfoFontColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoInfoFontColor",     white));
+        setPresoAlertColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoAlertColor",           red));
+        setPresoCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoCapoColor",             red));
+        setPresoShadowColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_presoShadowColor",         translucentLight));
+        setHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_highlightChordColor",   transparent));
+        setHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_highlightHeadingColor",transparent));
+        setHotZoneColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_hotZoneColor",                 transparent));
+        setAbcPopupColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_abcPopupColor",               vvlightgrey));
+        setAbcPopupTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_abcPopupTextColor",       black));
+    }
+
+    public String getPdfTheme() {
+        if (pdfTheme==null) {
+            pdfTheme = mainActivityInterface.getPreferences().getMyPreferenceString("pdfTheme","default");
+        }
+        return pdfTheme;
+    }
+    public int getPdfTextColor() {
+        return pdfTextColor;
+    }
+    public int getPdfMultilingualColor() {
+        return pdfMultilingualColor;
+    }
+    public int getPdfCapoColor() {
+        return pdfCapoColor;
+    }
+    public int getPdfBackgroundColor() {
+        return pdfBackgroundColor;
+    }
+    public int getPdfVerseColor() {
+        return pdfVerseColor;
+    }
+    public int getPdfChorusColor() {
+        return pdfChorusColor;
+    }
+    public int getPdfBridgeColor() {
+        return pdfBridgeColor;
+    }
+    public int getPdfCommentColor() {
+        return pdfCommentColor;
+    }
+    public int getPdfPreChorusColor() {
+        return pdfPreChorusColor;
+    }
+    public int getPdfTagColor() {
+        return pdfTagColor;
+    }
+    public int getPdfChordsColor() {
+        return pdfChordsColor;
+    }
+    public int getPdfCustomColor() {
+        return pdfCustomColor;
+    }
+    public int getPdfHighlightChordColor() {
+        return pdfHighlightChordColor;
+    }
+    public int getPdfHighlightHeadingColor() {
+        return pdfHighlightHeadingColor;
+    }
+    public void setPDFTextColor(int i) {
+        this.pdfTextColor = i;
+    }
+    public void setPDFMultilingualColor(int i) {
+        this.pdfMultilingualColor = i;
+    }
+    public void setPDFCapoColor(int i) {
+        this.pdfCapoColor = i;
+    }
+    public void setPDFBackgroundColor(int i) {
+        this.pdfBackgroundColor = i;
+    }
+    public void setPDFVerseColor(int i) {
+        this.pdfVerseColor = i;
+    }
+    public void setPDFChorusColor(int i) {
+        this.pdfChorusColor = i;
+    }
+    public void setPDFBridgeColor(int i) {
+        this.pdfBridgeColor = i;
+    }
+    public void setPDFCommentColor(int i) {
+        this.pdfCommentColor = i;
+    }
+    public void setPDFPreChorusColor(int i) {
+        this.pdfPreChorusColor = i;
+    }
+    public void setPDFTagColor(int i) {
+        this.pdfTagColor = i;
+    }
+    public void setPDFChordsColor(int i) {
+        this.pdfChordsColor = i;
+    }
+    public void setPDFCustomColor(int i) {
+        this.pdfCustomColor = i;
+    }
+    public void setPDFHighlightChordColor(int i) {
+        this.pdfHighlightChordColor = i;
+    }
+    public void setPDFHighlightHeadingColor(int i) {
+        this.pdfHighlightHeadingColor = i;
+    }
+
+
+    private void setPDFThemeDefault() {
+        setPDFTextColor(black);
+        setPDFCapoColor(grey);
+        setPDFMultilingualColor(grey);
+        setPDFBackgroundColor(white);
+        setPDFVerseColor(white);
+        setPDFChorusColor(white);
+        setPDFBridgeColor(white);
+        setPDFCommentColor(white);
+        setPDFPreChorusColor(white);
+        setPDFTagColor(white);
+        setPDFChordsColor(black);
+        setPDFCustomColor(white);
+        setPDFHighlightChordColor(transparent);
+        setPDFHighlightHeadingColor(transparent);
+    }
+    private void setPDFThemeDark() {
+        setPDFTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsTextColor",             white));
+        setPDFMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_multilingualTextColor",vlightgrey));
+        setPDFCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCapoColor",             red));
+        setPDFBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsBackgroundColor", black));
+        setPDFVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsVerseColor",           black));
+        setPDFChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsChorusColor",         vdarkblue));
+        setPDFBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsBridgeColor",         vdarkred));
+        setPDFCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCommentColor",       vdarkgreen));
+        setPDFPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsPreChorusColor",   darkishgreen));
+        setPDFTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsTagColor",               darkpurple));
+        setPDFChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsChordsColor",         yellow));
+        setPDFCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_lyricsCustomColor",         vdarkyellow));
+        setPDFHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_highlightChordColor",     transparent));
+        setPDFHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("dark_highlightHeadingColor", transparent));
+    }
+    private void setPDFThemeLight() {
+        setPDFTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsTextColor",             black));
+        setPDFMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_multilingualTextColor",grey));
+        setPDFCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCapoColor",             red));
+        setPDFBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsBackgroundColor", white));
+        setPDFVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsVerseColor",           white));
+        setPDFChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsChorusColor",         vlightpurple));
+        setPDFBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsBridgeColor",         vlightcyan));
+        setPDFCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCommentColor",       vlightblue));
+        setPDFPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsPreChorusColor",   lightgreen));
+        setPDFTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsTagColor",               vlightgreen));
+        setPDFChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsChordsColor",         darkblue));
+        setPDFCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_lyricsCustomColor",         lightishcyan));
+        setPDFHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_highlightChordColor",     transparent));
+        setPDFHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("light_highlightHeadingColor", transparent));
+    }
+    private void setPDFThemeCustom1() {
+        setPDFTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsTextColor",             white));
+        setMultilingualTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_multilingualTextColor",vlightgrey));
+        setPDFCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCapoColor",             red));
+        setPDFBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsBackgroundColor", black));
+        setPDFVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsVerseColor",           black));
+        setPDFChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsChorusColor",         black));
+        setPDFBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsBridgeColor",         black));
+        setPDFCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCommentColor",       black));
+        setPDFPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsPreChorusColor",   black));
+        setPDFTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsTagColor",               black));
+        setPDFChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsChordsColor",         yellow));
+        setPDFCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_lyricsCustomColor",         black));
+        setPDFHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_highlightChordColor",     transparent));
+        setPDFHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom1_highlightHeadingColor", transparent));
+    }
+    private void setPDFThemeCustom2() {
+        setPDFTextColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsTextColor",             black));
+        setPDFMultilingualColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_multilingualTextColor",grey));
+        setPDFCapoColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCapoColor",             red));
+        setPDFBackgroundColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsBackgroundColor", white));
+        setPDFVerseColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsVerseColor",           white));
+        setPDFChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsChorusColor",         white));
+        setPDFBridgeColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsBridgeColor",         white));
+        setPDFCommentColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCommentColor",       white));
+        setPDFPreChorusColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsPreChorusColor",   white));
+        setPDFTagColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsTagColor",               white));
+        setPDFChordsColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsChordsColor",         darkblue));
+        setPDFCustomColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_lyricsCustomColor",         white));
+        setPDFHighlightChordColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_highlightChordColor",     transparent));
+        setPDFHighlightHeadingColor(mainActivityInterface.getPreferences().getMyPreferenceInt("custom2_highlightHeadingColor", transparent));
+    }
+
+    public int getValue(String what) {
+        switch(what) {
+            case "multilingualTextColor":
+                return getMultilingualTextColor();
+            case "lyricsBackgroundColor":
+                return getLyricsBackgroundColor();
+            case "lyricsCapoColor":
+                return getLyricsCapoColor();
+            case "lyricsVerseColor":
+                return getLyricsVerseColor();
+            case "lyricsChorusColor":
+                return getLyricsChorusColor();
+            case "lyricsBridgeColor":
+                return getLyricsBridgeColor();
+            case "lyricsCommentColor":
+                return getLyricsCommentColor();
+            case "lyricsPreChorusColor":
+                return getLyricsPreChorusColor();
+            case "lyricsTagColor":
+                return getLyricsTagColor();
+            case "lyricsChordsColor":
+                return getLyricsChordsColor();
+            case "lyricsCustomColor":
+                return getLyricsCustomColor();
+            case "presoFontColor":
+                return getPresoFontColor();
+            case "presoMultilingualColor":
+                return getPresoMultilingualColor();
+            case "presoChordColor":
+                return getPresoChordColor();
+            case "presoInfoFontColor":
+                return getPresoInfoFontColor();
+            case "presoAlertColor":
+                return getPresoAlertColor();
+            case "presoCapoColor":
+                return getPresoCapoColor();
+            case "presoShadowColor":
+                return getPresoShadowColor();
+            case "metronomeColor":
+                return getMetronomeColor();
+            case "stickyTextColor":
+                return getStickyTextColor();
+            case "stickyBackgroundColor":
+                return getStickyBackgroundColor();
+            case "highlightChordColor":
+                return getHighlightChordColor();
+            case "highlightHeadingColor":
+                return getHighlightHeadingColor();
+            case "hotZoneColor":
+                return getHotZoneColor();
+            case "abcPopupColor":
+                return abcPopupColor;
+            case "abcPopupTextColor":
+                return abcPopupTextColor;
+            case "lyricsTextColor":
+            default:
+                return getLyricsTextColor();
+        }
+    }
+    private String which;
+    public void setWhich(String which) {
+        this.which = which;
+    }
+    public String getWhich() {
+        return which;
+    }
+
+    // Default colours
+    private final int darkblue = 0xff0000dd;
+    private final int vdarkblue = 0xff000022;
+    private final int vlightcyan = 0xffeeffff;
+    private final int vlightblue = 0xffeeeeff;
+    private final int black = 0xff000000;
+    private final int white = 0xffffffff;
+    private final int grey = 0xff666666;
+    private final int translucentDark = 0x66000000;
+    private final int translucentLight = 0x66ffffff;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final int vlightgrey = 0xffbbbbbb;
+    private final int vvlightgrey = 0xffeeeeee;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final int lightyellow = 0xffddaa00;
+    private final int yellow = 0xffffff00;
+    private final int stickybg = 0xddddaa00;
+    private final int vdarkyellow = 0xff111100;
+    private final int red = 0xffff0000;
+    private final int vdarkred = 0xff220000;
+    private final int darkishred = 0xffaa1212;
+    private final int transparent = 0x00000000;
+    private final int vdarkgreen = 0xff002200;
+    private final int darkishgreen = 0xff112211;
+    private final int lightgreen = 0xffeeddee;
+    private final int vlightgreen = 0xffeeffee;
+    private final int darkpurple = 0xff220022;
+    private final int vlightpurple = 0xffffeeff;
+    private final int lightishcyan = 0xffddeeff;
+
+    public int getColorInt(String which) {
+        int color;
+        switch (which) {
+            case "black":
+                color = black;
+                break;
+            case "darkishgreen":
+                color = darkishgreen;
+                break;
+            case "darkpurple":
+                color = darkpurple;
+                break;
+            case "lightgreen":
+                color = lightgreen;
+                break;
+            case "lightishcyan":
+                color = lightishcyan;
+                break;
+            case "red":
+                color = red;
+                break;
+            case "vdarkblue":
+                color = vdarkblue;
+                break;
+            case "vdarkgreen":
+                color = vdarkgreen;
+                break;
+            case "vdarkred":
+                color = vdarkred;
+                break;
+            case "vdarkyellow":
+                color = vdarkyellow;
+                break;
+            case "vlightblue":
+                color = vlightblue;
+                break;
+            case "vlightcyan":
+                color = vlightcyan;
+                break;
+            case "vlightgreen":
+                color = vlightgreen;
+                break;
+            case "vlightpurple":
+                color = vlightpurple;
+                break;
+            case "yellow":
+                color = yellow;
+                break;
+            case "transparent":
+                color = transparent;
+                break;
+            case "vlightgrey":
+                color = vlightgrey;
+                break;
+            case "vvlightgrey":
+                color = vvlightgrey;
+                break;
+            case "white":
+            default:
+                color = white;
+                break;
+        }
+        return color;
+    }
+
+    public String getNonAlphaHexColorFromInt(int color) {
+        String hex = String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color));
+        hex=hex.toUpperCase();
+        return hex;
+    }
+
+    public int adjustAlpha(int color, float newAlpha) {
+        int alpha = Math.round((float)Color.alpha(color) * newAlpha);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
+    }
+
+    public String getHexFromIntNoAlpha(int intValue) {
+        // Returns an 8 character hex code for int=0-255;
+        return String.format("%08X", (intValue));
+    }
+
+    public int getColorOnly(int colorWithAlpha) {
+        int red = Color.red(colorWithAlpha);
+        int green = Color.green(colorWithAlpha);
+        int blue = Color.blue(colorWithAlpha);
+        return Color.argb(255,red,green,blue);
+    }
+
+    public int getAlphaIntFromColor(int colorWithAlpha) {
+        return Color.alpha(colorWithAlpha);
+    }
+    public float getAlphaFloatFromColor(int colorWithAlpha) {
+        return Color.alpha(colorWithAlpha)/255f;
+    }
+
+    public float[] getAbcColorAndAlphaSplit() {
+        // Repeat for the sticky notes
+        int alpha = Color.alpha(abcPopupColor);
+        int red = Color.red(abcPopupColor);
+        int green = Color.green(abcPopupColor);
+        int blue = Color.blue(abcPopupColor);
+        return new float[] {Color.argb(255,red,green,blue), alpha / 255f};
+    }
+
+    // For the set menus
+    public int getSetActiveColor(View view) {
+        return mainActivityInterface.getPalette().secondary;
+    }
+    public int getSetInactiveColor(View view) {
+        return mainActivityInterface.getPalette().primaryVariant;
+    }
+    public int getSetDraggedColor(View view) {
+        return mainActivityInterface.getPalette().secondaryVariant;
+    }
+    public int getSetBackgroundColor(View view) {
+        return mainActivityInterface.getPalette().primary;
+    }
+    public int getColorOnSurface(View view) {
+        return mainActivityInterface.getPalette().onSurface;
+    }
+    public int getHintTextColor(View view) {
+        return mainActivityInterface.getPalette().hintColor;
+    }
+
+
+    public void tintProgressBar(ProgressBar progressBar) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(mainActivityInterface.getPalette().secondary));
+        } else {
+            Drawable indeterminateDrawable = DrawableCompat.wrap(progressBar.getIndeterminateDrawable());
+            DrawableCompat.setTint(indeterminateDrawable, mainActivityInterface.getPalette().secondary);
+            progressBar.setIndeterminateDrawable(indeterminateDrawable);
+        }
+    }
+
+    public void tintPopup(MyMaterialTextView myMaterialTextView) {
+        Drawable drawable = AppCompatResources.getDrawable(c, R.drawable.popup_bg);
+        if (drawable!=null) {
+            DrawableCompat.setTint(drawable,mainActivityInterface.getPalette().secondary);
+        }
+        myMaterialTextView.setBackground(drawable);
+        int padding = Math.round(c.getResources().getDimension(R.dimen.box_padding));
+        myMaterialTextView.setPadding(padding,padding,padding,padding);
+
+    }
+}
+```
+
+`opensong_tablet/app/src/main/res/layout/settings_display_extra.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/DefaultView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/extra_scroll_space_large">
+
+            <!--Extra info-->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/infoText"
+                style="@style/largeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/info_text" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/songSheet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/songsheet"
+                android:hint="@string/songsheet_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/prevInSet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="false"
+                android:text="@string/show_prev_song"
+                android:hint="@string/page_buttons"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/nextInSet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="true"
+                android:text="@string/show_next_in_set"
+                android:hint="@string/page_buttons"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/prevNextSongMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="false"
+                android:text="@string/show_next_prev_in_song_menu"
+                android:hint="@string/page_buttons"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/prevNextTextButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="true"
+                android:text="@string/prev_next_text"
+                android:hint="@string/text_button"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/prevNextHide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="true"
+                android:text="@string/prev_next_autohide"
+                android:hint="@string/info_text_autohide_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/onscreenAutoscrollHide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="false"
+                android:text="@string/autoscroll_hide"
+                android:hint="@string/info_text_autohide_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/onscreenCapoHide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="false"
+                android:text="@string/capo_hide"
+                android:hint="@string/info_text_autohide_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/onscreenPadHide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:checked="false"
+                android:text="@string/pad_hide"
+                android:hint="@string/info_text_autohide_info"/>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <!--Bold chords and headings, lyrics box-->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                style="@style/largeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/song_display" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/boldChordsHeadings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/bold_chords_headings"
+                android:hint="@string/appearance_change"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/boldChorus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/bold_chorus"
+                android:hint="@string/appearance_change"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/showChords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/show_chords"
+                android:hint="@string/show_chords_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/showLyrics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/show_lyrics"
+                android:hint="@string/show_lyrics_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/dyslexiaMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/dyslexia_mode"
+                android:hint="@string/dyslexia_mode_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/highContrastLyrics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/high_contrast_lyrics"
+                android:hint="@string/high_contrast_lyrics_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/voiceControl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/voice_control"
+                android:hint="@string/voice_control_summary"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                android:id="@+id/jsxCalibrate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/jsx_calibrate"
+                android:hint="@string/jsx_denoise_summary"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:id="@+id/jsxMasterThresholdLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="JSx Master Threshold" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                android:id="@+id/jsxMasterThreshold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="-100"
+                android:valueTo="0"
+                android:stepSize="1" />
+
+            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                android:id="@+id/bracketsStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/format_text_brackets"
+                android:text="@string/format_text_normal"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/curlyBrackets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="0dp"
+                android:text="@string/curly_brackets_hide"
+                android:hint="@string/curly_brackets_hide_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/curlyBracketsDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/curly_brackets_hide_info_device"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/pdfHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/pdf_horizontal"
+                android:hint="@string/pdf_horizontal_info"/>
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <!--Section trimming and spaces-->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                style="@style/largeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/song_sections" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/presoOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/presentation_order"
+                android:hint="@string/presentation_order_use"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/keepMultiline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/keep_multiline"
+                android:hint="@string/keep_multiline_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/trimSections"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/trim_sections"
+                android:hint="@string/trim_sections_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/addSectionSpace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/section_space"
+                android:hint="@string/section_space_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/trimLineSpacing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/linespacing"
+                android:hint="@string/linespacing_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                android:id="@+id/trimLineSpacingSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="50"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/trimWordSpacing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/trim_wordspacing"
+                android:hint="@string/trim_wordspacing_info"/>
+
+            <!--TODO Add later maybe?
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/addSectionBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/section_box"
+                android:hint="@string/section_box_info"/>-->
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <!--Section filtering-->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                style="@style/largeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/filter_section" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/filterSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/filter_section"
+                android:hint="@string/filter_info"/>
+
+            <LinearLayout
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                    android:id="@+id/filterShow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/show"
+                    android:hint="@string/filter_mode_info"/>
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/filter_entry" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                    android:id="@+id/filters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/filters"
+                    app:endIconMode="clear_text"
+                    android:imeOptions="actionNone"
+                    android:inputType="textMultiLine" />
+
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    android:id="@+id/filterSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/save" />
+            </LinearLayout>
+
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"
+                android:layout_marginBottom="400dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+`opensong_tablet/app/src/main/res/values/strings.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="a_hz" translatable="false">A (Hz)</string>
+    <string name="abc_include_tab">Include tablature</string>
+    <string name="abc_include_tab_info">Show instrument tablature below the music score</string>
+    <string name="abc_inline_text">Inline ABC text</string>
+    <string name="abc_inline_text_info">Copy the above code into a single line of inline ABC notation that can be pasted into the song lyrics</string>
+    <string name="abc_inline_width">ABC notation staff width</string>
+    <string name="abc_inline_width_info">Setting the staff width too high will cause the abc notation to become very small and will also shrink any song lyrics when used inline</string>
+    <string name="abc_not_available">ABC notation view not allowed here</string>
+    <string name="abc_popup_width">Popup width</string>
+    <string name="abc_popup_width_info">The width of the popup window as a percentage of the screen width</string>
+    <string name="abc_transpose_to_song">Auto transpose to song key</string>
+    <string name="abc_transpose_to_song_info">If a key is set in the song and in the abc notation, the app will try to adjust the output of the abc notation to match the song key.</string>
+    <string name="about">About</string>
+    <string name="about_description">App info, help, user guide, etc.</string>
+    <string name="acceleration">Acceleration</string>
+    <string name="accent">Accent</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="action">Action</string>
+    <string name="action_button_info">Click to show or hide your page buttons.\n\nEach one can be assigned to song actions such as metronome, transpose, pads, etc.\nLong pressing on the main button lets you change the settings of each button.\nLong pressing on some page buttons performs quick actions such as start/stop/edit</string>
+    <string name="action_long_press">Additional long press action</string>
+    <string name="action_short_press">Short press/click action</string>
+    <string name="actionbar_autohide">Automatically hide action bar</string>
+    <string name="actionbar_display">Actionbar</string>
+    <string name="actionbar_info">Change the appearance of the information in the actionbar</string>
+    <string name="actionbar_left">Action bar left</string>
+    <string name="actionbar_right">Action bar right</string>
+    <string name="actions">Actions</string>
+    <string name="actions_current_song">Actions for current song</string>
+    <string name="add">Add</string>
+    <string name="add_all_songs_to_set">This will add all songs shown in the song menu to your set</string>
+    <string name="add_custom_slide">Add custom slide to set</string>
+    <string name="add_reusable">Save as a reusable slide</string>
+    <string name="add_song_to_set">Add current song to set</string>
+    <string name="add_songs">Add songs</string>
+    <string name="added_to_set">has been added to the end of your current set.</string>
+    <string name="aeros" translatable="false">Aeros</string>
+    <string name="aeros_info">Settings specific to Aeros loop pedal</string>
+    <string name="aeros_mode">Aeros mode</string>
+    <string name="aeros_mode_info">This restricts the number of folders to 128 in total.  The first 111 are designated as folders and the remaining 17 are designated as playlists</string>
+    <string name="after">After</string>
+    <string name="air_turn_long_press">AirTurn mode</string>
+    <string name="air_turn_long_press_info">When using a pedal that does not send long press actions, you can simulate this by setting a desired long press time</string>
+    <string name="air_turn_long_press_time">Long press wait time</string>
+    <string name="alert">Alert</string>
+    <string name="alert_text">Enter message text</string>
+    <string name="alpha">Alpha</string>
+    <string name="alphabetical">Alphabetical song index</string>
+    <string name="alphabetical_level2">Two character alphabetical index</string>
+    <string name="alphabetical_level2_info">Clicking on an item in the alphabetical index will toggle between one and two character alphabetical index</string>
+    <string name="alphabetical_sort">Put items in alphabetical order</string>
+    <string name="amp">Amp</string>
+    <string name="app">App</string>
+    <string name="app_id" translatable="false">4E2B0891</string>
+    <string name="app_name" translatable="false">OpenSongApp</string>
+    <string name="app_specific_file">A file specific to OpenSongApp</string>
+    <string name="appearance_change">Adjusts appearance</string>
+    <string name="apply_changes">Apply changes</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="artist">Artist</string>
+    <string name="ask">Ask each time</string>
+    <string name="audio">Audio</string>
+    <string name="audio_player">Audio player</string>
+    <string name="audio_player_info">Play saved audio files</string>
+    <string name="audio_recorder">Audio recorder</string>
+    <string name="audio_recorder_info">Record audio notes or ideas using your microphone</string>
+    <string name="audio_source">Audio source</string>
+    <string name="author">Author</string>
+    <string name="autohide">Autohide</string>
+    <string name="autohide_page_button">Autohide the main page button when not expanded</string>
+    <string name="autohide_time">Time to keep visible (autohide time)</string>
+    <string name="automatic">Automatic</string>
+    <string name="autoscale">Autoscale</string>
+    <string name="autoscale_info">The app will make the text as large as possible to fit the screen</string>
+    <string name="autoscroll">Autoscroll</string>
+    <string name="autoscroll_autostart">Keep autoscroll activated when changing songs</string>
+    <string name="autoscroll_default_or_prompt">If you haven\'t set a song duration should the default values be used or do you want to be asked each time?</string>
+    <string name="autoscroll_delay">Delay</string>
+    <string name="autoscroll_delay_countdown">Show the initial delay time as a countdown to 0 before starting autoscroll.</string>
+    <string name="autoscroll_hide">Autohide autoscroll</string>
+    <string name="autoscroll_info">Adjust the autoscroll settings</string>
+    <string name="autoscroll_inline_pause">Inline pause</string>
+    <string name="autoscroll_link_audio">Use duration of link audio file</string>
+    <string name="autoscroll_pause">Autoscroll Pause</string>
+    <string name="autoscroll_time">Autoscroll delay time</string>
+    <string name="autoshow_highlight">Autoshow highlighter notes</string>
+    <string name="autoshow_musicscore">Autoshow music score</string>
+    <string name="autoshow_musicscore_info">Automatically show music score (abc notation) when songs load</string>
+    <string name="autoshow_stickynotes">Autoshow sticky notes</string>
+    <string name="average">Average</string>
+    <string name="back">Back</string>
+    <string name="background">Background</string>
+    <string name="backing">Backing</string>
+    <string name="backup">Backup</string>
+    <string name="backup_highlighter">Include highlighter notes</string>
+    <string name="backup_import">Import OpenSongApp backup</string>
+    <string name="backup_info">OpenSongApp Backup file</string>
+    <string name="backup_now">Create a backup now</string>
+    <string name="backup_osb">Create a backup of OpenSongApp songs (*.osb)</string>
+    <string name="backup_sets">Backup sets</string>
+    <string name="bad_songs_found">Some unexpected song files have been found in your OpenSong/Songs/ folders that are not supported directly.  They have been moved to your OpenSong/Import folder, but you can use the option to import multiple files to attempt to convert them to OpenSong format and add them back to your OpenSong/Songs/ folder</string>
+    <string name="band">Band</string>
+    <string name="banjo4">Banjo (4)</string>
+    <string name="banjo5">Banjo (5)</string>
+    <string name="bass4">Bass - 4 string</string>
+    <string name="bass5">Bass - 5 string</string>
+    <string name="battery">Battery</string>
+    <string name="beat_buddy" translatable="false">BeatBuddy</string>
+    <string name="beat_buddy_auto">Automatically send BeatBuddy song</string>
+    <string name="beat_buddy_auto_info">Compares your song \'Filename\', \'Title\' and \'Also known as\' fields with your BeatBuddy database.  If a matching song is found, the folder and song code are sent over MIDI automatically</string>
+    <string name="beat_buddy_browse_info">Browse the songs on the BeatBuddy (using the default project or imported project)</string>
+    <string name="beat_buddy_database_reset">Clear the BeatBuddy database in the app.  This will restore the pedal defaults only.</string>
+    <string name="beat_buddy_dynamic_messages">Dynamic MIDI messages (the app deals with the code)</string>
+    <string name="beat_buddy_folder_info">Folder must be a number between 1 and 16384</string>
+    <string name="beat_buddy_import_error">There was a problem importing the BeatBuddy project.  Please refer to the user manual for more information.</string>
+    <string name="beat_buddy_import_options">You have two options of importing project information from your BeatBuddy:</string>
+    <string name="beat_buddy_import_options1">1. Connect the BeatBuddy or BeatBuddy SD card to this device using a USB cable and select the root/main folder</string>
+    <string name="beat_buddy_import_options2">2. Import a combined MyBeatBuddyProject.csv file created on your computer using my BeatBuddy python script (available from the downloads page).  You can import the .csv file directly</string>
+    <string name="beat_buddy_import_options_choose">Select the desired option below to begin the import process.</string>
+    <string name="beat_buddy_import_project">Import BeatBuddy project information</string>
+    <string name="beat_buddy_import_project_info">This will allow you to select/browse drumkits, songs and folders by name from your BeatBuddy pedal</string>
+    <string name="beat_buddy_info">Edit and save song commands for use with a BeatBuddy pedal</string>
+    <string name="beat_buddy_match">Song match</string>
+    <string name="beat_buddy_match_info">Automatically match your OpenSongApp songs to those on your BeatBuddy pedal</string>
+    <string name="beat_buddy_project_csv">Import project .csv file</string>
+    <string name="beat_buddy_project_csv_previous">Use existing MyBeatBuddyProject.csv file (found in OpenSong/Settings)</string>
+    <string name="beat_buddy_song_info">Song must be a number between 1 and 128</string>
+    <string name="beat_buddy_song_list_info">Tap an item to prepare and send the MIDI code. Alternatively, long press to save the name of this BeatBuddy item to your song (used when automatically sending BeatBuddy song).  This method always matches the song name regardless of which folder or song number it is</string>
+    <string name="beat_tick">Beat 1 (tick)</string>
+    <string name="beat_tock">Beat 2 (tock)</string>
+    <string name="beats">Beats</string>
+    <string name="before">Before</string>
+    <string name="bible">Bible</string>
+    <string name="bibleXML">OpenSong XML Bible</string>
+    <string name="bible_browse">Browse/search bible</string>
+    <string name="bible_browse_offline">Use offline/downloaded bible</string>
+    <string name="bible_download_for_offline">Download a bible translation for offline use</string>
+    <string name="bible_download_info">Bible translation not available above?  Try manually downloading another language/translation from one of the two sites listed below.</string>
+    <string name="bible_download_info_more">You should extract the zip file into your OpenSong/OpenSong Scripture/ folder.  The file extracted should be an xml or xmm file.</string>
+    <string name="bible_search">Phrase or verse to search</string>
+    <string name="bible_translation">Bible version code (e.g. NIV, MSG)</string>
+    <string name="bible_verse">Bible verse</string>
+    <string name="bible_verse_numbers">Include verse numbers</string>
+    <string name="bigger">Bigger</string>
+    <string name="black_screen">Black screen</string>
+    <string name="black_screen_info">Fade in/out all views (except logo)</string>
+    <string name="blank">Blank</string>
+    <string name="blank_screen">Blank screen</string>
+    <string name="blank_screen_info">Fade in/out song content over the background</string>
+    <string name="block_text_shadow">Block text shadow</string>
+    <string name="block_text_shadow_info">Apply a background shadow to the lyrics to improve readability</string>
+    <string name="blue">Blue</string>
+    <string name="board">Board</string>
+    <string name="bold">Bold</string>
+    <string name="bold_chords_headings">Display chords and headings in bold</string>
+    <string name="bold_chorus">Display chorus in bold</string>
+    <string name="book">Book</string>
+    <string name="boost">Boost</string>
+    <string name="both">Both</string>
+    <string name="bottom">Bottom</string>
+    <string name="bpm" translatable="false">bpm</string>
+    <string name="brackets">Brackets</string>
+    <string name="bridge">Bridge</string>
+    <string name="bridge_background">Bridge background</string>
+    <string name="browse_sd_card">Select SD card main folder</string>
+    <string name="browser">Browser</string>
+    <string name="bulk">Bulk</string>
+    <string name="button">Button</string>
+    <string name="camera">Camera</string>
+    <string name="camera_info">Take a photograph of a songsheet</string>
+    <string name="can_be_found_at">Can be found at</string>
+    <string name="cancel">Cancel</string>
+    <string name="capo">Capo</string>
+    <string-array name="capo" translatable="false">
+        <item/>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+    <string name="capo_chords">Capo chords</string>
+    <string name="capo_fret">Capo fret</string>
+    <string name="capo_hide">Autohide capo</string>
+    <string name="capo_style">Capo fret as numeral</string>
+    <string name="cast_info_string">OpenSongApp using screen mirroring to display on a second screen.  If the app is unable open your cast settings page showing available devices, you will have to manually start screen mirroring on your device before running OpenSongApp.  The app will then use the connected screen</string>
+    <string name="cast_namespace" translatable="false">urn:x-cast:com.garethevans.church.opensongtablet</string>
+    <string name="category">Category</string>
+    <string name="cavaquinho">Cavaquinho</string>
+    <string name="ccli" translatable="false">CCLI</string>
+    <string name="ccli_automatic">Record usage stats automatically</string>
+    <string name="ccli_church">Church name</string>
+    <string name="ccli_description">CCLI settings</string>
+    <string name="ccli_export">Export your CCLI log as a XML file</string>
+    <string name="ccli_licence">Licence number</string>
+    <string name="ccli_log">Open your current CCLI log for viewing</string>
+    <string name="ccli_reset">Reset CCLI log</string>
+    <string name="ccli_view">View CCLI log</string>
+    <string name="change">Change</string>
+    <string name="chapter">Chapter</string>
+    <string name="checkbox">Checkbox</string>
+    <string name="choir">Choir</string>
+    <string name="choose_app_mode">Choose app mode</string>
+    <string name="choose_background">Click on a background to use it. Long press / right click to change it.</string>
+    <string name="choose_folder">Choose folder to save file in</string>
+    <string name="choose_folders">Choose folders</string>
+    <string name="choose_fontsize">Select font size</string>
+    <string name="choose_image1">Choose background image 1</string>
+    <string name="choose_image2">Choose background image 2</string>
+    <string name="choose_video1">Choose background video 1</string>
+    <string name="choose_video2">Choose background video 2</string>
+    <string name="chord_capo_display">If a song has capo chords, which chords should be shown?</string>
+    <string name="chord_color">Chords font</string>
+    <string name="chord_fingering">Chord fingering</string>
+    <string name="chord_fingering_inline">Show chord fingerings in the song</string>
+    <string name="chord_fingering_inline_info">This will draw chord diagrams for each chord in the song using the preferred instrument (or song specified instrument).  This will significantly slow down the display of the song and should only be used when learning chords.</string>
+    <string name="chord_format">Chord format</string>
+    <string name="chord_settings">Chord settings</string>
+    <string name="chordformat_1" translatable="false">C  C#/Db  D  D#/Eb  E  F  F#/Gb  G  G#/Ab  A  A#/Bb  B</string>
+    <string name="chordformat_1_name">Standard</string>
+    <string name="chordformat_2" translatable="false">C  C#/Db  D  D#/Eb  E  F  F#/Gb  G  G#/Ab  A  A#/B  H</string>
+    <string name="chordformat_2_name" translatable="false">Euro (B,H)</string>
+    <string name="chordformat_3" translatable="false">C  Cis/Des  D  Dis/Es  E  F  Fis/Ges  G  Gis/As  A  Ais/B  H</string>
+    <string name="chordformat_3_name" translatable="false">Euro (B,H,-is,-es)</string>
+    <string name="chordformat_4" translatable="false">DO  DO#/REb  RE  RE#/MIb  MI  FA  FA#/SOLb  SOL  SOL#/LAb  LA  LA#/SIb  SI</string>
+    <string name="chordformat_4_name" translatable="false">Solfège</string>
+    <string name="chordformat_5" translatable="false">1  2  3  4  5  6  7  8  9  10  11  12</string>
+    <string name="chordformat_5_name" translatable="false">Nashville</string>
+    <string name="chordformat_6" translatable="false">I  II  III  IV  V  VI  VII  VIII  IX  X  XI  XII</string>
+    <string name="chordformat_6_name">Numeral</string>
+    <string name="chordformat_7" translatable="false">C  Cis/Des  D  Dis/Es  E  F  Fis/Ges  G  Gis/As  A  Ais/Bes  B</string>
+    <string name="chordformat_7_name" translatable="false">Euro (-is,-es)</string>
+    <string name="chordformat_autochange">Autochange chord format</string>
+    <string name="chordformat_autochange_info">If a song uses a different chord format, should the app try to display using preferred setting</string>
+    <string name="chordformat_default">Always assume original songs are in my preferred chord format</string>
+    <string name="chordformat_default_info">Default for transposing and capo display</string>
+    <string name="chordformat_desired">New chord format</string>
+    <string name="chordformat_detected">Detected chord format</string>
+    <string name="chordformat_preferred">Use preferred chord format</string>
+    <string name="chordformat_preferred_info">Assume current/detected and desired chord format is</string>
+    <string name="chordinator">Uses chord extraction code from Chordinator Augmented from Paul Evans.  Used by permission</string>
+    <string name="chordinator_info">This method will attempt to find chord sheets automatically, but it is unsuccessful, you can manually extract content using the select and copy method described below</string>
+    <string name="chordline_scale">Scale chords</string>
+    <string name="chordpro" translatable="false">ChordPro</string>
+    <string name="chordpro_file_info">A file that can be imported into numerous song book applications</string>
+    <string name="chords">Chords</string>
+    <string name="chords_found">All chords found in the song lyrics</string>
+    <string name="chorus">Chorus</string>
+    <string name="chorus_background">Chorus background</string>
+    <string name="chromecast" translatable="false">Chromecast</string>
+    <string name="church">Church</string>
+    <string name="clear">Clear</string>
+    <string name="client">Client</string>
+    <string name="clipboard_info">When you find the song lyrics/chords you want to import, highlight them and click on the \'Copy\' option in the clipboard.</string>
+    <string name="clock">Clock</string>
+    <string name="close">Close</string>
+    <string name="code">Code</string>
+    <string name="color">Color</string>
+    <string name="color_choose">Colour Chooser</string>
+    <string name="colour">Colour</string>
+    <string name="column_force">Manually override column breaks</string>
+    <string name="column_force_info" tools:ignore="TypographyDashes">Use the new page code (!--) in the song to force a new column break when autoscaling</string>
+    <string name="column_force_insert">Insert column break</string>
+    <string name="coming_soon">Coming soon…</string>
+    <string name="comment">Comment</string>
+    <string name="comment_background">Comment background</string>
+    <string name="commentline_scale">Scale comment text</string>
+    <string name="compressor">Compressor</string>
+    <string name="confirm">Confirm</string>
+    <string name="connect">Connect</string>
+    <string name="connected">Connected</string>
+    <string name="connected_display">Connected display</string>
+    <string name="connected_display_description">Settings specific to Chromecast/HDMI output</string>
+    <string name="connection_autoscroll_info">Listen for autoscroll stop and start commands</string>
+    <string name="connection_host_needs_update">A connected device has sent information in an old format.  Please ask them to update their app.</string>
+    <string name="connection_match_to_pdf_song">Prefer matching PDF file</string>
+    <string name="connection_match_to_pdf_song_info">Rather than try to load matching OpenSong files, try to load PDF files with the same name (but ending with .pdf)</string>
+    <string name="connection_scroll_info">Listen for scroll up and down commands</string>
+    <string name="connections_accept">Connect with</string>
+    <string name="connections_accept_code">Confirm the code matches on both devices:</string>
+    <string name="connections_actasclient">Act as client</string>
+    <string name="connections_actasclient_info">Listen for instructions from connected devices that are set as hosts</string>
+    <string name="connections_actashost">Act as host</string>
+    <string name="connections_actashost_info">Control other connected devices that are set as clients</string>
+    <string name="connections_advanced">Show more settings for Nearby connections and full log</string>
+    <string name="connections_advertise">Advertise</string>
+    <string name="connections_advertise_info">Advertise your device for others to discover</string>
+    <string name="connections_advertise_name">Device being advertised: </string>
+    <string name="connections_advertise_temporary">Limited advertise</string>
+    <string name="connections_advertise_temporary_info">Only advertise for 10 seconds after clicking the advertise button</string>
+    <string name="connections_advertising">Advertising…</string>
+    <string name="connections_browse_host">Browse host files</string>
+    <string name="connections_browse_host_info">Select files from a connected host device (running as the host) to import</string>
+    <string name="connections_change">Once you have made a connection, you can change between host and client as required</string>
+    <string name="connections_connect">Connect devices</string>
+    <string name="connections_connected">Connected to</string>
+    <string name="connections_connected_devices_info">Shows a list of currently connected devices</string>
+    <string name="connections_description">Connect to other devices running OpenSongApp</string>
+    <string name="connections_device_name">Device name</string>
+    <string name="connections_disconnect">Disconnect from</string>
+    <string name="connections_discover">Discover services</string>
+    <string name="connections_discover_info">Look for other devices that are currently advertising</string>
+    <string name="connections_discover_stop">Stop discovery</string>
+    <string name="connections_failure">Unable to connect</string>
+    <string name="connections_host_current_set">Get host current set</string>
+    <string name="connections_host_current_set_info">Replace your current set with the version that the connected host is using</string>
+    <string name="connections_host_passthrough">Host passthrough</string>
+    <string name="connections_host_passthrough_info">Allow messages received from other hosts to pass through to connected clients</string>
+    <string name="connections_keephostsongs">Keep host songs</string>
+    <string name="connections_keephostsongs_info">If you do not already have the host song in your library, the app will copy if for you</string>
+    <string name="connections_log">Connection log (click to clear).  If you have any issues, reset your Wi-Fi and restart the app.</string>
+    <string name="connections_mode">Connection mode</string>
+    <string name="connections_mode_cluster">Cluster</string>
+    <string name="connections_mode_info">If you have issues connecting devices, try changing the connection mode.  Cluster mode (default) is the most versatile and allows multiple devices to connect to each other allowing switching between host and clients.   Star mode only allows one device to connect to many.  Single mode is to establish a connection between only two devices, but with the best bandwidth.   All connecting devices need to be set to the same mode and changing mode will end all current connections.</string>
+    <string name="connections_mode_single">Single</string>
+    <string name="connections_mode_star">Star</string>
+    <string name="connections_no_devices">No devices connected</string>
+    <string name="connections_off">Close any connections and stop advertising and discovering</string>
+    <string name="connections_receive_host">Receive host songs</string>
+    <string name="connections_receive_host_info">View the host version of the song instead of your own</string>
+    <string name="connections_searching">Searching…</string>
+    <string name="connections_service_stop">Stop service</string>
+    <string name="connections_song_sections_info">Listen for song section changes</string>
+    <string name="connections_start_on_boot">Start nearby connections on boot up</string>
+    <string name="connections_start_on_boot_info">Use your current connection preferences next time you boot up (includes all host/client settings selected here).  By default hosts will advertise and clients will discover, but you can manually choose any option on the settings page</string>
+    <string name="content">Content</string>
+    <string name="continue_text">Continue</string>
+    <string name="contribute">Contribute</string>
+    <string name="controller">Controller</string>
+    <string name="controls">Controls</string>
+    <string name="controls_description">Foot pedals and screen gestures</string>
+    <string name="copied">Copied</string>
+    <string name="copy_chord">Copy chords between sections</string>
+    <string name="copy_chord_info">Take the chords from one section and apply them to another</string>
+    <string name="copy_chord_into">Copy into</string>
+    <string name="copy_chord_section">Use the chord structure in this section</string>
+    <string name="copy_of">Copy</string>
+    <string name="copyright">Copyright</string>
+    <string name="crash">Crash</string>
+    <string name="crash_alert">OpenSongApp has crashed.  Crash saved in the crashLog.txt file</string>
+    <string name="crash_log">Crash log</string>
+    <string name="crash_log_hint">Crash logging is always active and can help the developer fix issues with the app for you and others. Please email it to crashlog@opensongapp.com. Once you send a crash log, you should reset this file.  If the file does not exist, or you have not experienced a crash, the buttons below will be disabled</string>
+    <string name="create">Create</string>
+    <string name="create_folder_error">There was an error creating the new folder!</string>
+    <string name="create_new_song">Create new song</string>
+    <string name="crossfade_time">Cross-fade time</string>
+    <string name="csv" translatable="false">CSV</string>
+    <string name="curly">Curly</string>
+    <string name="curly_brackets_hide">Curly bracket hide {…}</string>
+    <string name="curly_brackets_hide_info">Treat text inside curly brackets as performance notes only.  These will be hidden during presentation.</string>
+    <string name="curly_brackets_hide_info_device">Hide curly bracket text on this device (and connected displays when in Performance mode)</string>
+    <string name="current_location">Selected location</string>
+    <string name="custom">Custom</string>
+    <string name="custom_background">Custom tag background</string>
+    <string name="custom_chord_exists">A custom chord with this name already exists for this instrument</string>
+    <string name="custom_chords">Custom chords</string>
+    <string name="custom_chords_info">Custom chords saved with the current song</string>
+    <string name="custom_chords_needed">Chords not found in database</string>
+    <string name="custom_gestures">Assign custom gestures</string>
+    <string name="custom_gestures_info">Double taps and long presses on the song window</string>
+    <string name="custom_slide">Custom slide (with content)</string>
+    <string name="customchords_code">Custom code</string>
+    <string name="customchords_name">Chord name</string>
+    <string name="dark">Dark</string>
+    <string name="database">Database</string>
+    <string name="database_backup_info">Manually backup the database file</string>
+    <string name="database_export_info">Export the database as a CSV file that can be opened and viewed using Spreadsheet software</string>
+    <string name="database_management">Database management</string>
+    <string name="database_management_info">Options to help you manage your persistent app database (for PDF/image files) and export the information in your song databases to spreadsheets</string>
+    <string name="date">Date</string>
+    <string name="dec_autoscroll_speed">Decrease Autoscroll Speed</string>
+    <string name="decrease">Decrease</string>
+    <string name="deeplink_abc" translatable="false">https://www.opensongapp.com/?p=settings/actions/abcnotation</string>
+    <string name="deeplink_about" translatable="false">https://www.opensongapp.com/?p=settings/about</string>
+    <string name="deeplink_actionbar" translatable="false">https://www.opensongapp.com/?p=settings/display/actionbar</string>
+    <string name="deeplink_aeros" translatable="false">https://www.opensongapp.com/?p=settings/utilities/aeros</string>
+    <string name="deeplink_alert" translatable="false">https://www.opensongapp.com/?p=alert</string>
+    <string name="deeplink_app_mode" translatable="false">https://www.opensongapp.com/?p=settings/appmode</string>
+    <string name="deeplink_app_open" translatable="false">https://www.opensongapp.com?p=</string>
+    <string name="deeplink_app_open_root" translatable="false">opensongapp://</string>
+    <string name="deeplink_autoscroll_settings" translatable="false">https://www.opensongapp.com/?p=settings/autoscroll</string>
+    <string name="deeplink_backup" translatable="false">https://www.opensongapp.com/?p=settings/storage/backup</string>
+    <string name="deeplink_beatbuddy_commands" translatable="false">https://www.opensongapp.com/?p=settings/utilities/beatbuddy/commands</string>
+    <string name="deeplink_beatbuddy_import" translatable="false">https://www.opensongapp.com/?p=settings/utilities/beatbuddy/import</string>
+    <string name="deeplink_beatbuddy_match" translatable="false">https://www.opensongapp.com/?p=settings/utilities/beatbuddy/match</string>
+    <string name="deeplink_beatbuddy_options" translatable="false">https://www.opensongapp.com/?p=settings/utilities/beatbuddy/options</string>
+    <string name="deeplink_bible" translatable="false">https://www.opensongapp.com/?p=settings/bible</string>
+    <string name="deeplink_bible_download" translatable="false">https://www.opensong.app.com/?settings/bible/download</string>
+    <string name="deeplink_bootup" translatable="false">https://www.opensongapp.com/?p=bootup</string>
+    <string name="deeplink_ccli" translatable="false">https://www.opensongapp.com/?p=settings/ccli</string>
+    <string name="deeplink_chords" translatable="false">https://www.opensongapp.com/?p=settings/actions/chords</string>
+    <string name="deeplink_chords_custom" translatable="false">https://www.opensongapp.com/?p=settings/chords/custom</string>
+    <string name="deeplink_chords_settings" translatable="false">https://www.opensongapp.com/?p=settings/chords/settings</string>
+    <string name="deeplink_connected_display" translatable="false">https://www.opensongapp.com/?p=settings/display/connected</string>
+    <string name="deeplink_controls" translatable="false">https://www.opensongapp.com/?p=settings/controls</string>
+    <string name="deeplink_custom_slide" translatable="false">https://www.opensongapp.com/?p=settings/sets/customslide</string>
+    <string name="deeplink_database_utilities" translatable="false">https://www.opensongapp.com/?p=settings/utilities/database</string>
+    <string name="deeplink_display" translatable="false">https://www.opensongapp.com/?p=display</string>
+    <string name="deeplink_display_extra" translatable="false">https://www.opensongapp.com/?p=settings/display/extra</string>
+    <string name="deeplink_drummer_settings" translatable="false">https://www.opensongapp.com/?p=settings/actions/drummersettings</string>
+    <string name="deeplink_edit" translatable="false">https://www.opensongapp.com/?p=settings/edit</string>
+    <string name="deeplink_export" translatable="false">https://www.opensongapp.com/?p=settings/actions/export</string>
+    <string name="deeplink_fonts" translatable="false">https://www.opensongapp.com/?p=settings/display/fonts</string>
+    <string name="deeplink_forum" translatable="false">https://www.opensongapp.com/?p=settings/about/forum</string>
+    <string name="deeplink_gestures" translatable="false">https://www.opensongapp.com/?p=settings/controls/gestures</string>
+    <string name="deeplink_highlighter" translatable="false">https://www.opensongapp.com/?p=songactions/highlighter/edit</string>
+    <string name="deeplink_import" translatable="false">https://www.opensongapp.com/?p=settings/import</string>
+    <string name="deeplink_import_bulk" translatable="false">https://www.opensongapp.com/?p=settings/import/bulk</string>
+    <string name="deeplink_import_file" translatable="false">https://www.opensongapp.com/?p=settings/import/file</string>
+    <string name="deeplink_import_online" translatable="false">https://www.opensongapp.com/?p=settings/import/online</string>
+    <string name="deeplink_import_osb" translatable="false">https://www.opensongapp.com/?p=settings/import/osb</string>
+    <string name="deeplink_inlineset" translatable="false">https://www.opensongapp.com/?p=settings/set/inlineset</string>
+    <string name="deeplink_kitkat_choose" translatable="false">https://www.opensongapp.com/?p=settings/storage/kitkatchoose</string>
+    <string name="deeplink_language" translatable="false">https://www.opensongapp.com/?p=settings/about/language</string>
+    <string name="deeplink_links" translatable="false">https://www.opensongapp.com/?p=settings/actions/links</string>
+    <string name="deeplink_logs" translatable="false">https://www.opensongapp.com/?p=settings/actions/about/logs</string>
+    <string name="deeplink_manage_storage" translatable="false">https://www.opensongapp.com/?p=settings/storage/manage</string>
+    <string name="deeplink_margins" translatable="false">https://www.opensongapp.com/?p=settings/display/margins</string>
+    <string name="deeplink_menu_settings" translatable="false">https://www.opensongapp.com/?p=settings/display/menu</string>
+    <string name="deeplink_metronome" translatable="false">https://www.opensongapp.com/?p=settings/actions/metronome</string>
+    <string name="deeplink_midi" translatable="false">https://www.opensongapp.com/?p=settings/midi</string>
+    <string name="deeplink_midi_clock" translatable="false">https://www.opensongapp.com/?p=settings/midi/midiclock</string>
+    <string name="deeplink_move" translatable="false">https://www.opensongapp.com/?p=settings/storage/move</string>
+    <string name="deeplink_nearby" translatable="false">https://www.opensongapp.com/?p=settings/nearby</string>
+    <string name="deeplink_onsong" translatable="false">https://www.opensongapp.com/?p=settings/onsong</string>
+    <string name="deeplink_openchords" translatable="false">https://www.opensongapp.com/?p=settings/storage/openchords</string>
+    <string name="deeplink_pads" translatable="false">https://www.opensongapp.com/?p=settings/pads</string>
+    <string name="deeplink_page_buttons" translatable="false">https://www.opensongapp.com/?p=settings/controls/pagebuttons</string>
+    <string name="deeplink_pedals" translatable="false">https://www.opensongapp.com/?p=settings/controls/pedals</string>
+    <string name="deeplink_performance" translatable="false">https://www.opensongapp.com/?p=performance</string>
+    <string name="deeplink_preferences" translatable="false">https://www.opensongapp.com/?p=preferences</string>
+    <string name="deeplink_presenter" translatable="false">https://www.opensongapp.com/?p=presenter</string>
+    <string name="deeplink_profiles" translatable="false">https://www.opensongapp.com/?p=settings/profiles</string>
+    <string name="deeplink_scaling" translatable="false">https://www.opensongapp.com/?p=settings/display/scaling</string>
+    <string name="deeplink_search_menu" translatable="false">https://www.opensongapp.com/?p=settings/search</string>
+    <string name="deeplink_set_bundle" translatable="false">https://www.opensongapp.com/?p=settings/sets/bundle</string>
+    <string name="deeplink_set_storage" translatable="false">https://www.opensongapp.com/?p=settings/storage/setstorage</string>
+    <string name="deeplink_sets" translatable="false">https://www.opensongapp.com/?p=settings/sets</string>
+    <string name="deeplink_sets_backup_restore" translatable="false">https://www.opensongapp.com/?p=settings/sets/backuprestore</string>
+    <string name="deeplink_sets_manage" translatable="false">https://www.opensongapp.com/?p=settings/sets/manage</string>
+    <string name="deeplink_song_actions" translatable="false">https://www.opensongapp.com/?p=settings/actions</string>
+    <string name="deeplink_sticky_notes" translatable="false">https://www.opensongapp.com/?p=settings/actions/stickynotes</string>
+    <string name="deeplink_storage_options" translatable="false">https://www.opensongapp.com/?p=settings/storage</string>
+    <string name="deeplink_swipe" translatable="false">https://www.opensongapp.com/?p=settings/controls/swipe</string>
+    <string name="deeplink_sync" translatable="false">https://www.opensongapp.com/?p=settings/nearby/sync</string>
+    <string name="deeplink_tags" translatable="false">https://www.opensongapp.com/?p=settings/actions/tags</string>
+    <string name="deeplink_theme" translatable="false">https://www.opensongapp.com/?p=settings/display/theme</string>
+    <string name="deeplink_utilities" translatable="false">https://www.opensongapp.com/?p=settings/utilities</string>
+    <string name="deeplink_voicelive" translatable="false">https://www.opensongapp.com/?p=settings/utilities/voicelive</string>
+    <string name="default_autoscroll">Default autoscroll times</string>
+    <string name="default_metronome_info">Use default values for tempo (100bpm) and time signature (4/4) if they have not been set for the song</string>
+    <string name="default_presentation_text">Include default presentation text</string>
+    <string name="delay">Delay</string>
+    <string name="delete">Delete</string>
+    <string name="delete_folder_info">Delete song subdirectory</string>
+    <string name="delete_folder_warning">If you delete this subdirectory, this will also delete any songs or folders that it contains.  You cannot undo this change!\n\nPlease make sure you have made and saved backups of ALL your files before proceeding!!!</string>
+    <string name="delete_song_warning">You cannot undo this action.  Please make sure you have created a backup just in case!</string>
+    <string name="desktop_specific_file">A file specific to the desktop version of OpenSong</string>
+    <string name="device">Device</string>
+    <string name="diagram">Diagram</string>
+    <string name="display">Display</string>
+    <string name="display_settings">Change display settings (what you see on screen)</string>
+    <string name="divider">Divider</string>
+    <string name="divisions">Divisions</string>
+    <string name="donate">Donate</string>
+    <string name="double_string">Double</string>
+    <string name="double_tap">Select double tap action</string>
+    <string name="double_time">Double time</string>
+    <string name="download">Download</string>
+    <string name="download_wifi_only">Download over Wi-Fi only</string>
+    <string name="draw">Draw</string>
+    <string name="drawing">Drawing</string>
+    <string name="drum">Drum</string>
+    <string name="drum_crash">Crash</string>
+    <string name="drum_hat_closed">HiHat Closed</string>
+    <string name="drum_hat_open">HiHat open</string>
+    <string name="drum_kick">Kick</string>
+    <string name="drum_kit">Drum kit</string>
+    <string name="drum_kit_acoustic">Acoustic kit</string>
+    <string name="drum_kit_cajon">Cajon</string>
+    <string name="drum_kit_percussion">Percussion kit</string>
+    <string name="drum_ride">Ride</string>
+    <string name="drum_ride_bell">Ride bell</string>
+    <string name="drum_rim_shot">Rimshot</string>
+    <string name="drum_sequencer">Drum sequencer</string>
+    <string name="drum_sequencer_info">Create, edit and assign drum tracks to songs</string>
+    <string name="drum_sequencer_info1">Tap the beat to cycle through different velocities</string>
+    <string name="drum_sequencer_info2">Long press to clear a beat</string>
+    <string name="drum_snare">Snare</string>
+    <string name="drum_splash">Splash</string>
+    <string name="drum_stick">Stick</string>
+    <string name="drum_tom_hi">High tom</string>
+    <string name="drum_tom_lo">Floor tom</string>
+    <string name="drum_tom_mid">Mid tom</string>
+    <string name="drummer">Drummer</string>
+    <string name="drummer_assign">Assign</string>
+    <string name="drummer_assign_error">Before assigning a drummer to a song, you need to save the drummer file first</string>
+    <string name="drummer_assign_info">Assign this drummer to the current song</string>
+    <string name="drummer_fill">Drummer fill</string>
+    <string name="drummer_kit">Drummer kit</string>
+    <string name="drummer_main">Main beat</string>
+    <string name="drummer_main_fill">Main fill</string>
+    <string name="drummer_not_valid">Please edit the song and set a valid tempo and time signature</string>
+    <string name="drummer_part">Drummer part</string>
+    <string name="drummer_player">Drummer player</string>
+    <string name="drummer_settings">Drummer settings</string>
+    <string name="drummer_transition">Drummer transition</string>
+    <string name="drummer_variation">Variation beat</string>
+    <string name="drummer_variation_fill">Variation fill</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="duplicate_sections">You have used the same tag multiple times in the song.  This can cause problems when setting the order.</string>
+    <string name="duplicate_song">Create a copy of this song</string>
+    <string name="edit">Edit</string>
+    <string name="edit_format">Song edit format</string>
+    <string name="edit_new_section">Insert new section</string>
+    <string name="edit_set_item">Edit set item</string>
+    <string name="edit_set_item_info">Change item or key or make a variation</string>
+    <string name="edit_song">Edit song</string>
+    <string name="edit_song_aka">Also known as</string>
+    <string name="edit_song_variation">You are editing a song that is a set variation item.  Any changes are saved to the variation in the set only.</string>
+    <string name="edit_song_variation_temp">This item is transposed in the set.  You have been taken to the original song for editing.</string>
+    <string name="edit_temporary">Temporary edit</string>
+    <string name="edit_text_size">Edit text size</string>
+    <string name="empty">Empty</string>
+    <string name="ending">Ending</string>
+    <string name="error">Error</string>
+    <string name="error_song_not_saved">There was an error saving the song</string>
+    <string name="exclusive">Exclusive</string>
+    <string name="existing_found">You have already used the following install locations.  You will still need to locate and set this manually using the red button above.</string>
+    <string name="exit">Exit</string>
+    <string name="exit_confirm">Are you sure you want to exit the program?</string>
+    <string name="export">Export</string>
+    <string name="export_chordpro">ChordPro song (.cho)</string>
+    <string name="export_convert_song">OpenSong formatted songs can also be converted to the following formats</string>
+    <string name="export_current_format">Songs in their current format</string>
+    <string name="export_current_format_info">A copy of the song in its current format (OpenSong, PDF or image)</string>
+    <string name="export_current_set">Share the current set</string>
+    <string name="export_current_song">Share the current song</string>
+    <string name="export_desktop">Desktop file (no file extension)</string>
+    <string name="export_image">Image (.png)</string>
+    <string name="export_include_set_songs">Include songs identified in the set</string>
+    <string name="export_include_set_songs_info">This allows songs to be included in the Export and Print options</string>
+    <string name="export_onsong">OnSong song (.onsong)</string>
+    <string name="export_ost">OpenSongApp song (.ost)</string>
+    <string name="export_set">OpenSongApp set (.osts)</string>
+    <string name="export_song_directory">Export list of songs</string>
+    <string name="export_song_directory_info">Create a list of the songs in your library</string>
+    <string name="export_text">Text (.txt)</string>
+    <string name="extra">Extra information</string>
+    <string name="extra_settings">Advanced settings</string>
+    <string name="extract">Extract text</string>
+    <string name="fiddle">Fiddle</string>
+    <string name="file">File</string>
+    <string name="file_choose_info">Select the required file(s) below.</string>
+    <string name="file_chooser">File chooser</string>
+    <string name="file_exists">File already exists.  Please rename it.</string>
+    <string name="file_log">File write activity log</string>
+    <string name="file_log_info">Keep a log of file activities (creation, saving, editing, etc.).  Can help identify issues if something goes wrong.</string>
+    <string name="file_type">File type</string>
+    <string name="file_view_log">Song view log</string>
+    <string name="file_view_log_info">Keep a log of the most recently viewed songs</string>
+    <string name="filename">Filename</string>
+    <string name="files_restored">Files restored</string>
+    <string name="fill">Fill</string>
+    <string name="filter_by_artist">This button is used to include an artist filter for your song list</string>
+    <string name="filter_by_dropdown">Refine your search by choosing an option from the drop down list here</string>
+    <string name="filter_by_edit">Refine your search by entering some text here </string>
+    <string name="filter_by_folder">This button is used to include a folder filter for your song list.  Turn it off to remove the filter.</string>
+    <string name="filter_by_key">This button is used to include a key filter for your song list</string>
+    <string name="filter_by_tag">This button is used to include a tag/theme filter for your song list</string>
+    <string name="filter_by_this_value">Further filter by this value.  This filter searches titles, filenames, user fields and hymn numbers</string>
+    <string name="filter_by_title">Search by song title</string>
+    <string name="filter_entry">Add each filter on a new line below.</string>
+    <string name="filter_info">You can filter sections by using prefixes.  If you add the filter \'guitar\', any sections using this prefix would be filtered. e.g. [*guitar:Instrumental]</string>
+    <string name="filter_mode_info">By default filtered sections are hidden, but you can set this to only show these filtered sections instead</string>
+    <string name="filter_results">Filter results</string>
+    <string name="filter_section">Section filtering</string>
+    <string name="filter_songs">Filter the list of songs shown</string>
+    <string name="filtering">Filtering</string>
+    <string name="filters">Filters</string>
+    <string name="find_existing">Find previous installation locations for OpenSong files</string>
+    <string name="finger">Finger</string>
+    <string name="fingering">Fingering</string>
+    <string name="first_run">Either this is your first time running the app, or something has changed. Due to Android permissions, we need you to set your desired storage location for the app to store its files.</string>
+    <string name="first_song">Displaying first item</string>
+    <string name="fix">Autofix</string>
+    <string name="fix_info">Try to fix minor formatting issues</string>
+    <string name="folder">Folder</string>
+    <string name="folder_created_on_download">This folder will be created if you download content from the OpenChords server</string>
+    <string name="folder_doesnt_exist">This folder does not exist in your Songs folder</string>
+    <string name="folder_exists">This folder already exists!</string>
+    <string name="folder_exists_but_is_different">This folder already exists, but is not the same as the OpenChords server.  Downloading will replace the contents of your local folder.  You may wish to rename your local folder first from the Storage menu option.</string>
+    <string name="folder_move_contents">Move folder contents</string>
+    <string name="folder_move_contents_info">Move songs between song folders</string>
+    <string name="folder_rename">Edit song folder name</string>
+    <string name="font">Font</string>
+    <string name="font_browse">Browse all Google Fonts</string>
+    <string name="font_choose">Change fonts</string>
+    <string name="font_choose_description">Change song display fonts</string>
+    <string name="font_choose_list">Choose a font from the list below</string>
+    <string name="font_presentation">Presentation font</string>
+    <string name="font_presentation_bold">Display presented lyrics using bold text</string>
+    <string name="font_presentation_info">Presentation information font</string>
+    <string name="foot">Foot</string>
+    <string name="force_single_page_pdf">Force single page songs for PDF/Print</string>
+    <string name="force_single_page_pdf_info">Scales songs to fit on a single page when printing or exporting to PDF</string>
+    <string name="format">Format</string>
+    <string name="format_text_bold">Bold</string>
+    <string name="format_text_bolditalic">Bold italic</string>
+    <string name="format_text_brackets">Format bracket text (…)</string>
+    <string name="format_text_italic">Italic</string>
+    <string name="format_text_normal">Normal</string>
+    <string name="forum">Forum</string>
+    <string name="forum_description">Report bugs, get help and request features</string>
+    <string name="forum_desktop">When opening the forum on a mobile device you will only be able to browse the forum.  If you want to post or respond to posts, you will need to switch your browser to request desktop site.  You can normally select this from the browser settings.  First time posters on the forum will require manual moderation before their post is displayed, so please be patient!</string>
+    <string name="fret">Fret</string>
+    <string name="full">Full</string>
+    <string name="gesture">Gesture</string>
+    <string name="get">Get</string>
+    <string name="github" translatable="false">GitHub</string>
+    <string name="github_description">Contribute to app development</string>
+    <string name="global">Global</string>
+    <string name="grace_time">Allow song grace time</string>
+    <string name="grace_time_info">This allows you to browse songs quickly and only sends information to other connected devices after a grace time period of 2s.</string>
+    <string name="green">Green</string>
+    <string name="guide">Guide</string>
+    <string name="guitar">Guitar</string>
+    <string name="guitar_drop_d">Guitar - drop D</string>
+    <string name="guitar_open_g">Guitar - open G</string>
+    <string name="half_time">Half time</string>
+    <string name="hard_tune">Hard tune</string>
+    <string name="hardware">Hardware</string>
+    <string name="hardware_acceleration">Use hardware acceleration</string>
+    <string name="hardware_acceleration_info">Turning on hardware acceleration can make scrolling smoother, however, it can cause display bugs and crashes on certain devices.</string>
+    <string name="harmony">Harmony</string>
+    <string name="harmony_hold">Harmony hold</string>
+    <string name="harmony_vibrato_boost">Harmony vibrato boost</string>
+    <string name="heading_scale">Scale heading text</string>
+    <string name="help">Help (Online)</string>
+    <string name="hex_color_code">Hex color code</string>
+    <string name="hide">Hide</string>
+    <string name="highligher_drag">Drag the toolbox around using this button</string>
+    <string name="highligher_tool_current">This shows your current highlighter tool.  Click on it to change the tool or its settings</string>
+    <string name="highlight">Highlighter</string>
+    <string name="highlight_info">Edit highlighter notes / annotations</string>
+    <string name="highlighter_low_memory">Your device was unable to create a screenshot of the song for previewing with the highlighter as it was too large.  Please try changing the autoscaling of the song to full or reducing the maximum font scaling size.</string>
+    <string name="hit">Hit</string>
+    <string name="host">Host</string>
+    <string name="hot">Hot</string>
+    <string name="hot_zone_bottom_center">Bottom center</string>
+    <string name="hot_zone_center_disabled">Top and bottom center hot zones will be disabled</string>
+    <string name="hot_zone_left_disabled">Top left hot zone will be disabled</string>
+    <string name="hot_zone_rationale">Other areas of the screen are reserved for page buttons, song information and are not available.  Hot zones will block other actions in these areas</string>
+    <string name="hot_zone_top_center">Top center</string>
+    <string name="hot_zone_top_left">Top left</string>
+    <string name="hot_zones">Hot zones</string>
+    <string name="hot_zones_info">Assign custom actions to areas of the screen</string>
+    <string name="hotspot">Setup a WiFi hotspot</string>
+    <string name="hotspot_info">If no WiFi network is available, OpenSongApp can create a local WiFi hotspot (no internet access) that other devices can connect to and access the web server.</string>
+    <string name="hymn_number">Hymn number</string>
+    <string name="ignore_cutouts">Ignore cutouts</string>
+    <string name="ignore_cutouts_info">If your device has notches (display cutouts), you can force the app to still draw over this space.  Make sure you can still see the menu buttons before you leave this page, otherwise you might not be able to access the app settings!</string>
+    <string name="ignore_rounded_corners">Ignore device rounded corners</string>
+    <string name="ignore_rounded_corners_info">Rounded screen corner can cause text to be clipped. Ignoring rounded corners will ask the app to use the full screen width/height (recommended).  You can always adjust the margins below.</string>
+    <string name="ignore_warning">Ignore warning</string>
+    <string name="image">Image</string>
+    <string name="image_adjust">Adjust image (crop and rotate)</string>
+    <string name="image_change">Click on the image to change</string>
+    <string name="image_file_info">The OpenSongApp file converted to an image file</string>
+    <string name="image_slide">Image slideshow</string>
+    <string name="immersive">Immersive</string>
+    <string name="immersive_mode">Immersive mode</string>
+    <string name="immersive_mode_info">Hide navigation and status bars to use more of your display</string>
+    <string name="import_basic">Import</string>
+    <string name="import_bulk">Multiple files</string>
+    <string name="import_bulk_details">The app will attempt to import song files in readable formats into a \'Imported\' song folder.  You can then choose to move songs into other folders if required.</string>
+    <string name="import_bulk_info">Batch import multiple song files</string>
+    <string name="import_bulk_showcase_choose">Click here to select multiple files using the Android file picker</string>
+    <string name="import_bulk_showcase_found">These are the files that you have chosen to import</string>
+    <string name="import_bulk_showcase_import">Click here to attempt to import these files</string>
+    <string name="import_download">Import download</string>
+    <string name="import_from_file">Import from a saved file</string>
+    <string name="import_main">Import or create songs</string>
+    <string name="import_osb">Restore songs from OpenSongApp backup file (*.osb)</string>
+    <string name="import_other" translatable="false">OpenSong, OnSong, PDF, txt, ChoPro, Word</string>
+    <string name="imported">Imported</string>
+    <string name="imported_values">Imported values</string>
+    <string name="inc_autoscroll_speed">Increase Autoscroll Speed</string>
+    <string name="included_songs">Included songs</string>
+    <string name="included_songs_already_have">You already have this item in your database</string>
+    <string name="included_songs_import">Import selected songs</string>
+    <string name="included_songs_warning">Importing items that already exist in your database will cause your version to be replaced by the imported version.  These songs are identified with a warning message and are not selected by default</string>
+    <string name="increase">Increase</string>
+    <string name="index">Index</string>
+    <string name="index_songs">Index songs</string>
+    <string name="index_songs_end">Song index completed</string>
+    <string name="index_songs_error">There was an error building the song index</string>
+    <string name="index_songs_full">Full</string>
+    <string name="index_songs_full_info">Index every song in your OpenSong/Songs folder</string>
+    <string name="index_songs_info">Indexing songs is required if you have edited, created or deleted songs outwith OpenSongApp (including synchronising devices) or if this is a new installation.  You can skip this if nothing has changed and speed up the boot process.</string>
+    <string name="index_songs_quick">Quick</string>
+    <string name="index_songs_quick_info">Only index songs that have changed since the index was last built</string>
+    <string name="index_songs_rebuild">Rebuild song index</string>
+    <string name="index_songs_start">Building the song index</string>
+    <string name="index_songs_wait">Please wait until song indexing is completed</string>
+    <string name="info_text">Info text</string>
+    <string name="info_text_autohide">Automatically hide information bar</string>
+    <string name="info_text_autohide_info">Hide once the information has been displayed and a minimum time has elapsed</string>
+    <string name="info_text_background">Background for information bar</string>
+    <string name="information">Information</string>
+    <string name="initialising">Initialising</string>
+    <string name="inline">Inline</string>
+    <string name="inline_midi">Inline MIDI commands</string>
+    <string name="inline_midi_info">MIDI commands that can be triggered by clicking on a song section</string>
+    <string name="insert_guitar_tab">Insert Guitar tab</string>
+    <string name="insert_guitar_tab_info">Create default guitar tab lines</string>
+    <string name="insert_inline_abc">Insert inline ABC</string>
+    <string name="insert_inline_abc_info">Create the insert code for creating a short line of inline ABC notation</string>
+    <string name="instrument">Instrument</string>
+    <string name="instrumental">Instrumental</string>
+    <string name="interlude">Interlude</string>
+    <string name="internet">Internet</string>
+    <string name="intro">Intro</string>
+    <string name="invert_PDF">Invert PDF colours</string>
+    <string name="invert_PDF_info">Most PDF documents have a light background and dark text.  Inverting the colours will make this have a dark background and light text similar to a dark or night theme.</string>
+    <string name="is_not_set">Not set</string>
+    <string name="item">Item</string>
+    <string name="justchords">JustChords file (.justchords)</string>
+    <string name="justchords_file_info">A file format specific to JustChords on iOS</string>
+    <string name="keep_multiline">Keep multiline compact</string>
+    <string name="keep_multiline_info">Display songs containing combined verses as they appear in the song edit window.</string>
+    <string name="key">Key</string>
+    <array name="key_choice" translatable="false">
+        <item/>
+        <item>A</item>
+        <item>A#</item>
+        <item>Bb</item>
+        <item>B</item>
+        <item>C</item>
+        <item>C#</item>
+        <item>Db</item>
+        <item>D</item>
+        <item>D#</item>
+        <item>Eb</item>
+        <item>E</item>
+        <item>F</item>
+        <item>F#</item>
+        <item>Gb</item>
+        <item>G</item>
+        <item>G#</item>
+        <item>Ab</item>
+        <item>Am</item>
+        <item>A#m</item>
+        <item>Bbm</item>
+        <item>Bm</item>
+        <item>Cm</item>
+        <item>C#m</item>
+        <item>Dbm</item>
+        <item>Dm</item>
+        <item>D#m</item>
+        <item>Ebm</item>
+        <item>Em</item>
+        <item>Fm</item>
+        <item>F#m</item>
+        <item>Gbm</item>
+        <item>Gm</item>
+        <item>G#m</item>
+        <item>Abm</item>
+    </array>
+    <string name="key_original">Original key</string>
+    <string name="key_original_transpose">Transpose the song back to the original key</string>
+    <string name="keyboard_smart_ribbon">Keyboard smart ribbon</string>
+    <string name="keyboard_smart_ribbon_info">When editing song lyrics the smart ribbon is shown above the on-screen keyboard and will give shorcuts to add various sections into the lyrics.  If a key has also been set, it will also show commonly used chords.</string>
+    <string name="keyword">Keyword</string>
+    <string name="kit_kick">Kick</string>
+    <string name="kit_snare">Snare</string>
+    <string name="landscape">Landscape</string>
+    <string name="language">Language</string>
+    <array name="languagelist" translatable="false">
+        <item>(af) Afrikaans</item>
+        <item>(cs) český</item>
+        <item>(de) Deutsch</item>
+        <item>(el) ελληνικά</item>
+        <item>(en) English</item>
+        <item>(es) español</item>
+        <item>(fr) français</item>
+        <item>(hu) magyar</item>
+        <item>(it) italiano</item>
+        <item>(ja) 日本語</item>
+        <item>(pl) język polski</item>
+        <item>(pt) português</item>
+        <item>(ru) Русский</item>
+        <item>(si) සිංහල</item>
+        <item>(sr) Srpski</item>
+        <item>(sv) Sweeds</item>
+        <item>(zh) 中文</item>
+    </array>
+    <string name="larger">Larger</string>
+    <string name="last_song">Displaying last item</string>
+    <string name="latest_updates">Latest updates</string>
+    <string name="level">Level</string>
+    <string name="licence">Licence</string>
+    <string name="license">License</string>
+    <string name="flower_description">Drawing</string>
+    <string name="focal_flip_mode">Focal Flip</string>
+    <string name="focal_flip_mode_info">A dyslexia-friendly view that centers the active line with high contrast.</string>
+    <string name="focal_length">Focal length</string>
+    <string name="light">Light</string>
+    <string name="line_length">Line length</string>
+    <string name="lines_per_slide">Lines per slide</string>
+    <string name="linespacing">Trim linespacing</string>
+    <string name="linespacing_info">Try to trim the top and bottom of a line to get rid of font padding.  Can help maximise text size.</string>
+    <string name="link">Link</string>
+    <string name="link_audio">Audio file link</string>
+    <string name="link_audio_pad">Set this as the song pad/backing track</string>
+    <string name="link_choose">Choose a file to link with this song</string>
+    <string name="link_error">The link is not valid, please reset the link.</string>
+    <string name="link_file">Other file</string>
+    <string name="link_info">Link files, audio, etc. to songs</string>
+    <string name="link_reset">Reset the link above</string>
+    <string name="link_search_document">Select a document on your device. If you want to allow synchronising across devices, this file should be saved somewhere inside your OpenSong folder.</string>
+    <string name="link_search_web">Search for this song on the internet. If you find a suitable web page, copy the web address to the clipboard, then return here and paste it into the box above.</string>
+    <string name="link_search_youtube">Try to find this song on YouTube. If you find the correct item, select the \'Share\' option and then copy the link to the clipboard. You can then return here and paste the link above.</string>
+    <string name="link_web">Online link</string>
+    <string name="link_youtube">YouTube link</string>
+    <string name="listen">Listen</string>
+    <string name="load">Load</string>
+    <string name="load_reusable">Load a reusable slide</string>
+    <string name="location">Location</string>
+    <string name="location_not_enabled">To connect to devices please turn \'Location\' ON.  If you have a choice of mode, choose a mode that uses Wi-Fi.</string>
+    <string name="log">App usage logs</string>
+    <string name="log_info">Manage file logs (can help with debugging)</string>
+    <string name="logo">Logo</string>
+    <string name="logo_info">Toggle between the logo and the song content</string>
+    <string name="logs">Logs</string>
+    <string name="long_press">Long press/hold</string>
+    <string name="long_press_action">Select long press action</string>
+    <string name="loop">Loop</string>
+    <string name="loop_slide_pages">Loop pages in custom slide</string>
+    <string name="looper">Looper</string>
+    <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="lyrics">Lyrics</string>
+    <string name="lyrics_color">Lyrics font</string>
+    <string name="main_song_display">Main song display</string>
+    <string name="mainfoldername">MAIN</string>
+    <string name="mandolin">Mandolin</string>
+    <string name="manual">Manual</string>
+    <string name="margins">Margins</string>
+    <string name="margins_custom">Custom additional margins</string>
+    <string name="margins_gestures">Using gesture navigation</string>
+    <string name="margins_gestures_info">Reduces the height reserved for the navigation bar</string>
+    <string name="margins_info">Adjust the margins around the content to avoid screen cutouts and rounded corners</string>
+    <string name="margins_system">System margins</string>
+    <string name="margins_system_info">Leave space for detected device controls (bottom navigation bar and side menus)</string>
+    <string name="master">Master</string>
+    <string name="max_font_size">Maximum autoscale font size</string>
+    <string name="max_pdf_scale">Maximum scale size of PDF/Print</string>
+    <string name="max_pdf_scale_info">The maximum scaling to use.  Choose lower values for smaller text.  Text size will not scale beyond page width.  75% is a good starting point for most.</string>
+    <string name="max_vol_range">Graphical volume indicator range</string>
+    <string name="maximise_columns">Scale columns independently.</string>
+    <string name="maximise_columns_info">If a song is shown in multiple columns (e.g. when rotated to landscape), this allows each column to zoom to fill the portion of the screen it is allocated.</string>
+    <string name="maximum">Maximum</string>
+    <string name="media">Media</string>
+    <string name="media_selected">Media loaded</string>
+    <string name="menu">Menu</string>
+    <string name="menu_set_info">Use this button to view and manage your sets</string>
+    <string name="menu_settings">Menu settings</string>
+    <string name="menu_settings_description">Change settings for the song/set menu</string>
+    <string name="menu_showcase_info">Open the menu to view and manage your songs and sets</string>
+    <string name="menu_song_info">Use this button view and manage your songs</string>
+    <string name="menu_song_order">How should songs be listed in the menu?</string>
+    <string name="merged_text_file">Merged text file</string>
+    <string name="merged_text_file_info">A single text file with all items merged.  Useful for importing into a document when producing a paper song book</string>
+    <string name="message">Message</string>
+    <string name="messages">Messages</string>
+    <string name="meter">Meter</string>
+    <string name="metronome">Metronome</string>
+    <string name="metronome_autostart">Autostart metronome</string>
+    <string name="metronome_autostart_info">Keep metronome running when changing songs</string>
+    <string name="metronome_duration">Metronome duration (bars)</string>
+    <string name="metronome_info">Adjust the metronome settings</string>
+    <string name="microphone">Microphone</string>
+    <string name="midi" translatable="false">MIDI</string>
+    <string name="midi_action">MIDI action</string>
+    <string name="midi_action_assign">Assign to an MIDI action</string>
+    <string name="midi_action_info">Choose which MIDI action should be assigned this code</string>
+    <string name="midi_actions">Custom MIDI commands</string>
+    <string name="midi_actions_info">Edit custom MIDI commands that can be assigned to actions (e.g. foot pedals, page buttons, hot zones)</string>
+    <string name="midi_add">Add command</string>
+    <string name="midi_auto">Auto send MIDI</string>
+    <string name="midi_bluetooth">Connect Bluetooth device</string>
+    <string name="midi_board">MIDI board</string>
+    <string name="midi_board_click_or_long_click">Click on buttons to send MIDI.  Long press on buttons to edit them.</string>
+    <string name="midi_board_info">Use a collection of MIDI commands and sliders to control connected devices</string>
+    <string name="midi_burst">Burst mode</string>
+    <string name="midi_burst_info">Some devices rely on receiving multiple controller messages quickly.  When switched on, any MIDI command generated will be annotated by * as a burst command (i.e. sent several times in a row)</string>
+    <string name="midi_channel">Channel</string>
+    <string name="midi_channel_default">When sending automatic messages to the VoiceLive the MIDI channel below will be used</string>
+    <string name="midi_click_track">Send MIDI click track</string>
+    <string name="midi_click_track_channel">MIDI channel for click track</string>
+    <string name="midi_click_track_channel_info">The MIDI channel used by your click track or drum module</string>
+    <string name="midi_click_track_info">If you have a MIDI device connected and your songs have a tempo and time signature set, the app can send MIDI click track information as part of the metronome function.</string>
+    <string name="midi_click_track_tick_tock_info">Not all MIDI percussion notes may be available on your device.  Please check your manual for the MIDI notes used for each sound.</string>
+    <string name="midi_clock">MIDI clock</string>
+    <string name="midi_clock_click">MIDI clock / click track</string>
+    <string name="midi_clock_info">Send MIDI clock information (tempo) to connected MIDI devices or send MIDI metronome click track</string>
+    <string name="midi_clock_latency">MIDI clock latency</string>
+    <string name="midi_clock_latency_info">Due to potential Android timing issues and Bluetooth latency, you can add a compensation level if you find your MIDI clock tempo runs slower than expected.</string>
+    <string name="midi_clock_master">Act as MIDI clock master</string>
+    <string name="midi_clock_master_info">If your songs have a tempo set and a MIDI connection has been made, OpenSongApp will send the tempo to all devices via a MIDI clock code.  This will default to 100bpm for songs with no tempo set.</string>
+    <string name="midi_clock_short_burst">Send MIDI clock as a short burst</string>
+    <string name="midi_clock_short_burst_info">When a song loads, the MIDI clock will only be sent for the first five seconds allowing devices to receive a tempo.  This can help avoid the MIDI clock from Android drifting and causing devices to constantly adjust their tempos.</string>
+    <string name="midi_clock_start_stop">Send MIDI start/stop</string>
+    <string name="midi_clock_start_stop_info">When the MIDI clock starts, a start MIDI message will also be sent to connected devices.  A stop MIDI message will be sent when you stop the MIDI clock.</string>
+    <string name="midi_code_current">MIDI code currently assigned to action</string>
+    <string name="midi_code_new">New MIDI code</string>
+    <string name="midi_commands">Edit song commands</string>
+    <string name="midi_commands_info">View and edit MIDI commands that are sent to connected devices when the song loads</string>
+    <string name="midi_controller">Controller change</string>
+    <string name="midi_delay">MIDI delay between messages</string>
+    <string name="midi_description">Connect midi devices and change settings</string>
+    <string name="midi_device_settings">MIDI devices and settings</string>
+    <string name="midi_devices">Available devices</string>
+    <string name="midi_disconnect">Disconnect</string>
+    <string name="midi_error">Please check MIDI connection</string>
+    <string name="midi_index">MIDI index</string>
+    <string name="midi_index_code">MIDI required to load song</string>
+    <string name="midi_input_channel_pedal">Listen for MIDI pedal actions on this channel</string>
+    <string name="midi_input_channel_song">Listen for MIDI song controls on this channel</string>
+    <string name="midi_input_channel_song_autoscroll_info">Start/stop autoscroll when receiving MIDI start/stop command</string>
+    <string name="midi_input_channel_song_metronome_info">Start/stop metronome when receiving MIDI start/stop command</string>
+    <string name="midi_input_channel_song_pad_info">Start/stop pad when receiving MIDI start/stop command</string>
+    <string name="midi_list_item">Click to test, swipe to delete, or rearrange</string>
+    <string name="midi_message_include">Include this in the song messages</string>
+    <string name="midi_messages">Song MIDI messages (sent in order)</string>
+    <string name="midi_messages_static">Static MIDI messages (messages saved with the song)</string>
+    <string name="midi_note">Note</string>
+    <string name="midi_pedal">Listen for incoming MIDI (e.g. footpedal)</string>
+    <string name="midi_program">Program change</string>
+    <string name="midi_send">Send MIDI</string>
+    <string name="midi_shorthand">MIDI shorthand</string>
+    <string name="midi_sysex" translatable="false">Sysex</string>
+    <string name="midi_test">Test</string>
+    <string name="midi_value">Value</string>
+    <string name="midi_velocity">Velocity</string>
+    <string name="min_font_size">Preferred minimum autoscale font size</string>
+    <string name="minus_1" translatable="false">-1</string>
+    <string name="mode">Mode</string>
+    <string name="mode_performance" translatable="false">Performance</string>
+    <string name="mode_focal_flip" translatable="false">Focal Flip</string>
+    <string name="mode_presenter" translatable="false">Presenter</string>
+    <string name="mode_stage" translatable="false">Stage</string>
+    <string name="modulation">Modulation</string>
+    <string name="move">Move</string>
+    <string name="move_from">Move from</string>
+    <string name="move_to_folder">Move to folder</string>
+    <string name="multiline">Multiline</string>
+    <string name="multilingual">Multilingual</string>
+    <string name="multilingual_scale">Scale multilingual lyric lines</string>
+    <string name="multiple">Multiple</string>
+    <string name="multitrack">Multitrack</string>
+    <string name="multitrack_convert">Convert files</string>
+    <string name="multitrack_folder_choose_other">Choose folder</string>
+    <string name="multitrack_folder_found">Multitrack song folder found</string>
+    <string name="multitrack_folder_not_found">Multitrack song folder not found</string>
+    <string name="multitrack_folder_not_valid">Multitrack song folder does not have valid audio files</string>
+    <string name="multitrack_player">Multitrack player</string>
+    <string name="multitrack_player_info">Play multiple audio tracks from a folder</string>
+    <string name="multitrack_requires_conversion">Some audio files require conversion before they can be used</string>
+    <string name="multitrack_requires_conversion_info">To use MultiTracks, all audio files in the folder need to be 16-bit stereo WAV PCM files.  The app can attempt to convert these files for you.</string>
+    <string name="music">Music</string>
+    <string name="music_score">Music score</string>
+    <string name="music_score_info">Edit score notes</string>
+    <string name="music_score_popup">Music score (abc) popup window</string>
+    <string name="my_band">Import Band sample songs</string>
+    <string name="my_church">Import Church sample songs</string>
+    <string name="nearby_devices">Nearby devices</string>
+    <string name="nearby_files_copied">Files copied:</string>
+    <string name="nearby_files_failed">Files failed:</string>
+    <string name="nearby_files_skipped">Files skipped:</string>
+    <string name="nearby_found_files">The following files have been found on the host device.  Choose the files to download.  If the download progress stalls or gets stuck, you can try again</string>
+    <string name="nearby_get_profiles">Get profiles</string>
+    <string name="nearby_get_setlist">Get setlist</string>
+    <string name="nearby_get_songs">Get songs</string>
+    <string name="nearby_host_menu_only">Only listen for new clients when this page is visible</string>
+    <string name="nearby_host_menu_only_info">Connection requests will not be shown unless you are on this page</string>
+    <string name="nearby_host_menu_only_info_warning">Host must have Nearby settings open to accept connections</string>
+    <string name="nearby_large_file">This large song file is being shared</string>
+    <string name="nearby_message">Nearby alert message</string>
+    <string name="nearby_messages">Nearby alert messages</string>
+    <string name="nearby_messages_include">Include custom Nearby alert messages</string>
+    <string name="nearby_messages_include_info">Send the matching alert message to connected devices</string>
+    <string name="nearby_messages_info">The messages can be assigned to action controls (e.g. page buttons) but also added to custom MIDI actions so connected devices are notified of a MIDI action being sent</string>
+    <string name="nearby_messages_sticky">Sticky nearby messages</string>
+    <string name="nearby_messages_sticky_info">Show any text messages received from Nearby host as a sticky note.  If switched off, messages are displayed as alert boxes that display for a few seconds</string>
+    <string name="network_error">Network error</string>
+    <string name="new_category">New category</string>
+    <string name="new_folder">Create new song folder</string>
+    <string name="new_folder_add">New folder</string>
+    <string name="new_folder_info">Add subfolders in your Songs folder</string>
+    <string name="new_folder_name">Enter a new folder name</string>
+    <string name="new_something">New</string>
+    <string name="next">Next</string>
+    <string name="no_previous_found">No previous installations found.</string>
+    <string name="no_suitable_application">No application is available or installed that can open this item.</string>
+    <string name="not_allowed">This function is not allowed for this item</string>
+    <string name="not_available">Not available</string>
+    <string name="not_saved">Not saved</string>
+    <string name="not_saved_filename">Please enter a filename for your song</string>
+    <string name="not_saved_folder">Please select a folder for your song</string>
+    <string name="notation">Notation</string>
+    <string name="note">Note</string>
+    <string name="nothing_selected">Nothing selected</string>
+    <string name="number_1" translatable="false">1</string>
+    <string name="number_2" translatable="false">2</string>
+    <string name="number_3" translatable="false">3</string>
+    <string name="numeral">Numeral</string>
+    <string name="octaver">Octaver</string>
+    <string name="off">Off</string>
+    <string name="okay">OK</string>
+    <string name="on">On</string>
+    <string name="online">Online</string>
+    <string name="online_services" translatable="false">UG, SongSelect, Chordie, etc.</string>
+    <string name="onsong" translatable="false">iOS/OnSong</string>
+    <string name="onsong_file_info">A file that can be imported into OnSong on iOS devices</string>
+    <string name="onsong_import">"Import OnSong backup file"</string>
+    <string name="onsong_import_folder">Choose a folder to save imported songs</string>
+    <string name="onsong_import_folder_info">The recommended option is to import into a separate OnSong folder.  You can always move songs into other folders later.</string>
+    <string name="opacity">Opacity</string>
+    <string name="open">Open</string>
+    <string name="open_song_menu">Open song menu</string>
+    <string name="openchords" translatable="false">OpenChords</string>
+    <string name="openchords_folder_doesnt_exist">This folder does not exist on the OpenChords server.  You can create this by uploading</string>
+    <string name="openchords_info">Synchronise folder with OpenChords.  This allows other apps such as JustChords to synchronise with OpenSongApp</string>
+    <string name="openchords_link">Share link for folder</string>
+    <string name="openchords_link_info">If a folder has already been uploaded to the OpenChords server you can share a link for others to use</string>
+    <string name="openchords_not_owner">This is a folder shared by another user</string>
+    <string name="openchords_owner">You own this folder</string>
+    <string name="openchords_readonly">This folder is marked as read only</string>
+    <string name="openchords_readonly_switch">Read only</string>
+    <string name="openchords_readonly_switch_info">Change the settings of this folder for other users who use the link</string>
+    <string name="opensong" translatable="false">OpenSong</string>
+    <string name="opensong_media">Audio recordings are saved to /OpenSong/Media/</string>
+    <string name="optional">Optional</string>
+    <string name="order">Order</string>
+    <string name="other">Other</string>
+    <string name="other_options">Other options</string>
+    <string name="outro">Outro</string>
+    <string name="override_abc">Override automatic music score display for this song</string>
+    <string name="override_fullautoscale">Override full autoscale to width only</string>
+    <string name="override_none">Use app default</string>
+    <string name="override_off">Force hide</string>
+    <string name="override_on">Force show</string>
+    <string name="override_preview">Override next line preview display for this song</string>
+    <string name="override_scale_explanation">If the autoscale font size is less than the desired minimum font size, do you want the app to override to a different scaling method?  Using these options may force you to scroll horizontally and vertically in a song</string>
+    <string name="override_sticky">Override automatic sticky note display for this song</string>
+    <string name="override_widthautoscale">Override width only scaling to no autoscale</string>
+    <string name="overwrite">Overwrite existing item</string>
+    <string name="overwrite_info">Any matching files you already have will be overwritten by the host files</string>
+    <string name="pad">Pad</string>
+    <string name="pad_auto">Auto</string>
+    <string name="pad_cross_fade">Cross-fade pads</string>
+    <string name="pad_cross_fade_info">This will automatically start pads when moving between songs and allow a smooth cross fade.  You must manually start the pad the first time.</string>
+    <string name="pad_custom_info">Set custom pads to use as backing tracks matching song keys.  These files must be saved in the OpenSong/Pads folder.  Songs that have the pad set as \'Auto\' and have a key set will use the file noted here.</string>
+    <string name="pad_custom_pad_error">There is a problem with the custom auto pad set for this key</string>
+    <string name="pad_custom_short">Choose built in or custom pads to match each key</string>
+    <string name="pad_file_error">There is a problem with the link audio file</string>
+    <string name="pad_hide">Autohide pad</string>
+    <string name="pad_info">Control or edit the current pad or backing track</string>
+    <string name="pad_key_error">The key of this song has not been set</string>
+    <string name="pad_off">Pads are switched off for this song</string>
+    <string name="pad_onoroff">Use a pad with this song</string>
+    <string name="pad_playback_info">Pad progress is shown here.  Tap to pause, press and hold to stop.</string>
+    <string name="pad_settings_info">Default pad settings</string>
+    <string name="padding">Padding</string>
+    <string name="page">Page</string>
+    <string name="page_buttons">Page buttons</string>
+    <string name="pan">Pan</string>
+    <string name="pan_center">Center</string>
+    <string name="pan_left">Left</string>
+    <string name="pan_right">Right</string>
+    <string name="panic">Panic</string>
+    <string name="panic_stop">All output stopped</string>
+    <string name="part">Part</string>
+    <string name="password">Password</string>
+    <string name="pause">Pause</string>
+    <string name="paypal" translatable="false">PayPal</string>
+    <string name="paypal_description">Send me a donation if you find the app useful</string>
+    <string name="pdf" translatable="false">PDF</string>
+    <string name="pdf_file_info">The OpenSongApp file converted to a PDF document</string>
+    <string name="pdf_horizontal">Display PDF pages horizontally</string>
+    <string name="pdf_horizontal_info">When autoscale is set to full and the device is in landscape orientation PDF pages will be shown side by side (scaled by height)</string>
+    <string name="pdf_preview_not_allowed">Previewing PDF files directly is not supported on many mobile web browsers, but you can open the file using the button below.</string>
+    <string name="pedal">Pedal</string>
+    <string name="pedal_avoid_repeat">Show a warning before moving to the next song</string>
+    <string name="pedal_avoid_repeat_info">Useful to avoid accidental presses</string>
+    <string name="pedal_controls">Set up foot pedal buttons and actions</string>
+    <string name="pedal_detected">Pedal press detected</string>
+    <string name="pedal_down">Pedal down (press)</string>
+    <string name="pedal_instructions">Click on a pedal button below to assign it to a keyboard button or midi note and assign actions to it. Most Bluetooth pedals send keyboard commands (e.g. arrow up/down).</string>
+    <string name="pedal_midi_warning">To use a midi pedal, make sure you have connected it using the midi settings in the app first.</string>
+    <string name="pedal_scroll_before_move">Try to scroll before changing songs</string>
+    <string name="pedal_scroll_before_move_info">Allows next/previous pedals to also function as scroll pedals</string>
+    <string name="pedal_test">Test connected pedal</string>
+    <string name="pedal_test_info">Test a connected pedal by pressing the button on your pedal.  The code being sent will be displayed.  Long press a button on the pedals to allow the app to try and identify the recommended long press mode to use (if available).</string>
+    <string name="pedal_up">Pedal up (release)</string>
+    <string name="pedal_waiting">Waiting for button…</string>
+    <string name="pedal_waiting_ended">No pedal press detected</string>
+    <string name="pedal_warning">Confirm song change by pressing the pedal again after this warning closes</string>
+    <string name="pen">Pen</string>
+    <string name="pencil">Pencil</string>
+    <string name="performance">Performance</string>
+    <string name="performance_mode">Performance mode</string>
+    <string name="performance_mode_info">Use your device as a songbook</string>
+    <string name="permission">Permission</string>
+    <string name="permissions_refused">Permissions were refused and may need to be granted manually from Android settings if you do not see the option again</string>
+    <string name="persistent_database">Persistent database</string>
+    <string name="persistent_database_backup_file" translatable="false">OpenSong/Backups/</string>
+    <string name="persistent_database_clean">Clean up database</string>
+    <string name="persistent_database_clean_info">Check your database for entries that refer to files that no longer exist.  This could be due to manually deleting or renaming PDF/image files.  If the entries do not contain useful information they will be removed.</string>
+    <string name="persistent_database_clean_perfect">Congratulations, your PDF/image database is clean and has no pointless entries!</string>
+    <string name="persistent_database_clean_useful">The database contains references to the following PDF/image files that no longer exist.  The database entries do, however, contain some potentially useful information (such as lyrics, notes, MIDI information, etc.).  You can safely delete these entries, but the app will create a CSV file with this content so you can manually recover the data if required.  The file will be created in OpenSong/Settings/removedNonOpenSongSongs.csv</string>
+    <string name="persistent_database_clean_useless">The following PDF/image files are referenced in your database, but the files no longer exist.  The database entries for these files have no useful information and it is therefore safe to delete the database entries.</string>
+    <string name="persistent_database_export_file" translatable="false">OpenSong/Export/NonOpenSongSongs.csv</string>
+    <string name="persistent_database_file" translatable="false">OpenSong/Settings/NonOpenSongSongs.db</string>
+    <string name="persistent_database_info">This stores extra information (key, notes, autoscroll, midi, etc.) for non OpenSong songs such as PDF files</string>
+    <string name="persistent_database_invalid_file">This file is invalid and cannot be used</string>
+    <string name="persistent_database_restore_info">Import a backup database and replace the current version</string>
+    <string name="persistent_database_restore_warning">Only proceed if you have created a backup of your persistent database file.  This will overwrite your current persistent database and cannot be undone</string>
+    <string name="photo">Photo</string>
+    <string name="piano">Piano</string>
+    <string name="picture">Picture</string>
+    <string name="pinch_to_zoom">Pinch to zoom</string>
+    <string name="pinch_to_zoom_info">Allow zooming in and out of a song in Performance mode using the pinch to zoom gesture</string>
+    <string name="play_services_error">To use Google Cast, Fonts and Nearby Connections, you will need to install Google Play Services.</string>
+    <string name="play_services_how">Show me how</string>
+    <string name="player">Player</string>
+    <string name="playlist">Playlist</string>
+    <string name="plus_1" translatable="false">+1</string>
+    <string name="popup">Popup</string>
+    <string name="popup_large">Large popups</string>
+    <string name="popup_large_info">Use large popups for drop-down menus</string>
+    <string name="portrait">Portrait</string>
+    <string name="position">Position</string>
+    <string name="prechorus">Pre-Chorus</string>
+    <string name="prechorus_background">Prechorus background</string>
+    <string name="pref_key_text">Choose your preferred key settings for transposing and capo display</string>
+    <string name="preferences">Preferences</string>
+    <string name="presentation">Presentation</string>
+    <string name="presentation_mode_info">Control the display to a projector</string>
+    <string name="presentation_order">Presentation order</string>
+    <string name="presentation_order_info">The song presentation order is shown below.  You can drag items to rearrange the order and swipe to remove.</string>
+    <string name="presentation_order_use">If presentation order exists for the song, use this to create the display</string>
+    <string name="presenter">Presenter</string>
+    <string name="presenter_mode">Presenter mode</string>
+    <string name="presenter_song_section_text_size">The text size of the song content in the presenter view</string>
+    <string name="preset">Preset</string>
+    <string name="preso_alpha">Background opacity</string>
+    <string name="prev_next_autohide">Autohide previous / next buttons</string>
+    <string name="prev_next_text">Use text previous / next buttons</string>
+    <string name="preview">Preview</string>
+    <string name="preview_line_spacing">Preview line spacing</string>
+    <string name="preview_line_transparency">Preview line transparency</string>
+    <string name="previous">Previous</string>
+    <string name="print">Print</string>
+    <string name="processing">Files are being processed</string>
+    <string name="profile">Profile</string>
+    <string name="profile_backup">Backup current profile</string>
+    <string name="profile_explanation">Profiles are used to store your display preferences.</string>
+    <string name="profile_restart">After loading in a profile, you should restart the app to see all of the changes.</string>
+    <string name="profile_restore">Restore a saved profile</string>
+    <string name="profiles_found">The following profiles have been found in the OpenSong/Profiles folder.  Click on an item to select it.</string>
+    <string name="program">Program</string>
+    <string name="project">Project</string>
+    <string name="project_panic">Click here to reset any connected displays</string>
+    <string name="promptbackup">You haven\'t backed up your song library in the last 10 times you have used this app.  This is highly recommended as you can recover your songs if anything goes wrong.  Ideally you should keep a copy of your backup file on the cloud (e.g. Google Drive) or email it to yourself.</string>
+    <string name="quicklaunch_button1">Button 1</string>
+    <string name="quicklaunch_button2">Button 2</string>
+    <string name="quicklaunch_button3">Button 3</string>
+    <string name="quicklaunch_button4">Button 4</string>
+    <string name="quicklaunch_button5">Button 5</string>
+    <string name="quicklaunch_button6">Button 6</string>
+    <string name="quicklaunch_button7">Button 7</string>
+    <string name="quicklaunch_button8">Button 8</string>
+    <string name="quicklaunch_title">Customise quick launch buttons</string>
+    <string name="random_song">Find a random song</string>
+    <string name="random_song_info">Select a random song from those currently shown in the menu</string>
+    <string name="rate">Rate this app</string>
+    <string name="rate_description">Please leave a review</string>
+    <string name="rate_string">Rate</string>
+    <string name="rating">Rating</string>
+    <string name="record">Record</string>
+    <string name="recorder">Recorder</string>
+    <string name="red">Red</string>
+    <string name="redo">Redo</string>
+    <string name="refrain">Refrain</string>
+    <string name="refresh_song">Refresh current song</string>
+    <string name="remove">Remove</string>
+    <string name="rename">Rename</string>
+    <string name="rename_info">Rename or change the category of a saved set</string>
+    <string name="repeat_mode">Repeat mode</string>
+    <string name="repeat_mode_count">Number of key up commands to qualify as a long press (in the time stated above)</string>
+    <string name="repeat_mode_info">For pedals that send repeated key down and up commands this can simulate a long press action</string>
+    <string name="repeat_mode_time">Time to listen for repeated key down and key up commands</string>
+    <string name="reprise">Reprise</string>
+    <string name="requires_internet">This feature requires internet access</string>
+    <string name="reset">Reset</string>
+    <string name="reset_colours">Reset Colours</string>
+    <string name="reset_text">If you are having difficulties with the app, try clearing your preferences. This will not delete your songs.</string>
+    <string name="respect_copyright">Respect copyright - always use legally</string>
+    <string name="restart">Restart</string>
+    <string name="restart_auto">The app will restart when you leave this page to apply a light or dark theme to your menus</string>
+    <string name="restart_required">Please restart the app to apply the changes</string>
+    <string name="restore">Restore</string>
+    <string name="restore_sets">Restore sets</string>
+    <string name="resume">Resume</string>
+    <string name="reverb">Reverb</string>
+    <string name="review">Review</string>
+    <string name="rhythmic">Rhythmic</string>
+    <string name="root">ROOT</string>
+    <string name="rotate_display">Rotate display</string>
+    <string name="sample">Sample</string>
+    <string name="save">Save</string>
+    <string name="save_changes">Save changes</string>
+    <string name="save_text_for_searching">Save text for searching</string>
+    <string name="scale">Scale</string>
+    <string name="scale_auto">Toggle autoscale settings</string>
+    <string name="scale_style">Scale style</string>
+    <string name="scale_width">Maximum width (ignoring height)</string>
+    <string name="scale_width_info">When switched on, the app zooms the text to fill the width of the screen.  You might have to scroll down to see the rest of the song.  When off, the app fits the entire song into the window.</string>
+    <string name="scaling">Scaling</string>
+    <string name="scaling_info">Autoscale settings and section scaling</string>
+    <string name="score">Score</string>
+    <string name="screen">Screen</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="screenshot_info">A screenshot of how the song appears on your device (based on your app theme)</string>
+    <string name="scripture">Scripture</string>
+    <string name="scroll">Scroll</string>
+    <string name="scroll_amount">Scroll amount</string>
+    <string name="scroll_down">Scroll down</string>
+    <string name="scroll_up">"Scroll up</string>
+    <string name="scrolling">Scrolling</string>
+    <string name="search">Search</string>
+    <string name="search_biblegateway">Search BibleGateway.com</string>
+    <string name="search_settings">Search settings</string>
+    <string name="secondary">Secondary</string>
+    <string name="section">Section</string>
+    <string name="section_box">Draw section box</string>
+    <string name="section_box_info">Show each section of a song with a box around it (as in stage mode)</string>
+    <string name="section_highlighting">Section highlighting</string>
+    <string name="section_not_found">This section does not exist in the song.  Please remove this item, or create the section in the lyrics tab.</string>
+    <string name="section_not_used">This section is in the song, but is not in the Presentation order.</string>
+    <string name="section_space">Add section space</string>
+    <string name="section_space_info">Add a small space between sections to improve visibility</string>
+    <string name="select">Select</string>
+    <string name="select_all">Select all</string>
+    <string name="select_page">Select page</string>
+    <string name="send">Send</string>
+    <string name="server">Server</string>
+    <string name="service_id" translatable="false">com.garethevans.church.opensongtablet</string>
+    <string name="set">Set</string>
+    <string name="set_add">Add to set</string>
+    <string name="set_bundle_justchords">JustChords set bundle</string>
+    <string name="set_bundle_opensongapp">OpenSongApp set bundle</string>
+    <string name="set_bundle_opensongapp_import">Import set bundle (.ossb)</string>
+    <string name="set_bundle_opensongapp_info">If you are sharing a set with other OpenSongApp users, this is the preferred method.  It contains the set list and all files required, you do not require any additional options below</string>
+    <string name="set_current">Current set</string>
+    <string name="set_delete_info">Delete old sets</string>
+    <string name="set_help">Drag songs around to change the order of your set</string>
+    <string name="set_import">Import setlist</string>
+    <string name="set_inline">Inline set</string>
+    <string name="set_inline_info">Show the setlist on the screen beside the song window</string>
+    <string name="set_inline_showcase">This is the inline set which allows a view of the setlist while you are performing.  You can change the settings in Settings / Display / Inline set.</string>
+    <string name="set_is_empty">There are no items in your set</string>
+    <string name="set_item_info">You can change the folder/filename of the song loaded from the set and you can also change the key for song display (this performs a temporary transpose of the song on your device if required)</string>
+    <string name="set_item_removed">Item removed from set</string>
+    <string name="set_items_not_found">Some set items were not found on your device (they may just have a different filename, spelling, etc).  You can manually edit these items (marked with an *) from the set menu after importing.</string>
+    <string name="set_list">Setlist</string>
+    <string name="set_list_separate">Set list files</string>
+    <string name="set_lists">Setlists</string>
+    <string name="set_load_first">Open the loaded set at the first item</string>
+    <string name="set_load_first_info">Always open the first set item.  If switched off, the set will attempt to open at the currently loaded song if it is in the set.</string>
+    <string name="set_load_info">Load a previously saved set</string>
+    <string name="set_load_merge">Choosing more than one will merge them in the order selected.</string>
+    <string name="set_manage">Manage your sets</string>
+    <string name="set_manage_click">Click on an item in the set to view it</string>
+    <string name="set_manage_info">Save, load, export, remove, import and backup sets</string>
+    <string name="set_manage_swipe">Swipe to remove an item from your set list</string>
+    <string name="set_name">Set name</string>
+    <string name="set_new">Create a new set</string>
+    <string name="set_new_info">Remove all songs from the current set</string>
+    <string name="set_packaged_opensongapp">Packaged OpenSongApp set file</string>
+    <string name="set_packaged_opensongapp_info">This creates a custom zip file that contains the set file and all OpenSong, PDF or image files referenced in the set.  This can be shared with other OpenSongApp users</string>
+    <string name="set_packages">Complete set packages</string>
+    <string name="set_rebuild">Rebuild set</string>
+    <string name="set_rebuild_info">Rebuild the set from the last successful change (use if you suspect there is an issue with your set)</string>
+    <string name="set_save_info">Save the current set for future use</string>
+    <string name="set_saved_not_current">Select a saved set.  Current sets should be saved before exporting.</string>
+    <string name="set_selected">Set item / items selected</string>
+    <string name="set_share_info">Share or export a set with others</string>
+    <string name="set_shuffle">Shuffle set</string>
+    <string name="set_shuffle_info">Randomise the order of songs in the set</string>
+    <string name="set_sort">Sort set</string>
+    <string name="set_x_margin">Horizontal margin size</string>
+    <string name="set_y_margin">Vertical margin size</string>
+    <string name="sets">Sets</string>
+    <string name="settings">Settings</string>
+    <string name="shape">Shape</string>
+    <string name="share">Share</string>
+    <string name="show">Show</string>
+    <string name="show_capo">Show capo chords</string>
+    <string name="show_chords">Show chords</string>
+    <string name="show_chords_info">Display chords found in the song</string>
+    <string name="show_logo">Show logo</string>
+    <string name="show_lyrics">Show lyrics</string>
+    <string name="show_lyrics_info">Display lyrics found in the song</string>
+    <string name="dyslexia_mode">Dyslexia Chord Coloring</string>
+    <string name="dyslexia_mode_info">Colors chords based on root notes for accessibility</string>
+    <string name="high_contrast_lyrics">High-Contrast Lyric Highlighting</string>
+    <string name="high_contrast_lyrics_info">Highlights the current focal line with high contrast while dimming others</string>
+    <string name="show_next_in_set">Show next song in set</string>
+    <string name="show_next_line_preview">Show next line preview</string>
+    <string name="show_next_line_preview_hint">Display the first line of the next section at the bottom of the screen</string>
+    <string name="show_next_prev_in_song_menu">Also show previous/next for songs not in a set (using song menu)</string>
+    <string name="show_prev_song">Show previous song in set</string>
+    <string name="show_songs">Show songs</string>
+    <string name="show_tempo">Show tempo in the title</string>
+    <string name="signature">Signature</string>
+    <string name="simple_color">Simple colour</string>
+    <string name="simple_color_info">A single colour background</string>
+    <string name="simple_note">Simple note / placeholder</string>
+    <string name="size">Size</string>
+    <string name="skip">Skip</string>
+    <string name="slave">Slave</string>
+    <string name="slide">Slide</string>
+    <string name="slide_add_page">Insert new page to custom slide</string>
+    <string name="small_buttons">Small buttons</string>
+    <string name="small_buttons_info">Reduce the size of the page buttons on screen</string>
+    <string name="smaller">Smaller</string>
+    <string name="song">Song</string>
+    <string name="song_actions">Song actions</string>
+    <string name="song_actions_description">Adjust settings for song actions</string>
+    <string name="song_alignment_content">Song content alignment</string>
+    <string name="song_alignment_information">Song information alignment</string>
+    <string name="song_display">Song display</string>
+    <string name="song_doesnt_exist">That song isn\'t on your device.  Have you deleted it?</string>
+    <string name="song_duration">Song duration</string>
+    <string name="song_features">Song features</string>
+    <string name="song_features_warning">These values are best set using the dedicated song feature options in the settings menu. Save the song first. You can, however, manually edit the values here.</string>
+    <string name="song_files_separate">Song files</string>
+    <string name="song_menu_checkboxes">Show set checkboxes in song menu</string>
+    <string name="song_menu_subtitle_size">Song menu item subtitle size</string>
+    <string name="song_menu_title_size">Song menu item title size</string>
+    <string name="song_name_already_taken">Unfortunately this song title / filename has already been used (a suggestion could be to add a version number to the end).</string>
+    <string name="song_new_name">Enter a new file name for this song (this is how it will appear in your song menu)</string>
+    <string name="song_notes">Song sticky notes</string>
+    <string name="song_notes_edit">Edit song sticky note</string>
+    <string name="song_sections">Song sections</string>
+    <string name="song_sections_info">The sections found in your song lyrics are shown below.  Click on the buttons to add them to the presentation order.</string>
+    <string name="song_sections_project">Click on a song section to send it to the connected displays</string>
+    <string name="song_select_warning">This site requires a valid account.  You must use the download button within the SongSelect web page to trigger the download required.  The file will be imported into your OpenSong/Songs/ folder after it has been downloaded.</string>
+    <string name="song_select_warning_more">Due to SongSelect restrictions, you will now have to manually download your song file and then import it into the app.  After downloading the file, you will be returned to this page and can click on the \'Import download\' button to import the downloaded file into OpenSongApp.</string>
+    <string name="song_specific">Song specific</string>
+    <string name="song_swipe_toggle">Allow swiping between songs</string>
+    <string name="song_title">Song title</string>
+    <string name="songs">Songs</string>
+    <string name="songsheet">Songsheet</string>
+    <string name="songsheet_info">Displays a title with information about the song</string>
+    <string name="sound">Sound</string>
+    <string name="sound_bass_drum">Bass drum</string>
+    <string name="sound_bell">Bell</string>
+    <string name="sound_click">Click</string>
+    <string name="sound_digital">Digital</string>
+    <string name="sound_high">High</string>
+    <string name="sound_hihat">Hihat</string>
+    <string name="sound_level_meter">Sound level meter</string>
+    <string name="sound_level_meter_info">Check volumes (uses microphone)</string>
+    <string name="sound_low">Low</string>
+    <string name="sound_stick">Stick</string>
+    <string name="sound_wood">Wood</string>
+    <string name="source">Source</string>
+    <string name="space">Space</string>
+    <string name="spacing">Spacing</string>
+    <string name="spotify" translatable="false">Spotify</string>
+    <string name="ssid" translatable="false">SSID</string>
+    <string name="stage">Stage</string>
+    <string name="stage_mode">Stage Mode</string>
+    <string name="stage_mode_info">Display songs split into sections or as a stage monitor</string>
+    <string name="stage_section_max">Max section height (Stage Mode)</string>
+    <string name="standard">Standard</string>
+    <string name="start">Start</string>
+    <string name="start_stop_pad">Start/stop pad</string>
+    <string name="stem">Stem</string>
+    <string name="stems">Stems</string>
+    <string name="step">Step</string>
+    <string name="sticky">Sticky</string>
+    <string name="stop">Stop</string>
+    <string name="stopping">Stopping…</string>
+    <string name="storage">Storage</string>
+    <string name="storage_change">Select storage location</string>
+    <string name="storage_ext">External storage</string>
+    <string name="storage_graph_overview_info">Your current OpenSong/Songs folder directory structure is shown below.\nClick on the OpenSong (ROOT) folder to change your storage location.\nClick on the Songs (MAIN) folder to create a backup or a sub directory.\nIf you already have sub directories, clicking on them will give further options.</string>
+    <string name="storage_help">Please select your \'OpenSong\' folder.  This where songs, sets and more are stored.  If you need a new folder simply select a location for one to be added.  You can change this at any time from the Options menu.  Internal storage is recommended.\nFor an update or re-install: You can use the yellow button (not available in Android 11+) to find any previous \'OpenSong\' folder.</string>
+    <string name="storage_local">Local storage</string>
+    <string name="storage_main">This is where your songs are normally stored (often called the MAIN folder).  You can optionally set up subdirectories to better manage your song library.</string>
+    <string name="storage_manage">Manage storage</string>
+    <string name="storage_notwritable">Unable to use</string>
+    <string name="storage_options_info">Manage local storage (OpenSong root folder and song folders) and synchronise storage with OpenChords</string>
+    <string name="storage_quicktip">When selecting an OpenSong folder location:\nSELECT ONLY INTERNAL OR SD CARD storage.\nInternal storage is recommended.  This may list as device storage or with your device\'s name.\nWhen selecting you may need to change settings to show all storage.\nOn Android 10+ you should not select the Downloads or Root folder.  If in doubt, choose the \'Documents\' folder.</string>
+    <string name="storage_reset">Click here to change your storage location (where the root OpenSong folder is located).</string>
+    <string name="storage_settings">Manage your storage location and song folders</string>
+    <string name="storage_warning">"Please do not select the \'Songs\' folder as your storage location.  You should select the parent \'OpenSong\' folder location instead."</string>
+    <string name="string_tunings">String tunings</string>
+    <string name="style">Style</string>
+    <string name="subdirectories">Subdirectories</string>
+    <string name="subdirectory">Subdirectory</string>
+    <string name="subfolder">Subfolder</string>
+    <string name="success">Success</string>
+    <string name="swipe">Swipe settings</string>
+    <string name="swipe_allowance">Vertical movement allowed</string>
+    <string name="swipe_distance">Swipe distance</string>
+    <string name="swipe_info">Adjust gestures to move between songs</string>
+    <string name="swipe_string">Swipe</string>
+    <string name="sync">Synchronise connected devices</string>
+    <string name="sync_allow">Allow connected devices to sync</string>
+    <string name="sync_allow_info">Connected devices will be able to browse your songs and sets and downloaded them to their devices</string>
+    <string name="sync_check_for_updates">Check for updates</string>
+    <string name="sync_check_for_updates_info">Query the remote folder again and check for differences with local items</string>
+    <string name="sync_checking_local_item">Checking local item</string>
+    <string name="sync_choose_device">Device to synchronise with</string>
+    <string name="sync_comparing_local_and_remote">Checking local and remote folders for changes…</string>
+    <string name="sync_content_error">There was a problem with the information received.  Please try again</string>
+    <string name="sync_creating_new_item">Creating new item</string>
+    <string name="sync_delete_local_not_in_remote">Delete old local items</string>
+    <string name="sync_delete_local_not_in_remote_info">The following items exist in the local folder, but are not in the remote folder.  These can be removed if they are no longer required</string>
+    <string name="sync_delete_remote_not_in_local">Delete old remote items</string>
+    <string name="sync_delete_remote_not_in_local_info">The following items exist in the remote folder, but are not in the local folder.  These can be removed if they are no longer required</string>
+    <string name="sync_deleting_local_items">Deleting local item before getting remote items</string>
+    <string name="sync_device_denied">The connected device has switched off file synchronisation.  They can change this in the connect devices settings</string>
+    <string name="sync_device_processing">The connected device is processing the request</string>
+    <string name="sync_download_from_openchords">Download from OpenChords server</string>
+    <string name="sync_download_new_items">Download new items</string>
+    <string name="sync_exists">Exists</string>
+    <string name="sync_extracting">Extracting item</string>
+    <string name="sync_file_status">Status</string>
+    <string name="sync_folder_name_change">Folder name issue</string>
+    <string name="sync_folder_name_change_info">The name of the local folder chosen is different from the remote folder name</string>
+    <string name="sync_force_changes">Force changes</string>
+    <string name="sync_force_changes_info">Use this option to force a push (upload) or pull (download)</string>
+    <string name="sync_force_changes_warning_pull">WARNING!  This will delete all items in the local folder and replace them with the items downloaded from the remote folder.  You cannot undo this, so please make sure you have made a backup before proceeding</string>
+    <string name="sync_force_changes_warning_push">WARNING!  This will delete all items in the remote folder and replace them with the items uploaded from the local folder.  You cannot undo this.  Any user sharing your remote folder will lose access to the original files</string>
+    <string name="sync_force_general_info1">The changes above cannot be undone.  Make sure you have made suitable backups before proceeding</string>
+    <string name="sync_force_general_info2">After selecting one of these options, you will be shown information on potential issues and asked to confirm your choice</string>
+    <string name="sync_force_pull_info">This will replace your local folder with the remove folder contents</string>
+    <string name="sync_force_push_info">This will replace the remote folder with your local folder contents</string>
+    <string name="sync_info">Compare your songs and sets with connected devices and download any new or updated files</string>
+    <string name="sync_items_deleted_local">Items that will be deleted from the local folder if you proceed</string>
+    <string name="sync_items_deleted_remote">Items that will be deleted from the remote folder if you proceed</string>
+    <string name="sync_items_not_on_local">New items that are not in the local folder</string>
+    <string name="sync_items_not_on_remote">New items that are not in the remote folder</string>
+    <string name="sync_last_delete_local_sets">Last time local setlists were deleted (as they were not in the remote folder)</string>
+    <string name="sync_last_delete_local_songs">Last time local songs were deleted (as they were not in the remote folder)</string>
+    <string name="sync_last_delete_remote_sets">Last time remote setlists were deleted (as they were not in the local folder)</string>
+    <string name="sync_last_delete_remote_songs">Last time remote songs were deleted (as they were not in the local folder)</string>
+    <string name="sync_last_download_new_sets">Last time new setlists were pulled/downloaded</string>
+    <string name="sync_last_download_new_songs">Last time new songs were pulled/downloaded</string>
+    <string name="sync_last_download_update_sets">Last time setlist updates were pulled/downloaded</string>
+    <string name="sync_last_download_update_songs">Last time song updates were pulled/downloaded</string>
+    <string name="sync_last_force_download">Last time a force pull/download was run</string>
+    <string name="sync_last_force_upload">Last time a force push/upload was run</string>
+    <string name="sync_last_force_uploaded">Song force pushed/uploaded</string>
+    <string name="sync_last_query">Last check for updates</string>
+    <string name="sync_last_upload_new_sets">Last time new setlists were pushed/uploaded</string>
+    <string name="sync_last_upload_new_songs">Last time new songs were pushed/uploaded</string>
+    <string name="sync_last_upload_update_sets">Last time setlist updates were pushed/uploaded</string>
+    <string name="sync_last_upload_update_songs">Last time song updates were pushed/uploaded</string>
+    <string name="sync_local_folder_name">Local folder name</string>
+    <string name="sync_local_items_older">Local items that need updated</string>
+    <string name="sync_local_set_deleted">Local set deleted</string>
+    <string name="sync_local_song_deleted">Local song deleted</string>
+    <string name="sync_missing">New item</string>
+    <string name="sync_new_local_folder">Create new local folder</string>
+    <string name="sync_new_local_folder_info">A new local folder will be created when you pull items from the remote folder</string>
+    <string name="sync_new_remote_folder">Create new remote folder</string>
+    <string name="sync_new_remote_folder_info">This will create a new remote folder when you push items to the remote folder.  You will need to share the new link with your other users</string>
+    <string name="sync_newer">Updated</string>
+    <string name="sync_newer_items_local_replaced">These items in the local folder are newer, but will be replaced by the remote items</string>
+    <string name="sync_newer_items_remote_replaced">These items in the remote folder are newer, but will be replaced by the local items</string>
+    <string name="sync_no_changes_required">Items are already synchronised</string>
+    <string name="sync_older">Older</string>
+    <string name="sync_preparing_item">Preparing item for upload</string>
+    <string name="sync_pull_download">Pull (download)</string>
+    <string name="sync_pull_info">Download files from the remote folder to your local folder</string>
+    <string name="sync_push_info">Upload files from your local folder to the remote folder</string>
+    <string name="sync_push_upload">Push (upload)</string>
+    <string name="sync_querying_remote">Querying the remote server…</string>
+    <string name="sync_reading_local_folder">Reading the contents of the local folder</string>
+    <string name="sync_reading_remote_folder">Reading the contents of the remote folder</string>
+    <string name="sync_remote_folder_name">Remote folder name</string>
+    <string name="sync_remote_items_older">Remote items that need updated</string>
+    <string name="sync_remote_set_deleted">Remote set deleted</string>
+    <string name="sync_remote_song_deleted">Remote song deleted</string>
+    <string name="sync_same">Up to date</string>
+    <string name="sync_server_no_matching_folder">This folder does not exist on the remote server</string>
+    <string name="sync_server_noresponse_error">There was no response from the server</string>
+    <string name="sync_set_downloaded">New setlist pulled/downloaded</string>
+    <string name="sync_set_force_downloaded">Setlist force pulled/download</string>
+    <string name="sync_set_force_uploaded">Setlist force pushed/uploaded</string>
+    <string name="sync_set_update_downloaded">Updated setlist pulled/downloaded</string>
+    <string name="sync_set_update_uploaded">Updated setlist pushed/uploaded</string>
+    <string name="sync_set_uploaded">New setlist pushed/uploaded</string>
+    <string name="sync_show_new_updated_info">Hide all items that are already up to date</string>
+    <string name="sync_show_new_updated_only">Show new/updated only</string>
+    <string name="sync_song_downloaded">New song pulled/downloaded</string>
+    <string name="sync_song_force_downloaded">Song force pulled/download</string>
+    <string name="sync_song_update_downloaded">Updated song pulled/downloaded</string>
+    <string name="sync_song_update_uploaded">Updated song pushed/uploaded</string>
+    <string name="sync_song_uploaded">New song pushed/uploaded</string>
+    <string name="sync_switch_local_folder">Switch local folder</string>
+    <string name="sync_switch_local_folder_info">You already have a local folder with the same name as the remote folder.  This will match these folders instead</string>
+    <string name="sync_update_local_items">Update local items</string>
+    <string name="sync_update_remote_folder_name">Update remote folder name</string>
+    <string name="sync_update_remote_folder_name_info">Rename the remote folder to match the local folder name.  This will only happen when you push items to the remote folder</string>
+    <string name="sync_update_remote_items">Update remote items</string>
+    <string name="sync_updating_item">Updating item</string>
+    <string name="sync_upload_new_items">Upload new items</string>
+    <string name="sync_upload_to_openchords">Upload to OpenChords server</string>
+    <string name="sync_uploading_changes">Uploading changes to the remote folder</string>
+    <string name="sync_uuid_mismatch">UUID mismatch</string>
+    <string name="sync_view_history">View synchronisation history</string>
+    <string name="synchronise">Synchronise</string>
+    <string name="synchronise_need_update">Update your song files (required for synchronisation)</string>
+    <string name="synchronise_need_update_info">Some of your song files do not have UUID or last modified date information stored in them.  To allow safe synchronisation, you should run this step.</string>
+    <string name="synchronise_need_update_warning">This process will fully rebuild your song index and will edit and save songs that need either a unique UUID identifier or a last modified date added to them.  This process is SLOW if lots of files are affected and you should not exit the app until this has been completed.  Because this process edits your song files, it is critical that you have already made a backup before you run this step</string>
+    <string name="synchronize">Synchronize</string>
+    <string name="system">System</string>
+    <string name="tab">Tab</string>
+    <string name="tabs_scale">Scale tab text (guitar, drums, etc.)</string>
+    <string name="tag">Tag</string>
+    <string name="tag_add_remove">Highlighted songs contain the chosen tag.  Click on any song to add/remove the chosen tag.</string>
+    <string name="tag_background">Tag background</string>
+    <string name="tag_new">Click here to create a new tag that you can add to songs</string>
+    <string name="tag_search">Click here to show only songs that already have this tag</string>
+    <string name="tag_song">Song tags</string>
+    <string name="tag_song_info">Manage song tags to help with song searching</string>
+    <string name="tag_to_use">The tag to add or remove from songs</string>
+    <string name="tags_remove_from_songs">This theme tag will be removed from the following songs:</string>
+    <string name="tap">Short press/tap</string>
+    <string name="tap_tempo">Tap to set tempo</string>
+    <string name="tempo">Tempo</string>
+    <string name="temporary_database">Temporary database</string>
+    <string name="temporary_database_export_file" translatable="false">OpenSong/Export/SongDatabase.csv</string>
+    <string name="temporary_database_info">This database is created when the app starts and when the songs are indexed.  This is built from your OpenSong song files and matching information in the persistent database about PDF/image files found in your songs folder</string>
+    <string name="text">Text</string>
+    <string name="text_as_message">Text as message content</string>
+    <string name="text_as_message_info">When exporting multiple files to some apps (e.g. WhatsApp) the app sometimes stops after it receives a text message and the files aren\'t included.  You can switch this off and force the receiving app to deal with the files instead of just the message.</string>
+    <string name="text_button">Include song details. Devices with smaller displays may not show the content properly</string>
+    <string name="text_extract">Extract text from file (OCR)</string>
+    <string name="text_extract_check">OpenSongApp will try to find song content automatically, however, you can manually check by clicking on this button.</string>
+    <string name="text_extract_website">Song text found on this page.  Click here to extract.</string>
+    <string name="text_file_info">A file that can be opened and viewed by most applications</string>
+    <string name="text_size">Text size</string>
+    <string name="theme">Theme</string>
+    <string name="theme_choose">Switch theme</string>
+    <string name="theme_custom1">Custom 1</string>
+    <string name="theme_custom2">Custom 2</string>
+    <string name="theme_dark">Dark theme</string>
+    <string name="theme_edit">Edit or change current theme</string>
+    <string name="theme_exists">That theme already exists</string>
+    <string name="theme_light">Light theme</string>
+    <string name="theme_pdf_image">Theme for PDF/Image</string>
+    <string name="tick">Tick</string>
+    <string name="time">Time</string>
+    <string name="time_format">24hr</string>
+    <string name="time_mins">Minutes</string>
+    <string name="time_seconds">Show seconds</string>
+    <string name="time_secs">Seconds</string>
+    <string name="time_signature">Time signature</string>
+    <string name="time_slide_pages">Time for each slide (s)</string>
+    <string name="time_slide_pages_help">Leave blank for manual slideshow</string>
+    <string name="timer_learn">Learn autoscroll time</string>
+    <string name="title">Title</string>
+    <string name="titlebar">Titlebar</string>
+    <string name="tock">Tock</string>
+    <string name="tool">Tool</string>
+    <string name="top">Top</string>
+    <string name="track">Track</string>
+    <string name="transducer">Transducer</string>
+    <string name="transition">Transition</string>
+    <string name="translation">Translation</string>
+    <string name="transpose">Transpose</string>
+    <string name="transpose_capo">Transpose by capo fret change</string>
+    <string name="transpose_capo_info">Keep the chords the same, but change the position of the capo</string>
+    <string name="transpose_copy">Make a copy of this song and transpose it, leaving the original unchanged.</string>
+    <string name="transpose_info">Change the chords in the current song</string>
+    <string name="transpose_set_item">Transpose in set only</string>
+    <string name="transpose_set_item_info">When viewing this song in the current set, it will temporarily be transposed.  The original song will be unchanged.</string>
+    <string name="trigger">Trigger</string>
+    <string name="trim">Trim</string>
+    <string name="trim_sections">Trim sections</string>
+    <string name="trim_sections_info">Gets rid of blank lines after each section to maximise text size</string>
+    <string name="trim_wordspacing">Trim word spacing</string>
+    <string name="trim_wordspacing_info">Remove excess spaces between words</string>
+    <string name="tune">Tune</string>
+    <string name="tuner">Tuner</string>
+    <string name="tuner_info">Help to tune your instrument</string>
+    <string name="ukulele">Ukulele</string>
+    <string name="undo">UNDO</string>
+    <string name="unknown">Unknown</string>
+    <string name="usage">Usage</string>
+    <string name="use_default">Use default</string>
+    <string name="used_by_permision">Used by permission</string>
+    <string name="user">User</string>
+    <string name="user_1">User 1</string>
+    <string name="user_2">User 2</string>
+    <string name="user_3">User 3</string>
+    <string name="user_guide">User guide</string>
+    <string name="user_guide_lyrics" translatable="false">"[Intro]
+ Welcome to OpenSongApp!
+ This page shows you some of the features of the app.
+ OpenSongApp has three operating modes:
+ • Performance Mode – behave like a traditional song book
+ • Stage Mode – control stage display monitors/projector
+ • Presenter Mode – full control of a projector
+
+[Menus]
+ Song and set menus are accessed using the hamburger icon
+ The settings menus allow you to access all the app settings
+
+[Get help]
+ Click on the ? icon in the app or visit the online manual:
+ https://www.opensongapp.com
+
+[Adding songs]
+ You can manually create any song you like.
+ The app does not come with any songs due to copyright.
+ You can start a song by import from other services:
+ • Desktop OpenSong – I recommend syncing using Dropbox
+ • ChordPro files
+ • Online sources (Ultimate Guitar, Chordie, SongSelect, etc)
+ • some iOS app song files
+ Use the + button in the songs menu to see your options
+
+ Songs are stored in OpenSong format (xml files)
+ These are stored in the /OpenSong/Songs folder.
+
+[Edit the song]
+ By default, double tap on the screen to edit a song.
+ Alternatively, click on the song title.
+
+[Chords at work]
+ This song has been set as having a key of G.
+.G     D      Em           C      G         G7
+ Chord lines (above) start with a full stop/period (.)
+ You can set capo display and transpose the chords easily,
+ Multiple chord formats are understood.
+
+[Scaling]
+ By default OpenSongApp scales to song width.
+ Change this using Settings &gt; Display &gt; Scaling setting
+
+;HERE IS AN EXAMPLE OF A SONG
+
+[Intro]
+.||: G  | D/F#  | Em7  | D  :||
+[V1]
+.G2                D/F#
+ Love everlasting, love without measure
+.Em7                 D
+ Full of compassion, righteous and pure
+.C     G/B             Am7   C/D      D
+ Is my Saviour\'s love, is my Father\'s heart
+[V2]
+.G2                   D/F#
+ Loved by the Father, saved by the Son
+.Em7                 D
+ Born of His Spirit, washed in the blood
+.C          G/B             Am7        C/D       D
+ This is my Saviour\'s love, this is my Father\'s heart
+
+[B]
+.Em            Cmaj7  Em                Cmaj7
+ Your love for me, ___it reaches to the heavens
+.Em              Cmaj7                Bm7
+ Let my love for You __just grow and grow!
+.Em            Cmaj7  Em                Cmaj7
+ Your love for me, ___it reaches to the heavens
+.Em              Cmaj7               D  D/F#
+ Let my love for You __just grow and grow!
+[V3]
+.G2                       D/F#
+ Love sent from heaven, received in our hearts
+.Em7                      D
+ Loving each other, since Christ first loved us
+.C          G/B             Am7        C/D      D
+ Sharing my Saviour\'s love, showing my Father\'s heart
+
+[Outro]
+;(Slow to end)
+.| G  |"</string>
+    <string name="utilities">Utilities</string>
+    <string name="utilities_info">Other tools for musicians</string>
+    <string name="utility">Utility</string>
+    <string name="variation">Variation</string>
+    <string name="variation_info">Make a copy of this song that can be edited.  This song can be saved into a set and loaded back, but is lost when clearing the set</string>
+    <string name="variation_make">Make a set item variation</string>
+    <string name="verse">Verse</string>
+    <string name="verse_background">Verse background</string>
+    <string name="verse_from">Verse from:</string>
+    <string name="verse_to">Verse to:</string>
+    <string name="version">Version</string>
+    <string name="video">Video</string>
+    <string name="violin">Violin</string>
+    <string name="visible">Visible</string>
+    <string name="visual_metronome">Visual</string>
+    <string name="vocal">Vocal</string>
+    <string name="vocoder_synth">Vocoder / synth</string>
+    <string name="voicelive" translatable="false">VoiceLive</string>
+    <string name="voicelive_autosend_key">Automatic VoiceLive key</string>
+    <string name="voicelive_autosend_key_info">Send the key of the song (if set) to the VoiceLive automatically when the song loads</string>
+    <string name="voicelive_info">System defaults for controlling a TC Helicon VoiceLive pedal (e.g. VoiceLive Extreme 3)</string>
+    <string name="voicelive_maj1" translatable="false">MAJ1</string>
+    <string name="voicelive_maj2" translatable="false">MAJ2</string>
+    <string name="voicelive_maj3" translatable="false">MAJ3</string>
+    <string name="voicelive_min1" translatable="false">MIN1</string>
+    <string name="voicelive_min2" translatable="false">MIN2</string>
+    <string name="voicelive_min3" translatable="false">MIN3</string>
+    <string name="voicelive_override_midi">Override shorthand MIDI channel</string>
+    <string name="voicelive_override_midi_info">If shorthand MIDI messages are saved with the song that are specific to the VoiceLive, should the MIDI channel set here be used by default (ignoring the channel set in the shorthand MIDI message)</string>
+    <string name="voicelive_preferred_major_scale">Preferred major harmony scale</string>
+    <string name="voicelive_preferred_minor_scale">Preferred minor harmony scale</string>
+    <string name="volume">Volume</string>
+    <string name="volume_headphone">Headphone volume</string>
+    <string name="volume_value">Current volume value</string>
+    <string name="wah">Wah</string>
+    <string name="wait">Wait....</string>
+    <string name="wearOS">Send beats to Wear OS</string>
+    <string name="wearOS_info">Audio or visual metronome must be switched on and Wear OS device must be paired</string>
+    <string name="web">Web</string>
+    <string name="web_server">Web server</string>
+    <string name="web_server_hint">Allow users without OpenSongApp to view your songs using a web browser</string>
+    <string name="web_server_host_song">Host\'s song</string>
+    <string name="web_server_info">Non OpenSongApp users should be on the same network as this device (you can also use a hotspot).  They should then open this web address to view the song.</string>
+    <string name="web_server_navigation">Manual navigation</string>
+    <string name="web_server_navigation_info">When switched on, users can manually choose any song shown in your song list or current set.  When switched off, users can only view your currently loaded song</string>
+    <string name="web_server_port">Port number</string>
+    <string name="web_server_port_info">Some browsers and Wi-Fi routers block certain port numbers.  If you, or others, can\'t view the web page using the link below, try changing the port number</string>
+    <string name="web_view_desktop">Request desktop site</string>
+    <string name="web_view_desktop_info">This should improve the layout of songs and avoid the website trying to force you to install their mobile app</string>
+    <string name="webserver_messages">Webserver messages</string>
+    <string name="webserver_messages_info">Send messages to connected devices</string>
+    <string name="website">Website</string>
+    <string name="website_actionbar" translatable="false">https://www.opensongapp.com/user-manual/display/actionbar</string>
+    <string name="website_address" translatable="false">https://www.opensongapp.com</string>
+    <string name="website_aeros" translatable="false">https://www.opensongapp.com/user-manual/utilities/aeros</string>
+    <string name="website_app_mode" translatable="false">https://www.opensongapp.com/user-manual/app-mode</string>
+    <string name="website_audio_player" translatable="false">https://www.opensongapp.com/user-manual/utilities/audio-player</string>
+    <string name="website_audio_recorder" translatable="false">https://www.opensongapp.com/user-manual/utilities/audio-recorder</string>
+    <string name="website_autoscroll" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/autoscroll</string>
+    <string name="website_backup" translatable="false">https://www.opensongapp.com/user-manual/songs/opensongapp-backup</string>
+    <string name="website_beatbuddy" translatable="false">https://www.opensongapp.com/user-manual/utilities/beatbuddy/options</string>
+    <string name="website_beatbuddy_commands" translatable="false">https://www.opensongapp.com/user-manual/utilities/beatbuddy/commands</string>
+    <string name="website_beatbuddy_import" translatable="false">https://www.opensongapp.com/user-manual/utilities/beatbuddy/import</string>
+    <string name="website_bible_download" translatable="false">https://www.opensongapp.com/user-manual/sets/bible/download-bible</string>
+    <string name="website_bible_offline" translatable="false">https://www.opensongapp.com/user-manual/sets/bible/search-offline</string>
+    <string name="website_bible_online" translatable="false">https://www.opensongapp.com/user-manual/sets/bible/search-online</string>
+    <string name="website_browse_host_files_songs" translatable="false">https://www.opensongapp.com/user-manual/songs/browse-host-songs</string>
+    <string name="website_ccli" translatable="false">https://www.opensongapp.com/user-manual/ccli</string>
+    <string name="website_chords" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/chords/chords</string>
+    <string name="website_chords_custom" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/chords/custom-chords</string>
+    <string name="website_chords_fingering" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/chords/chord-fingering</string>
+    <string name="website_chords_settings" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/chords/chord-settings</string>
+    <string name="website_chords_transpose" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/chords/transpose</string>
+    <string name="website_connected_display" translatable="false">https://www.opensongapp.com/user-manual/display/casting</string>
+    <string name="website_custom_gestures" translatable="false">https://www.opensongapp.com/user-manual/controls/custom-gestures</string>
+    <string name="website_custom_slide" translatable="false">https://www.opensongapp.com/user-manual/sets/custom-slides</string>
+    <string name="website_database_utilities" translatable="false">https://www.opensongapp.com/user-manual/utilities/database-utilities</string>
+    <string name="website_drummer" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/drummer</string>
+    <string name="website_edit_song" translatable="false">https://www.opensongapp.com/user-manual/songs/edit-song</string>
+    <string name="website_edit_song_features" translatable="false">https://www.opensongapp.com/user-manual/songs/edit-song#h.kntse37simcb</string>
+    <string name="website_edit_song_main" translatable="false">https://www.opensongapp.com/user-manual/songs/edit-song#h.dqecqr6jwgf6</string>
+    <string name="website_edit_song_tag" translatable="false">https://www.opensongapp.com/user-manual/songs/edit-song#h.qx5dcmco7fmz</string>
+    <string name="website_export_set" translatable="false">https://www.opensongapp.com/user-manual/sets/export-set</string>
+    <string name="website_export_song" translatable="false">https://www.opensongapp.com/user-manual/songs/export-song</string>
+    <string name="website_export_song_list" translatable="false">https://www.opensongapp.com/user-manual/storage/export-list-of-songs</string>
+    <string name="website_fonts" translatable="false">https://www.opensongapp.com/user-manual/display/fonts</string>
+    <string name="website_foot_pedal" translatable="false">https://www.opensongapp.com/user-manual/controls/foot-pedals</string>
+    <string name="website_forum" translatable="false">https://groups.google.com/g/opensongapp</string>
+    <string name="website_github" translatable="false">https://github.com/thebigg73/OpenSongTablet</string>
+    <string name="website_highlighter" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/highlighter</string>
+    <string name="website_hot_zones" translatable="false">https://www.opensongapp.com/user-manual/controls/hot-zones</string>
+    <string name="website_image_adjust" translatable="false">https://www.opensongapp.com/user-manual/songs/image-adjust</string>
+    <string name="website_import_bulk" translatable="false">https://www.opensongapp.com/user-manual/songs/import-multiple-files</string>
+    <string name="website_import_onsongbackup" translatable="false">https://www.opensongapp.com/user-manual/songs/ios-onsong</string>
+    <string name="website_indexing_songs" translatable="false">https://www.opensongapp.com/user-manual/songs/song-indexing</string>
+    <string name="website_inline_midi" translatable="false">https://www.opensongapp.com/user-manual/midi/inline-midi-commands</string>
+    <string name="website_inline_set" translatable="false">https://www.opensongapp.com/user-manual/display/inline-set</string>
+    <string name="website_latest" translatable="false">https://www.opensongapp.com/updates/latest-updates</string>
+    <string name="website_link" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/link</string>
+    <string name="website_logs" translatable="false">https://www.opensongapp.com/user-manual/app-usage-logs</string>
+    <string name="website_margins" translatable="false">https://www.opensongapp.com/user-manual/display/margins</string>
+    <string name="website_menu_set" translatable="false">https://www.opensongapp.com/user-manual/sets/set-menu</string>
+    <string name="website_menu_settings" translatable="false">https://www.opensongapp.com/user-manual/display/menu</string>
+    <string name="website_menu_song" translatable="false">https://www.opensongapp.com/user-manual/songs/song-menu</string>
+    <string name="website_metronome" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/metronome</string>
+    <string name="website_midi_actions" translatable="false">https://www.opensongapp.com/user-manual/midi/midi-actions/</string>
+    <string name="website_midi_board" translatable="false">https://www.opensongapp.com/user-manual/midi/midi-board</string>
+    <string name="website_midi_clock" translatable="false">https://www.opensongapp.com/user-manual/midi/midi-clock</string>
+    <string name="website_midi_connections" translatable="false">https://www.opensongapp.com/user-manual/midi/midi-settings</string>
+    <string name="website_midi_shorthand" translatable="false">https://www.opensongapp.com/user-manual/midi/midi-shorthand</string>
+    <string name="website_midi_song" translatable="false">https://www.opensongapp.com/user-manual/midi/song-midi-messages</string>
+    <string name="website_multitrack" translatable="false">https://www.opensongapp.com/user-manual/utilities/multitrack</string>
+    <string name="website_music_score" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/music-score</string>
+    <string name="website_nearby" translatable="false">https://www.opensongapp.com/user-manual/connect-devices</string>
+    <string name="website_ocr" translatable="false">https://www.opensongapp.com/user-manual/songs/ocr</string>
+    <string name="website_openchords" translatable="false">https://www.opensongapp.com/user-manual/storage/openchords</string>
+    <string name="website_pad" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/pads</string>
+    <string name="website_page_buttons" translatable="false">https://www.opensongapp.com/user-manual/controls/page-buttons</string>
+    <string name="website_paypal" translatable="false">https://www.paypal.me/opensongapp</string>
+    <string name="website_play_services_help" translatable="false">https://www.opensongapp.com/user-manual/devices-without-google-play</string>
+    <string name="website_profiles" translatable="false">https://www.opensongapp.com/user-manual/profiles</string>
+    <string name="website_rate" translatable="false">https://play.google.com/store/apps/details?id=</string>
+    <string name="website_restore" translatable="false">https://www.opensongapp.com/user-manual/songs/restore-from-backup</string>
+    <string name="website_scaling" translatable="false">https://www.opensongapp.com/user-manual/display/scaling</string>
+    <string name="website_set_backup" translatable="false">https://www.opensongapp.com/user-manual/sets/backup-sets</string>
+    <string name="website_set_create_new" translatable="false">https://www.opensongapp.com/user-manual/sets/create-a-new-set</string>
+    <string name="website_set_delete" translatable="false">https://www.opensongapp.com/user-manual/sets/delete-set</string>
+    <string name="website_set_import" translatable="false">https://www.opensongapp.com/user-manual/sets/import-set#h.dcxdmdcuujm6</string>
+    <string name="website_set_import_bundle" translatable="false">https://www.opensongapp.com/user-manual/sets/import-set#h.y50wzruxqqh4</string>
+    <string name="website_set_load" translatable="false">https://www.opensongapp.com/user-manual/sets/load-set</string>
+    <string name="website_set_rename" translatable="false">https://www.opensongapp.com/user-manual/sets/rename-set</string>
+    <string name="website_set_restore" translatable="false">https://www.opensongapp.com/user-manual/sets/restore-sets</string>
+    <string name="website_set_save" translatable="false">https://www.opensongapp.com/user-manual/sets/save-set</string>
+    <string name="website_song_add" translatable="false">https://www.opensongapp.com/user-manual/songs/add-songs</string>
+    <string name="website_song_camera" translatable="false">https://www.opensongapp.com/user-manual/songs/camera</string>
+    <string name="website_song_display" translatable="false">https://www.opensongapp.com/user-manual/display/song-display</string>
+    <string name="website_song_file" translatable="false">https://www.opensongapp.com/user-manual/songs/import-file</string>
+    <string name="website_song_new" translatable="false">https://www.opensongapp.com/user-manual/songs/create-new-song</string>
+    <string name="website_song_online" translatable="false">https://www.opensongapp.com/user-manual/songs/add-songs/online-import</string>
+    <string name="website_song_onsong" translatable="false">https://www.opensongapp.com/user-manual/songs/add-songs/ios-onsong</string>
+    <string name="website_song_opensongapp" translatable="false">https://www.opensongapp.com/user-manual/songs/add-songs/backup-songs</string>
+    <string name="website_song_sample" translatable="false">https://www.opensongapp.com/user-manual/songs/add-songs/sample-songs</string>
+    <string name="website_sound_level_meter" translatable="false">https://www.opensongapp.com/user-manual/utilities/sound-level-meter</string>
+    <string name="website_storage_overview" translatable="false">https://www.opensongapp.com/user-manual/storage/storage-overview</string>
+    <string name="website_storage_set" translatable="false">https://www.opensongapp.com/user-manual/storage/set-storage-location</string>
+    <string name="website_swipe_settings" translatable="false">https://www.opensongapp.com/user-manual/controls/swipe-settings</string>
+    <string name="website_sync" translatable="false">https://www.opensongapp.com/user-manual/storage/synchronise-connected-devices</string>
+    <string name="website_tags" translatable="false">https://www.opensongapp.com/user-manual/songs/song-actions/tags</string>
+    <string name="website_themes" translatable="false">https://www.opensongapp.com/user-manual/display/themes</string>
+    <string name="website_tuner" translatable="false">https://www.opensongapp.com/user-manual/utilities/tuner</string>
+    <string name="website_voicelive" translatable="false">https://www.opensongapp.com/user-manual/utilities/voicelive</string>
+    <string name="website_web_server" translatable="false">https://www.opensongapp.com/user-manual/web-server</string>
+    <string name="welcome">Welcome to OpenSongApp</string>
+    <string name="where">Where</string>
+    <string name="width">Width</string>
+    <string name="word" translatable="false">Word (.docx)</string>
+    <string name="words_and_music_by">Words and music by</string>
+    <string name="worship">Worship</string>
+    <string name="youtube" translatable="false">YouTube</string>
+    <string name="zefania" translatable="false">Zefania</string>
+    <string name="zone">Zone</string>
+    <string name="zoom_level">Zoom level</string>
+    <string name="jsx_calibrate">Calibrate JSx Audio (20s Listen)</string>
+    <string name="voice_control">Voice Control (hands-free)</string>
+    <string name="calibrate">Calibrate</string>
+    <string name="voice_control_summary">Use voice commands to navigate songs (e.g. "Computer next")</string>
+    <string name="jsx_denoise_summary">Deep noise fingerprinting for stage environments</string>
+    <string name="sync_status">Sync Status</string>
+    <string name="vocal_flip">Vocal Flip</string>
+    <string name="record_performance">Record Performance</string>
+    <string name="sync_map">Sync Map</string>
+    <string name="vocal_flip_learn">Learn Noise Threshold</string>
+    <string name="vocal_flip_learning">Learning Noise Threshold...</string>
+</resources>
+
+```

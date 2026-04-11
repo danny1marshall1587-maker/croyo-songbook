@@ -1,5 +1,0 @@
-# ninja log v5
-0	32	1775337587182943003	CMakeFiles/cryoprompter.dir/JsxDeepCalibrator.cpp.o	e7dad6be93f42e12
-0	246	1775337587396747519	CMakeFiles/cryoprompter.dir/AudioEngine.cpp.o	1e96a505d8de58eb
-0	279	1775337587428067528	CMakeFiles/cryoprompter.dir/jni_bridge.cpp.o	47313ac6489d6366
-279	296	1775337587446956743	/home/dan/Documents/croyo songbook/app/build/intermediates/cxx/Debug/vp2u2664/obj/x86/libcryoprompter.so	c8e2528c13ca52e2

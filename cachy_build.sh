@@ -49,11 +49,11 @@ yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME
 
 # 6. Final Build Command
 echo "--- Compiling Production APK ---"
+cd opensong_tablet
 chmod +x gradlew
-./gradlew assembleDebug
+./gradlew app:installMobileOnlyDebug
 
 echo ""
-echo "--- Build Complete: app/build/outputs/apk/debug/app-debug.apk ---"
+echo "--- Build Complete: opensong_tablet/app/build/outputs/apk/mobileOnly/debug/app-mobileOnly-debug.apk ---"
 echo ""
-echo "--- To install on Waydroid, run: ---"
-echo "waydroid app install app/build/outputs/apk/debug/app-debug.apk"
+echo "--- Installed on Device ---"

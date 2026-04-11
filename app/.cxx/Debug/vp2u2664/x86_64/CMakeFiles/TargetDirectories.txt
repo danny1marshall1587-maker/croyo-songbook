@@ -1,3 +1,0 @@
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/vp2u2664/x86_64/CMakeFiles/cryoprompter.dir
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/vp2u2664/x86_64/CMakeFiles/edit_cache.dir
-/home/dan/Documents/croyo songbook/app/.cxx/Debug/vp2u2664/x86_64/CMakeFiles/rebuild_cache.dir

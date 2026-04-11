@@ -1,4 +1,0 @@
-/home/dan/Android/Sdk/cmake/3.22.1/bin/ninja \
-  -C \
-  "/home/dan/Documents/croyo songbook/app/.cxx/Debug/5y64365l/x86_64" \
-  cryoprompter
