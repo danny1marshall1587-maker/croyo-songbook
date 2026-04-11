@@ -70,10 +70,10 @@ android {
             minifyEnabled = false
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (localProps.containsKey("MYAPP_STORE_FILE") || System.getenv("MYAPP_STORE_FILE_BASE64") != null) {
+            if (signingConfigs.release.storeFile != null && signingConfigs.release.storeFile.exists()) {
                 signingConfig = signingConfigs.release
             } else {
-                println("⚠️ Skipping signingConfig because no keystore was found.")
+                println("⚠️ Skipping signingConfig because no keystore file was found.")
             }
         }
         beta {
