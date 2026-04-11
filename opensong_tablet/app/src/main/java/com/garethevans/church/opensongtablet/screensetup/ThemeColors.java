@@ -1155,3 +1155,4 @@ public class ThemeColors {
         setPresoShadowColor(translucentDark);
         setThemeFont("B612");
     }
+}

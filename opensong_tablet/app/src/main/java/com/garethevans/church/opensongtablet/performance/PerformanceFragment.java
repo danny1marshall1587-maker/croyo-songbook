@@ -2169,7 +2169,6 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 } else if (j < closestIndex) {
                     // Past: Steel Gray background, Light text
                     tv.setBackgroundColor(Color.parseColor("#708090"));
-                    tv.setTextColor(Color.parseColor("#D3D3D3"));
                 } else {
                     // Future: Light Blue background, Dark text
                     tv.setBackgroundColor(Color.parseColor("#ADD8E6"));
@@ -2223,6 +2222,8 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 }
             }
         }
+    }
+
     public void updatePerformancePreferences() {
         boolean wasEnabled = cryoPrompterEnabled;
         cryoPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("cryoPrompterEnabled", false);

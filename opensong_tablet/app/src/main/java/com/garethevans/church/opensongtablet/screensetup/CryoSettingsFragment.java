@@ -109,8 +109,7 @@ public class CryoSettingsFragment extends Fragment {
     }
 
     private void setupGestureDropdowns() {
-        String[] actions = getResources().getStringArray(R.array.pedal_actions_array);
-        ArrayList<String> actionList = new ArrayList<>(Arrays.asList(actions));
+        ArrayList<String> actionList = mainActivityInterface.getPedalActions().getActions();
 
         setupOneGesture("gestureMouthOpen", myView.gestureMouthOpen, actionList);
         setupOneGesture("gestureNod", myView.gestureNod, actionList);
@@ -149,7 +148,7 @@ public class CryoSettingsFragment extends Fragment {
         myView.flowPrimaryColor.setPalette(mainActivityInterface.getPalette());
         myView.flowSecondaryColor.setPalette(mainActivityInterface.getPalette());
         myView.faceGestureEnable.setPalette(mainActivityInterface.getPalette());
-        myView.configureGesturesBtn.setPalette(mainActivityInterface.getPalette());
+        // configureGesturesBtn is handled by the dropdowns themselves
     }
 
     @Override

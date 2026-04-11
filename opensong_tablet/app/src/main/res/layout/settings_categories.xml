@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/choose_app_mode"
                 android:hint="@string/performance_mode"
-                android:drawableStart="@drawable/ic_mode_selector"
+                android:drawableStart="@drawable/account"
                 app:size="large"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyDivider
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/cryo_performance"
                 android:hint="@string/cryo_prompter"
-                android:drawableStart="@drawable/ic_accessibility_hand"
+                android:drawableStart="@drawable/bullseye"
                 app:size="large"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyDivider

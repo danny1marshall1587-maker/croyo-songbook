@@ -176,6 +176,9 @@
     <string name="cryo_performance">Cryo Performance Suite</string>
     <string name="cryo_atmosphere">Atmosphere</string>
     <string name="cryo_section_colors">Quick Section Colors</string>
+    <string name="dyslexia_font_mode">Dyslexia Font Mode</string>
+    <string name="dyslexia_font_mode_info">Optimize font spacing and weight for improved readability (Dyslexia-friendly).</string>
+    <string name="deeplink_cryo" translatable="false">https://www.opensongapp.com/?p=settings/cryo</string>
     <string name="camera">Camera</string>
     <string name="camera_info">Take a photograph of a songsheet</string>
     <string name="can_be_found_at">Can be found at</string>

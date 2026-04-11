@@ -20,6 +20,8 @@ import com.garethevans.church.opensongtablet.customviews.ExposedDropDownArrayAda
 import com.garethevans.church.opensongtablet.databinding.SettingsDisplayExtraBinding;
 import com.garethevans.church.opensongtablet.interfaces.DisplayInterface;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+import java.util.ArrayList;
+import java.util.Arrays;
 import com.google.android.material.slider.Slider;
 
 public class DisplayExtraFragment extends Fragment {
@@ -546,6 +548,9 @@ public class DisplayExtraFragment extends Fragment {
         });
 
         myView.sleekLook.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("sleekLook", isChecked, null);
+            displayInterface.updateDisplay("setSongContentPrefs");
+        });
 
         myView.cryoFlowPattern.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

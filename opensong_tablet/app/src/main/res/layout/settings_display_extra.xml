@@ -355,6 +355,14 @@
                 android:text="@string/dyslexia_font_mode"
                 android:hint="@string/dyslexia_font_mode_info"/>
 
+            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                android:id="@+id/dyslexiaFontDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Choose Dyslexia Font" />
+
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
                 style="@style/largeText"
                 android:layout_width="match_parent"

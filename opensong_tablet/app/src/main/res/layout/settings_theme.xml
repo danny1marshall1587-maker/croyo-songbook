@@ -74,40 +74,38 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:gravity="center">
+                    android:paddingBottom="8dp">
                     <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                         android:id="@+id/chipVerse"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="4dp"
-                        app:showLabel="false"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/verse" />
+
                     <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                         android:id="@+id/chipChorus"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="4dp"
-                        app:showLabel="false"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/chorus" />
+
                     <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                         android:id="@+id/chipBridge"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="4dp"
-                        app:showLabel="false"/>
-                    <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
-                        android:id="@+id/chipPreChorus"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="4dp"
-                        app:showLabel="false"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bridge" />
+
                     <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                         android:id="@+id/chipTag"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="4dp"
-                        app:showLabel="false"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tag" />
+
+                    <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
+                        android:id="@+id/chipPreChorus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/prechorus" />
                 </LinearLayout>
 
                 <com.garethevans.church.opensongtablet.customviews.ExposedDropDown

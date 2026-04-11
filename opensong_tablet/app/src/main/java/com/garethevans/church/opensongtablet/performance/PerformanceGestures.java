@@ -229,9 +229,9 @@ public class PerformanceGestures {
                 break;
             case "scrolldown":
             case "down":
-                if (mainActivityInterface.getFragment("Performance") instanceof PerformanceFragment &&
-                        ((PerformanceFragment) mainActivityInterface.getFragment("Performance")).isCryoPrompterEnabled()) {
-                    PerformanceFragment pf = (PerformanceFragment) mainActivityInterface.getFragment("Performance");
+                if (mainActivityInterface.getPerformanceFragment() != null &&
+                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                    PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
                     pf.cryoJumpToLine(pf.getCryoActiveLineIndex() + 1);
                 } else {
                     scroll(true);
@@ -239,18 +239,18 @@ public class PerformanceGestures {
                 break;
             case "scrollup":
             case "up":
-                if (mainActivityInterface.getFragment("Performance") instanceof PerformanceFragment &&
-                        ((PerformanceFragment) mainActivityInterface.getFragment("Performance")).isCryoPrompterEnabled()) {
-                    PerformanceFragment pf = (PerformanceFragment) mainActivityInterface.getFragment("Performance");
+                if (mainActivityInterface.getPerformanceFragment() != null &&
+                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                    PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
                     pf.cryoJumpToLine(pf.getCryoActiveLineIndex() - 1);
                 } else {
                     scroll(false);
                 }
                 break;
             case "next":
-                if (mainActivityInterface.getFragment("Performance") instanceof PerformanceFragment &&
-                        ((PerformanceFragment) mainActivityInterface.getFragment("Performance")).isCryoPrompterEnabled()) {
-                    PerformanceFragment pf = (PerformanceFragment) mainActivityInterface.getFragment("Performance");
+                if (mainActivityInterface.getPerformanceFragment() != null &&
+                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                    PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
                     pf.cryoJumpToLine(pf.getCryoActiveLineIndex() + 1);
                 } else {
                     nextSong();
@@ -258,9 +258,9 @@ public class PerformanceGestures {
                 break;
             case "prev":
             case "previous":
-                if (mainActivityInterface.getFragment("Performance") instanceof PerformanceFragment &&
-                        ((PerformanceFragment) mainActivityInterface.getFragment("Performance")).isCryoPrompterEnabled()) {
-                    PerformanceFragment pf = (PerformanceFragment) mainActivityInterface.getFragment("Performance");
+                if (mainActivityInterface.getPerformanceFragment() != null &&
+                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                    PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
                     pf.cryoJumpToLine(pf.getCryoActiveLineIndex() - 1);
                 } else {
                     prevSong();
