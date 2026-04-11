@@ -165,8 +165,11 @@ public class DisplayExtraFragment extends Fragment {
         myView.focalTrackerColorDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("focalTrackerColorName", "Pink"));
 
         ExposedDropDownArrayAdapter dyslexiaFontAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.dyslexiaFontDropdown, R.layout.view_exposed_dropdown_item, mainActivityInterface.getMyFonts().getFontsFromGoogle());
+        dyslexiaFontAdapter.setShowFontPreview(true);
         myView.dyslexiaFontDropdown.setAdapter(dyslexiaFontAdapter);
-        myView.dyslexiaFontDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("dyslexiaFont", "Lato"));
+        String dyslexiaFontName = mainActivityInterface.getPreferences().getMyPreferenceString("dyslexiaFont", "Lato");
+        myView.dyslexiaFontDropdown.setText(dyslexiaFontName);
+        mainActivityInterface.getMyFonts().getTypeface(dyslexiaFontName, myView.dyslexiaFontDropdown.getAutoCompleteTextView(), mainActivityInterface.getMainHandler());
 
         // Cryo-Prompter
         myView.cryoPrompter.setChecked(getChecked("cryoPrompterEnabled", false));
@@ -229,6 +232,7 @@ public class DisplayExtraFragment extends Fragment {
                 String actionName = s.toString();
                 String actionCode = getActionCodeFromAction(actionName);
                 mainActivityInterface.getPreferences().setMyPreferenceString(prefKey, actionCode);
+                mainActivityInterface.getProcessSong().updateProcessingPreferences();
             }
         });
     }
@@ -537,6 +541,7 @@ public class DisplayExtraFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 String selected = s.toString();
                 mainActivityInterface.getPreferences().setMyPreferenceString("dyslexiaFont", selected);
+                mainActivityInterface.getMyFonts().getTypeface(selected, myView.dyslexiaFontDropdown.getAutoCompleteTextView(), mainActivityInterface.getMainHandler());
                 mainActivityInterface.getMyFonts().changeFont("fontDyslexia", selected, mainActivityInterface.getMainHandler());
                 mainActivityInterface.getProcessSong().updateProcessingPreferences();
                 displayInterface.updateDisplay("setSongContentPrefs");

@@ -180,7 +180,7 @@ public class BootUpFragment extends Fragment {
                 // Check for saved storage locations
                 final String progress = mainActivityInterface.getStorageAccess().
                         createOrCheckRootFolders(uriTree);
-                boolean foldersok = !progress.contains("Error");
+                boolean foldersok = progress.equalsIgnoreCase("Success");
 
                 if (foldersok) {
                     // Build the basic song index by scanning the songs and creating a songIDs file
@@ -244,7 +244,11 @@ public class BootUpFragment extends Fragment {
 
                 } else {
                     // There was a problem with the folders, so restart the app!
-                    requireActivity().recreate();
+                    mainActivityInterface.getMainHandler().post(() -> {
+                        if (isAdded()) {
+                            requireActivity().recreate();
+                        }
+                    });
                 }
             });
         }

@@ -73,7 +73,7 @@ public class ExposedDropDownArrayAdapter extends ArrayAdapter<String> {
                 if (item.startsWith("Fonts/")) displayName = item.replace("Fonts/", "");
                 if (item.startsWith("Vault/")) displayName = item.replace("Vault/", "");
 
-                text.setText(displayName + " - The quick brown fox...");
+                text.setText(displayName + " - Abc 1lI The quick brown fox...");
 
                 // Check if it's likely a font choice (FontSetupFragment passes font names here)
                 // We use the new getTypeface helper to apply the font to the view

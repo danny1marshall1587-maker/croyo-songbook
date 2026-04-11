@@ -11,6 +11,7 @@ import androidx.core.provider.FontsContractCompat;
 
 import com.garethevans.church.opensongtablet.R;
 import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
+import android.widget.TextView;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -171,7 +172,7 @@ public class MyFonts {
     /**
      * Helper specifically for previews in lists. Applies the font to the textView once loaded.
      */
-    public void getTypeface(String fontName, MyMaterialSimpleTextView textView, Handler handler) {
+    public void getTypeface(String fontName, TextView textView, Handler handler) {
         if (fontName == null || fontName.isEmpty()) return;
 
         if (fontName.startsWith("Fonts/")) {
@@ -180,7 +181,7 @@ public class MyFonts {
                 File fontFile = mainActivityInterface.getStorageAccess().getAppSpecificFile("Files", "", actualName);
                 if (fontFile.exists()) {
                     Typeface typeface = Typeface.createFromFile(fontFile.getPath());
-                    if (textView != null) textView.setTypeface(typeface);
+                                if (textView != null) textView.setTypeface(typeface);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -191,7 +192,7 @@ public class MyFonts {
                 File vaultFile = new File(c.getExternalFilesDir("fonts"), actualName);
                 if (vaultFile.exists()) {
                     Typeface typeface = Typeface.createFromFile(vaultFile.getAbsolutePath());
-                    if (textView != null) textView.setTypeface(typeface);
+                                if (textView != null) textView.setTypeface(typeface);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to load Vault font for preview", e);
@@ -204,7 +205,7 @@ public class MyFonts {
         }
     }
 
-    public void getGoogleFont(String fontName, String which, MyMaterialSimpleTextView textView, Handler handler) {
+    public void getGoogleFont(String fontName, String which, TextView textView, Handler handler) {
         FontRequest fontRequest = getFontRequest(fontName);
         FontsContractCompat.FontRequestCallback fontRequestCallback = getFontRequestCallback(fontName,which,textView);
         FontsContractCompat.requestFont(c,fontRequest,fontRequestCallback,handler);
@@ -218,7 +219,7 @@ public class MyFonts {
 
     private FontsContractCompat.FontRequestCallback getFontRequestCallback(final String fontName,
                                                                            final String which,
-                                                                           final MyMaterialSimpleTextView textView) {
+                                                                           final TextView textView) {
         return new FontsContractCompat.FontRequestCallback() {
             @Override
             public void onTypefaceRetrieved(Typeface typeface) {
@@ -247,7 +248,7 @@ public class MyFonts {
         };
     }
 
-    private void doSetDesiredFont(String which, Typeface typeface, String fontName,MyMaterialSimpleTextView textView) {
+    private void doSetDesiredFont(String which, Typeface typeface, String fontName, TextView textView) {
         // Set the desired font
         switch (which) {
             case "fontLyric":
