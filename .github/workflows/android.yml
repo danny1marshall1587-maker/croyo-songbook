@@ -1,0 +1,49 @@
+name: Android CI (Cryo-Songbook)
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flavor: [mobileOnly, withWear]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x opensong_tablet/gradlew
+
+    - name: Remove local java.home for CI
+      run: sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
+
+    - name: Run Lint
+      run: cd opensong_tablet && ./gradlew lint${{ matrix.flavor }}Debug --no-daemon
+
+    - name: Build Debug APK
+      run: cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Debug --no-daemon
+
+    - name: Rename APK for identification
+      run: |
+        find opensong_tablet/app/build/outputs/apk -name "*.apk" -exec mv {} CryoSongbook-${{ matrix.flavor }}-debug.apk \;
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: CryoSongbook-${{ matrix.flavor }}-debug
+        path: CryoSongbook-${{ matrix.flavor }}-debug.apk
