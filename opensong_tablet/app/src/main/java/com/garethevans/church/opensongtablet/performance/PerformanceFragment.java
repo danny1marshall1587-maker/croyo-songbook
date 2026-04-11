@@ -15,6 +15,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
@@ -2256,10 +2257,10 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 float viewCenterY = targetView.getTop() + (targetView.getHeight() / 2f);
                 
                 // If nested in TableRow/TableLayout, we need to add those offsets
-                View parent = (View) targetView.getParent();
-                while (parent != null && parent != myView.songView) {
-                    viewCenterY += parent.getTop();
-                    parent = (View) parent.getParent();
+                ViewParent parent = targetView.getParent();
+                while (parent != null && parent != myView.songView && parent instanceof View) {
+                    viewCenterY += ((View) parent).getTop();
+                    parent = parent.getParent();
                 }
                 // Add songView's top (below title)
                 viewCenterY += myView.songView.getTop();

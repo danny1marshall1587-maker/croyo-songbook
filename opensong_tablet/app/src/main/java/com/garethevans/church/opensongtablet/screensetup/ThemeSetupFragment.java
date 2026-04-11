@@ -148,6 +148,7 @@ public class ThemeSetupFragment extends Fragment {
         }
 
         myView.themeName.postDelayed(() -> {
+                    if (myView == null) return;
                     myView.themeName.setAdapter(arrayAdapter);
                     myView.themeName.addTextChangedListener(new TextWatcher() {
                         @Override

@@ -288,10 +288,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-        <service
-            android:name=".accessibility.BluetoothShieldService"
-            android:foregroundServiceType="connectedDevice"
-            android:exported="false" />
 
     </application>
 

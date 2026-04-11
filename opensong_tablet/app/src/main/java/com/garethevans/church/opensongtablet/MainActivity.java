@@ -581,7 +581,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                 // Start the Bluetooth Shield Service for persistent connection (Android 15 reliability)
                 try {
-                    Intent shieldIntent = new Intent(this, com.garethevans.church.opensongtablet.accessibility.BluetoothShieldService.class);
+                    Intent shieldIntent = new Intent();
+                    shieldIntent.setClassName(this, "com.garethevans.church.opensongtablet.bluetooth.BluetoothShieldService");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(shieldIntent);
                     } else {

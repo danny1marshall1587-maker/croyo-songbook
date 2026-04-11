@@ -543,15 +543,6 @@ public class DisplayExtraFragment extends Fragment {
             }
         });
 
-        myView.focalSnapInstant.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            updateBooleanPreference("focalSnapInstant", isChecked, null);
-        });
-
-        myView.sleekLook.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            updateBooleanPreference("sleekLook", isChecked, null);
-            displayInterface.updateDisplay("setSongContentPrefs");
-        });
-
         myView.cryoFlowPattern.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
