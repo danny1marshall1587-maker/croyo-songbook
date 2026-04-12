@@ -455,6 +455,43 @@
                 android:text="@string/voice_control"
                 android:hint="@string/voice_control_summary"/>
 
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/cryo_ai_agent"
+                android:textStyle="bold" />
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/aiAgentEnabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/cryo_ai_agent_enabled"
+                android:hint="@string/cryo_ai_agent_enabled_info"/>
+
+            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                android:id="@+id/aiAgentModel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/cryo_ai_agent_model"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                android:id="@+id/aiCryoFollowEnabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/cryo_ai_follow_enabled"
+                android:hint="@string/cryo_ai_follow_enabled_info"/>
+
+
             <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
                 android:id="@+id/jsxCalibrate"
                 android:layout_width="match_parent"

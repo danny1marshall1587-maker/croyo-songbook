@@ -1557,6 +1557,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                     myView.zoomLayout.setCurrentScale(scaleFactor);
                     myView.zoomLayout.setSongSize(widthAfterScale, heightAfterScale);
 
+                    syncAiSongContext();
                     endProcessing();
 
                     // Slide in
@@ -2376,8 +2377,44 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         }
     }
 
+    public void onAiLineAlignment(int index) {
+        if (index >= 0 && index != cryoActiveLineIndex) {
+            cryoJumpToLine(index);
+        }
+    }
+
     public int getCryoActiveLineIndex() {
         return cryoActiveLineIndex;
+    }
+
+    private void syncAiSongContext() {
+        if (myView == null || myView.songView == null) return;
+        
+        java.util.List<String> lines = new java.util.ArrayList<>();
+        extractLinesRecursive(myView.songView, lines);
+        
+        if (!lines.isEmpty()) {
+            com.garethevans.church.opensongtablet.ai.AiAgentManager.getInstance(getContext())
+                .setSongContext(lines);
+        }
+    }
+
+    private void extractLinesRecursive(ViewGroup parent, java.util.List<String> lines) {
+        // We need to ensure we visit children in the correct order for indexing
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            Object tag = child.getTag();
+
+            if (tag instanceof String && ((String) tag).startsWith("prompterLine_")) {
+                if (child instanceof android.widget.TextView) {
+                    lines.add(((android.widget.TextView) child).getText().toString());
+                }
+            }
+
+            if (child instanceof ViewGroup) {
+                extractLinesRecursive((ViewGroup) child, lines);
+            }
+        }
     }
 
     public boolean isCryoPrompterEnabled() {

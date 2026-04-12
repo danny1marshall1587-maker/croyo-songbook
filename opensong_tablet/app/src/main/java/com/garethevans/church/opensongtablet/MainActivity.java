@@ -5430,6 +5430,27 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 @Override
                 public void onResult(String text) {
                     android.util.Log.d("MainActivity", "Vosk Result: " + text);
+                    
+                    // Cryo-Follow Bridge
+                    if (getPreferences().getMyPreferenceBoolean("aiCryoFollowEnabled", false) && performanceValid()) {
+                        com.garethevans.church.opensongtablet.ai.AiAgentManager.getInstance(MainActivity.this)
+                            .findCurrentLine(text, performanceFragment.getCryoActiveLineIndex(), new com.garethevans.church.opensongtablet.ai.AiAgentManager.AiCallback() {
+                                @Override
+                                public void onResult(String resultIndex) {
+                                    try {
+                                        int index = Integer.parseInt(resultIndex.trim());
+                                        getMainHandler().post(() -> performanceFragment.onAiLineAlignment(index));
+                                    } catch (NumberFormatException e) {
+                                        Log.e("MainActivity", "AI returned invalid index: " + resultIndex);
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Log.e("MainActivity", "AI Alignment error", e);
+                                }
+                            });
+                    }
                 }
 
                 @Override

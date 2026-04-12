@@ -23,6 +23,8 @@ import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.google.android.material.slider.Slider;
+import com.garethevans.church.opensongtablet.ai.AiAgent;
+import com.garethevans.church.opensongtablet.ai.AiAgentManager;
 
 public class DisplayExtraFragment extends Fragment {
 
@@ -200,6 +202,13 @@ public class DisplayExtraFragment extends Fragment {
 
             // --- Face Gesture Mappings ---
             setupFaceGestureDropdowns();
+
+            // --- AI Agent ---
+            myView.aiAgentEnabled.setChecked(getChecked("aiAgentEnabled", false));
+            String[] aiModels = new String[] {AiAgent.GEMINI_3_FLASH.getDisplayName(), AiAgent.GEMMA_4.getDisplayName()};
+            ExposedDropDownArrayAdapter aiModelAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.aiAgentModel, R.layout.view_exposed_dropdown_item, aiModels);
+            myView.aiAgentModel.setAdapter(aiModelAdapter);
+            myView.aiAgentModel.setText(mainActivityInterface.getPreferences().getMyPreferenceString("aiAgentActive", AiAgent.GEMINI_3_FLASH.getDisplayName()));
         }
     }
 
@@ -602,6 +611,28 @@ public class DisplayExtraFragment extends Fragment {
         myView.cryoFlowSecondaryColorBtn.setOnClickListener(v -> {
             ChooseColorBottomSheet chooseColorBottomSheet = new ChooseColorBottomSheet(this, TAG, "cryoFlowSecondaryColor");
             chooseColorBottomSheet.show(getParentFragmentManager(), "flow_secondary_picker");
+        });
+
+        myView.aiCryoFollowEnabled.setChecked(mainActivityInterface.getPreferences().getMyPreferenceBoolean("aiCryoFollowEnabled", false));
+        myView.aiCryoFollowEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("aiCryoFollowEnabled", isChecked, null);
+        });
+
+        myView.aiAgentEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("aiAgentEnabled", isChecked, null);
+            // Optionally notify manager
+        });
+
+        myView.aiAgentModel.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String selected = s.toString();
+                mainActivityInterface.getPreferences().setMyPreferenceString("aiAgentActive", selected);
+                AiAgent agent = AiAgent.fromString(selected);
+                AiAgentManager.getInstance(getContext()).setActiveAgent(agent);
+            }
         });
     }
 

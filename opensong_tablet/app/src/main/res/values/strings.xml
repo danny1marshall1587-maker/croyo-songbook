@@ -1911,4 +1911,11 @@
     <string name="cryo_flow_color_primary">Primary Flow Color</string>
     <string name="cryo_flow_color_secondary">Secondary Flow Color</string>
     <string name="cryo_flow_patterns_array">Tide,Lava,Nebula,Aurora,Clouds,Breeze,Ripple,Drift,Pulse,Orbit</string>
+    <string name="cryo_ai_agent">Cryo AI Agent</string>
+    <string name="cryo_ai_agent_enabled">Enable AI Assistant</string>
+    <string name="cryo_ai_agent_enabled_info">Activate the integrated AI agent for song analysis and commands</string>
+    <string name="cryo_ai_agent_model">Select AI Model</string>
+    <string name="cryo_ai_agent_model_info">Choose between local (Gemma 4) or cloud (Gemini 3 Flash) models</string>
+    <string name="cryo_ai_follow_enabled">Enable Cryo-Follow</string>
+    <string name="cryo_ai_follow_enabled_info">Allow the AI to track your singing and move the prompter automatically</string>
 </resources>

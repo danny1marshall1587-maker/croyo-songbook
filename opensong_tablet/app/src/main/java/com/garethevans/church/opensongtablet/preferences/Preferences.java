@@ -182,6 +182,7 @@ public class Preferences extends Activity {
     // abcZoom                          int         How much the staff width is reduced thus zooming in.  Calculated by width/zoom (def:2)
     // aiAgentActive                    String      The active AI Agent (Gemini 3 Flash, Gemma 4) (def:GEMINI_3_FLASH)
     // aiAgentEnabled                   boolean     Is the AI Agent system enabled (def:false)
+    // aiCryoFollowEnabled              boolean     Should AI automatically track singing and move the prompter (def:false)
     // actionBarTempo                   boolean     Should the song tempo (if set) be shown in the action bar (def:false)
     // addSectionBox   *NOTYET*         boolean     Draw a box around sections when in Performance mode (def:false)
     // addSectionSpace                  boolean     Should a spacing line be added between sections to improve readability (def:true)
