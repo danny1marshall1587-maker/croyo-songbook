@@ -15,6 +15,7 @@ import com.garethevans.church.opensongtablet.databinding.BootupLogoBinding;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import android.os.Build;
 import android.util.Log;
+import com.garethevans.church.opensongtablet.appdata.CustomAlertDialog;
 
 /*
 This fragment is the first one that the main activity loads up.
@@ -194,97 +195,103 @@ public class BootUpFragment extends Fragment {
         // Start the boot process
         if (getContext() != null) {
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                // Tell the user we're initialising app
-                if (getContext() != null) {
-                    message = initialising;
-                } else {
-                    message = "Initialising";
-                }
-                updateMessage();
-                mainActivityInterface.initialiseActivity();
-
-                // Tell the user we're initialising the storage
-                if (getContext() != null) {
-                    message = processing + ": " + storage;
-                } else {
-                    message = "Processing: Storage";
-                }
-                updateMessage();
-
-                // Get the last used song and folder.  If the song failed to load, reset to default
-                setFolderAndSong();
-
-                // Check for saved storage locations
-                final String progress = mainActivityInterface.getStorageAccess().
-                        createOrCheckRootFolders(uriTree);
-                boolean foldersok = progress.equalsIgnoreCase("Success");
-
-                if (foldersok) {
-                    // Build the basic song index by scanning the songs and creating a songIDs file
+                try {
+                    // Tell the user we're initialising app
                     if (getContext() != null) {
-                        message = processing + "\n" + wait;
+                        message = initialising;
                     } else {
-                        message = "Processing\nWait....";
+                        message = "Initialising";
+                    }
+                    updateMessage();
+                    mainActivityInterface.initialiseActivity();
+
+                    // Tell the user we're initialising the storage
+                    if (getContext() != null) {
+                        message = processing + ": " + storage;
+                    } else {
+                        message = "Processing: Storage";
                     }
                     updateMessage();
 
-                    mainActivityInterface.getStorageAccess().fixBadSongs();
+                    // Get the last used song and folder.  If the song failed to load, reset to default
+                    setFolderAndSong();
 
-                    if (needIndex) {
-                        // Check for bad files
-                        mainActivityInterface.getSongListBuildIndex().setIndexComplete(false);
-                        mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", false);
-                        mainActivityInterface.quickSongMenuBuild();
+                    // Check for saved storage locations
+                    final String progress = mainActivityInterface.getStorageAccess().
+                            createOrCheckRootFolders(uriTree);
+                    boolean foldersok = progress.equalsIgnoreCase("Success");
 
-                    } else {
-                        mainActivityInterface.getSongListBuildIndex().setIndexComplete(true);
-                    }
-
-                    // Finished indexing
-                    if (getContext() != null) {
-                        message = success;
-                    } else {
-                        message = "Success";
-                    }
-                    if (myView != null) {
+                    if (foldersok) {
+                        // Build the basic song index by scanning the songs and creating a songIDs file
+                        if (getContext() != null) {
+                            message = processing + "\n" + wait;
+                        } else {
+                            message = "Processing\nWait....";
+                        }
                         updateMessage();
+
+                        mainActivityInterface.getStorageAccess().fixBadSongs();
+
+                        if (needIndex) {
+                            // Check for bad files
+                            mainActivityInterface.getSongListBuildIndex().setIndexComplete(false);
+                            mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", false);
+                            mainActivityInterface.quickSongMenuBuild();
+
+                        } else {
+                            mainActivityInterface.getSongListBuildIndex().setIndexComplete(true);
+                        }
+
+                        // Finished indexing
+                        if (getContext() != null) {
+                            message = success;
+                        } else {
+                            message = "Success";
+                        }
+                        if (myView != null) {
+                            updateMessage();
+                        }
+
+                        // Increase the boot times for prompting a user to backup their songs
+                        int runssincebackup = mainActivityInterface.getPreferences().getMyPreferenceInt("runssincebackup", 0);
+                        int runssincebackupdismissed = mainActivityInterface.getPreferences().getMyPreferenceInt("runssincebackupdismissed", 0);
+                        mainActivityInterface.getPreferences().setMyPreferenceInt("runssincebackup", runssincebackup + 1);
+                        mainActivityInterface.getPreferences().setMyPreferenceInt("runssincebackupdismissed", runssincebackupdismissed + 1);
+
+                        // Load in the setCurrent
+                        message = set_string;
+                        updateMessage();
+
+                        mainActivityInterface.getSetActions().parseCurrentSet();
+
+                        // Set up the Bluetooth adapter in the MIDI class if it exists
+                        // This also disconnects any BLEMidi devices that were externally paired
+                        if (mainActivityInterface.getAppPermissions().hasMidiScanPermissions()) {
+                            mainActivityInterface.getMidi().setupBluetoothManager();
+                        }
+
+                        // Set up the rest of the main activity (on the main thread)
+                        mainActivityInterface.getMainHandler().post(() -> {
+                            mainActivityInterface.navHome();
+                            mainActivityInterface.showActionBar();
+                            mainActivityInterface.updateMargins();
+                        });
+
+                    } else {
+                        // There was a problem with the folders.
+                        mainActivityInterface.getMainHandler().post(() -> {
+                            if (isAdded()) {
+                                mainActivityInterface.getShowToast().doIt("Storage Error: " + progress);
+                                requireStorageCheck();
+                            }
+                        });
                     }
-
-                    // Increase the boot times for prompting a user to backup their songs
-                    int runssincebackup = mainActivityInterface.getPreferences().getMyPreferenceInt("runssincebackup", 0);
-                    int runssincebackupdismissed = mainActivityInterface.getPreferences().getMyPreferenceInt("runssincebackupdismissed", 0);
-                    mainActivityInterface.getPreferences().setMyPreferenceInt("runssincebackup", runssincebackup + 1);
-                    mainActivityInterface.getPreferences().setMyPreferenceInt("runssincebackupdismissed", runssincebackupdismissed + 1);
-
-                    // Load in the setCurrent
-                    message = set_string;
-                    updateMessage();
-
-                    mainActivityInterface.getSetActions().parseCurrentSet();
-
-                    message = success;
-                    updateMessage();
-
-                    // Set up the Bluetooth adapter in the MIDI class if it exists
-                    // This also disconnects any BLEMidi devices that were externally paired
-                    if (mainActivityInterface.getAppPermissions().hasMidiScanPermissions()) {
-                        mainActivityInterface.getMidi().setupBluetoothManager();
-                    }
-
-                    // Set up the rest of the main activity (on the main thread)
-                    mainActivityInterface.getMainHandler().post(() -> {
-                        mainActivityInterface.navHome();
-                        mainActivityInterface.showActionBar();
-                        mainActivityInterface.updateMargins();
-                    });
-
-
-                } else {
-                    // There was a problem with the folders, so restart the app!
+                } catch (Exception e) {
+                    Log.e(TAG, "Error during boot process", e);
                     mainActivityInterface.getMainHandler().post(() -> {
                         if (isAdded()) {
-                            mainActivityInterface.getShowToast().doIt("Storage Error: Folder access denied. Please re-select.");
-                            requireActivity().recreate();
+                            mainActivityInterface.getShowToast().doIt("Startup Error: " + e.getLocalizedMessage());
+                            requireStorageCheck();
                         }
                     });
                 }

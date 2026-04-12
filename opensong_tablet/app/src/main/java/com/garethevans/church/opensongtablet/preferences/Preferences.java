@@ -180,6 +180,8 @@ public class Preferences extends Activity {
     // abcXPosition                     int         The x position of the popup sticky note (def: -1 which means figure it out first)
     // abcYPosition                     int         The y position of the popup sticky note (def: -1 which means figure it out first)
     // abcZoom                          int         How much the staff width is reduced thus zooming in.  Calculated by width/zoom (def:2)
+    // aiAgentActive                    String      The active AI Agent (Gemini 3 Flash, Gemma 4) (def:GEMINI_3_FLASH)
+    // aiAgentEnabled                   boolean     Is the AI Agent system enabled (def:false)
     // actionBarTempo                   boolean     Should the song tempo (if set) be shown in the action bar (def:false)
     // addSectionBox   *NOTYET*         boolean     Draw a box around sections when in Performance mode (def:false)
     // addSectionSpace                  boolean     Should a spacing line be added between sections to improve readability (def:true)

@@ -136,6 +136,15 @@ public class MyFonts {
         if (fontName.startsWith("Fonts/")) {
             try {
                 String actualName = fontName.replace("Fonts/", "");
+
+                // Defensive check: If storage isn't ready, we can't load the custom font yet.
+                // Fallback to system default to prevent crash during startup.
+                if (!mainActivityInterface.getStorageAccess().uriTreeValid(null)) {
+                    Log.w(TAG, "Storage not ready for font: " + actualName + " - using fallback");
+                    doSetDesiredFont(which, loadFontSafely("font/Lato.ttf"), "Lato", null);
+                    return;
+                }
+
                 // We need the font to be in a file readable location - the app storage
                 // Copy the chosen file here
                 File fontFile = mainActivityInterface.getStorageAccess().getAppSpecificFile("Files","",actualName);

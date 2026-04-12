@@ -4174,7 +4174,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void quickSongMenuBuild() {
-        if (getStorageAccess() != null && sqLiteHelper != null && nonOpenSongSQLiteHelper != null) {
+        if (getStorageAccess() != null && getSQLiteHelper() != null && getNonOpenSongSQLiteHelper() != null) {
             ArrayList<String> songIds = new ArrayList<>();
             try {
                 songIds = getStorageAccess().listSongs(false);

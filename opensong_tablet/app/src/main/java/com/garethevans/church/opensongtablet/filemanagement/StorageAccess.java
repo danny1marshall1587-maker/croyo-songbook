@@ -329,6 +329,11 @@ public class StorageAccess {
             e.printStackTrace();
         }
 
+        // If we have All Files Access on Android 11+, standard File logic is much more stable and faster.
+        if (mainActivityInterface.getAppPermissions().hasFullStoragePermission()) {
+            return createOrCheckRootFolders_File();
+        }
+
         if (lollipopOrLater()) {
             return createOrCheckRootFolders_SAF(uri);
         } else {
