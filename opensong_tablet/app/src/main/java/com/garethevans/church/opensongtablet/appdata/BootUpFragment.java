@@ -290,7 +290,11 @@ public class BootUpFragment extends Fragment {
                     Log.e(TAG, "Error during boot process", e);
                     mainActivityInterface.getMainHandler().post(() -> {
                         if (isAdded()) {
-                            mainActivityInterface.getShowToast().doIt("Startup Error: " + e.getLocalizedMessage());
+                            String errorMsg = e.getLocalizedMessage();
+                            if (errorMsg == null || errorMsg.isEmpty()) {
+                                errorMsg = e.getClass().getSimpleName();
+                            }
+                            mainActivityInterface.getShowToast().doIt("Startup Error: " + errorMsg);
                             requireStorageCheck();
                         }
                     });

@@ -56,11 +56,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Create and reset the database
     public SQLiteDatabase getDB() {
         try {
-            File f = mainActivityInterface.getStorageAccess().getAppSpecificFile("Database","",SQLite.DATABASE_NAME);
-            //File f = new File(c.getExternalFilesDir("Database"), SQLite.DATABASE_NAME);
+            File f = mainActivityInterface.getStorageAccess().getAppSpecificFile("Database", "", SQLite.DATABASE_NAME);
+            if (f == null) {
+                Log.e(TAG, "getAppSpecificFile returned null for Database");
+                return null;
+            }
             return SQLiteDatabase.openOrCreateDatabase(f, null);
-        } catch (OutOfMemoryError | Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to open or create database: " + SQLite.DATABASE_NAME, e);
             return null;
         }
     }
@@ -75,62 +78,92 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
     public void resetDatabase() {
-        try (SQLiteDatabase db = getDB()) {
-            emptyTable(db);
-            onCreate(db);
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                emptyTable(db);
+                onCreate(db);
+            } finally {
+                db.close();
+            }
         }
     }
 
     // Create, delete and update entries
     public void removeOldSongs(ArrayList<String> songIds) {
-        try (SQLiteDatabase db = getDB()) {
-            mainActivityInterface.getCommonSQL().removeOldSongs(db, songIds);
-        } catch (Exception e) {
-            e.printStackTrace();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                mainActivityInterface.getCommonSQL().removeOldSongs(db, songIds);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
     }
     public void insertFast() {
         SQLiteDatabase db = getDB();
-        try {
-            mainActivityInterface.getCommonSQL().insertFast(db);
-            db.setTransactionSuccessful();
-            db.endTransaction();
-        } catch (OutOfMemoryError | Exception e) {
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            e.printStackTrace();
-        } finally {
-            db.close();
+        if (db != null) {
+            try {
+                mainActivityInterface.getCommonSQL().insertFast(db);
+                db.setTransactionSuccessful();
+            } catch (OutOfMemoryError | Exception e) {
+                db.setTransactionSuccessful();
+                e.printStackTrace();
+            } finally {
+                db.endTransaction();
+                db.close();
+            }
         }
     }
     public void createSong(String folder, String filename) {
-        // Creates a basic song entry to the database (id, songid, folder, file)
-        try (SQLiteDatabase db = getDB()) {
-            mainActivityInterface.getCommonSQL().createSong(db, folder, filename);
-        } catch (OutOfMemoryError | Exception e) {
-            e.printStackTrace();
-            // Likely the song exists and we didn't check!
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                mainActivityInterface.getCommonSQL().createSong(db, folder, filename);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
     }
     public void updateSong(Song thisSong) {
-        try (SQLiteDatabase db = getDB()) {
-            mainActivityInterface.getCommonSQL().updateSong(db,thisSong);
-        } catch (OutOfMemoryError | Exception e) {
-            e.printStackTrace();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                mainActivityInterface.getCommonSQL().updateSong(db, thisSong);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
     }
     public boolean deleteSong(String folder, String file) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().deleteSong(db, folder, file) > -1;
-        } catch (OutOfMemoryError | Exception e) {
-            return false;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().deleteSong(db, folder, file) > -1;
+            } catch (OutOfMemoryError | Exception e) {
+                return false;
+            } finally {
+                db.close();
+            }
         }
+        return false;
     }
     public void renameSong(String oldFolder, String newFolder, String oldName, String newName) {
-        try (SQLiteDatabase db = getDB()) {
-            mainActivityInterface.getCommonSQL().renameSong(db, oldFolder, newFolder, oldName, newName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                mainActivityInterface.getCommonSQL().renameSong(db, oldFolder, newFolder, oldName, newName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
     }
 
@@ -148,31 +181,49 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
     public boolean songExists(String folder, String filename) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().songExists(db, folder, filename);
-        } catch (OutOfMemoryError | Exception e) {
-            e.printStackTrace();
-            return false;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().songExists(db, folder, filename);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return false;
     }
     public Song getSpecificSong(String folder, String filename) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSpecificSong(db,folder,filename);
-        } catch (OutOfMemoryError | Exception e) {
-            Song thisSong = new Song();
-            thisSong.setFolder(folder);
-            thisSong.setFilename(filename);
-            String songId = mainActivityInterface.getCommonSQL().getAnySongId(folder,filename);
-            thisSong.setSongid(songId);
-            return thisSong;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSpecificSong(db, folder, filename);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        
+        Song thisSong = new Song();
+        thisSong.setFolder(folder);
+        thisSong.setFilename(filename);
+        String songId = mainActivityInterface.getCommonSQL().getAnySongId(folder, filename);
+        thisSong.setSongid(songId);
+        return thisSong;
     }
     public Song getSongByUuid(String uuid) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSongFromUuid(db,uuid);
-        } catch (OutOfMemoryError | Exception e) {
-            return null;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongFromUuid(db, uuid);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return null;
     }
     public ArrayList<Song> getSongsByFilters(boolean searchByFolder, boolean searchByArtist,
                                              boolean searchByKey, boolean searchByTag,
@@ -181,66 +232,102 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                                              String tagVal, String filterVal, String titleVal,
                                              boolean songMenuSortTitles) {
 
-        try (SQLiteDatabase db = getDB()) {
-           return mainActivityInterface.getCommonSQL().getSongsByFilters(db, searchByFolder,
-                   searchByArtist, searchByKey, searchByTag, searchByFilter, searchByTitle,
-                    folderVal, artistVal, keyVal, tagVal, filterVal, titleVal, songMenuSortTitles);
-        } catch (OutOfMemoryError | Exception e) {
-            Log.d(TAG,"Table doesn't exist");
-            resetDatabase();
-            return new ArrayList<>();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongsByFilters(db, searchByFolder,
+                        searchByArtist, searchByKey, searchByTag, searchByFilter, searchByTitle,
+                        folderVal, artistVal, keyVal, tagVal, filterVal, titleVal, songMenuSortTitles);
+            } catch (OutOfMemoryError | Exception e) {
+                Log.d(TAG, "Table doesn't exist or other error");
+                resetDatabase();
+            } finally {
+                db.close();
+            }
         }
+        return new ArrayList<>();
     }
     public ArrayList<Song> openChordsSyncGetSongsFromFolder(String folder) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().openChordsSyncGetSongsFromFolder(db,folder);
-        } catch (Exception | OutOfMemoryError e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().openChordsSyncGetSongsFromFolder(db, folder);
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return new ArrayList<>();
     }
     public Song getOpenChordsSong(String folder, String uuid) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getOpenChordsSong(db,folder,uuid);
-        } catch (Exception | OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getOpenChordsSong(db, folder, uuid);
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return null;
     }
 
     public String[] getUuidFromFolderAndFile(String folderAndFile) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getUuidFromFolderAndFile(db,folderAndFile);
-        } catch (Exception | OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getUuidFromFolderAndFile(db, folderAndFile);
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return null;
     }
 
     public ArrayList<OpenChordsTag> getThemesFromFilesInFolder(String folder) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getThemesFromFilesInFolder(db, folder);
-        } catch (Exception | OutOfMemoryError e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getThemesFromFilesInFolder(db, folder);
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return new ArrayList<>();
     }
 
     public String getKey(String folder, String filename) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getKey(db, folder, filename);
-        } catch (Exception | OutOfMemoryError e) {
-            e.printStackTrace();
-            return "";
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getKey(db, folder, filename);
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return "";
     }
     public ArrayList<String> getThemeTags() {
         // Get unique theme tags
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getUniqueThemeTags(db);
-        } catch (OutOfMemoryError | Exception e) {
-            return new ArrayList<>();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getUniqueThemeTags(db);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return new ArrayList<>();
     }
     public ArrayList<String> renameThemeTags(String oldTag, String newTag) {
         // Rename matching tags if found and don't already exist
@@ -251,29 +338,46 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
     public String songsWithThemeTags(String tag) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSongsWithThemeTag(db, tag);
-        } catch (OutOfMemoryError | Exception e) {
-            return "";
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongsWithThemeTag(db, tag);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return "";
     }
 
     public String getFolderForSong(String filename) {
         // Set the default folder
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getFolderForSong(db, filename);
-        } catch (OutOfMemoryError | Exception e) {
-            e.printStackTrace();
-            return c.getString(R.string.mainfoldername);
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getFolderForSong(db, filename);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return c.getString(R.string.mainfoldername);
     }
 
     public Song getSongFromMidiIndex(int midiIndex) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSongFromMidiIndex(db,midiIndex);
-        } catch (OutOfMemoryError | Exception e) {
-            return null;
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongFromMidiIndex(db, midiIndex);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return null;
     }
     public void exportDatabase() {
         // Export a csv version of the temporary database
@@ -282,26 +386,43 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<ShareableObject> getShareableSongs() {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getShareableSongs(db);
-        } catch (OutOfMemoryError | Exception e) {
-            return new ArrayList<>();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getShareableSongs(db);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return new ArrayList<>();
     }
     public String[] getSongCreationInfo(String folder, String filename) {
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSongCreationInfo(db, folder, filename);
-        } catch (OutOfMemoryError | Exception e) {
-            return new String[] {"","","false"};
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongCreationInfo(db, folder, filename);
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
+        return new String[]{"", "", "false"};
     }
 
     public ArrayList<SongId> getSongIds() {
         // Create an array of simple song details - used for the web server
-        try (SQLiteDatabase db = getDB()) {
-            return mainActivityInterface.getCommonSQL().getSongIds(db);
-        } catch (Exception e) {
-            e.printStackTrace();
+        SQLiteDatabase db = getDB();
+        if (db != null) {
+            try {
+                return mainActivityInterface.getCommonSQL().getSongIds(db);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
         }
         return new ArrayList<>();
     }

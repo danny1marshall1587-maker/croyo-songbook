@@ -17,7 +17,7 @@ public class AiAgentManager {
 
     private AiAgentManager(Context context) {
         this.context = context.getApplicationContext();
-        loadActiveAgent();
+        loadActiveAgent(context);
     }
 
     public static synchronized AiAgentManager getInstance(Context context) {
@@ -27,11 +27,16 @@ public class AiAgentManager {
         return instance;
     }
 
-    private void loadActiveAgent() {
-        if (context instanceof MainActivityInterface) {
-            String savedAgent = ((MainActivityInterface) context).getPreferences()
+    private void loadActiveAgent(Context initContext) {
+        if (initContext instanceof MainActivityInterface) {
+            String savedAgent = ((MainActivityInterface) initContext).getPreferences()
                     .getMyPreferenceString("aiAgentActive", AiAgent.GEMINI_3_FLASH.name());
             activeAgent = AiAgent.fromString(savedAgent);
+        } else {
+            // Fallback: If we only have application context, we might not be able to easy-access 
+            // the custom Preferences wrapper if it requires MainActivityInterface, 
+            // but let's at least check if we can get it from the Activity directly if it's a known boot sequence.
+            Log.d(TAG, "loadActiveAgent: Context is not MainActivityInterface, using default agent.");
         }
     }
 
