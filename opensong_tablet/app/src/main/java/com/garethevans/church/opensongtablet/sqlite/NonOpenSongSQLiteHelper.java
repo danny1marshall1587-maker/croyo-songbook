@@ -38,13 +38,14 @@ public class NonOpenSongSQLiteHelper extends SQLiteOpenHelper {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
 
-        // Get a reference to the database files/uris (app and user)
-        getDatabaseUris();
+        // Only attempt to initialize if storage is ready
+        if (mainActivityInterface.getStorageAccess().uriTreeValid(null)) {
+            // Get a reference to the database files/uris (app and user)
+            getDatabaseUris();
 
-        // Check for a previous version in user storage
-        // If it exists and isn't empty, copy it in to the appDB
-        // If if doesn't exist, or is empty copy our appDB to the userDB
-        importDatabase();
+            // Check for a previous version in user storage
+            importDatabase();
+        }
     }
 
     private void getDatabaseUris() {
@@ -57,7 +58,7 @@ public class NonOpenSongSQLiteHelper extends SQLiteOpenHelper {
         Log.d(TAG,"finished trying to get appDB local");
 
         // If the userDB uri doesn't exist, copy the appDB now it is ready
-        if (!mainActivityInterface.getStorageAccess().uriExists(userDB)) {
+        if (userDB != null && !mainActivityInterface.getStorageAccess().uriExists(userDB)) {
             initialiseUserDB = true;
             copyUserDatabase();
         }

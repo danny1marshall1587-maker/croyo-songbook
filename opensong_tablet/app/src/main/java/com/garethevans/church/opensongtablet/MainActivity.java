@@ -889,8 +889,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         appPermissions.checkAgeVerification();
 
         // The databases
-        sqLiteHelper = getSQLiteHelper();
-        nonOpenSongSQLiteHelper = getNonOpenSongSQLiteHelper();
+        // sqLiteHelper = getSQLiteHelper();
+        // nonOpenSongSQLiteHelper = getNonOpenSongSQLiteHelper();
         commonSQL = getCommonSQL();
 
         // Converting song formats and processing song content
@@ -3034,7 +3034,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public NonOpenSongSQLiteHelper getNonOpenSongSQLiteHelper() {
         if (nonOpenSongSQLiteHelper == null) {
-            nonOpenSongSQLiteHelper = new NonOpenSongSQLiteHelper(this);
+            try {
+                nonOpenSongSQLiteHelper = new NonOpenSongSQLiteHelper(this);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to initialize NonOpenSongSQLiteHelper", e);
+            }
         }
         return nonOpenSongSQLiteHelper;
     }
