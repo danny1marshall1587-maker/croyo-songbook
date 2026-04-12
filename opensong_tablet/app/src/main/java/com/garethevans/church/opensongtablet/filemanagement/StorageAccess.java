@@ -520,7 +520,13 @@ public class StorageAccess {
         }
 
         // 2. Get the DocumentFile for our "OpenSong" home
-        DocumentFile openSongRoot = DocumentFile.fromTreeUri(c, uriTreeHome);
+        DocumentFile openSongRoot = null;
+        try {
+            openSongRoot = DocumentFile.fromTreeUri(c, uriTreeHome);
+        } catch (Exception e) {
+            Log.e(TAG, "Error resolving tree uri", e);
+        }
+
         if (openSongRoot == null || !openSongRoot.exists()) {
             updateFileActivityLog("Failure: Cannot access OpenSong root");
             return "Failure";
@@ -536,32 +542,40 @@ public class StorageAccess {
 
         // 3. Create/Check Main Root Folders (Songs, Settings, etc.)
         for (String folderName : rootFolders) {
-            DocumentFile folder = openSongRoot.findFile(folderName);
-            if (folder == null) {
-                logBuilder.append("\nCreating: ").append(folderName);
-                folder = openSongRoot.createDirectory(folderName);
-            } else {
-                logBuilder.append("\nFound: ").append(folderName);
-            }
+            try {
+                DocumentFile folder = openSongRoot.findFile(folderName);
+                if (folder == null) {
+                    logBuilder.append("\nCreating: ").append(folderName);
+                    folder = openSongRoot.createDirectory(folderName);
+                } else {
+                    logBuilder.append("\nFound: ").append(folderName);
+                }
 
-            // Keep a specific reference to Songs for later use
-            if (folderName.equalsIgnoreCase("Songs")) {
-                songsDF = folder;
+                // Keep a specific reference to Songs for later use
+                if (folderName.equalsIgnoreCase("Songs")) {
+                    songsDF = folder;
+                }
+            } catch (Exception e) {
+                logBuilder.append("\nFailed to process folder: ").append(folderName).append(" error: ").append(e.getMessage());
             }
         }
 
         // 4. Create/Check Cache Folders (e.g., "Variations/_cache")
         for (String cachePath : cacheFolders) {
-            String[] parts = cachePath.split("/"); // [0] = Variations, [1] = _cache
-            if (parts.length < 2) continue;
+            try {
+                String[] parts = cachePath.split("/"); // [0] = Variations, [1] = _cache
+                if (parts.length < 2) continue;
 
-            DocumentFile parent = openSongRoot.findFile(parts[0]);
-            if (parent != null) {
-                DocumentFile cacheFolder = parent.findFile(parts[1]);
-                if (cacheFolder == null) {
-                    logBuilder.append("\nCreating cache: ").append(cachePath);
-                    parent.createDirectory(parts[1]);
+                DocumentFile parent = openSongRoot.findFile(parts[0]);
+                if (parent != null) {
+                    DocumentFile cacheFolder = parent.findFile(parts[1]);
+                    if (cacheFolder == null) {
+                        logBuilder.append("\nCreating cache: ").append(cachePath);
+                        parent.createDirectory(parts[1]);
+                    }
                 }
+            } catch (Exception e) {
+                 logBuilder.append("\nFailed to process cache: ").append(cachePath).append(" error: ").append(e.getMessage());
             }
         }
 
