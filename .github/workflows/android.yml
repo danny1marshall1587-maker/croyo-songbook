@@ -59,12 +59,14 @@ jobs:
         if [ -z "$MYAPP_STORE_FILE_BASE64" ]; then
           echo "⚠️ MYAPP_STORE_FILE_BASE64 secret is EMPTY — build will be unsigned"
         else
-          echo "✅ MYAPP_STORE_FILE_BASE64 has $(echo "$MYAPP_STORE_FILE_BASE64" | wc -c | tr -d ' ') chars"
-          echo "$MYAPP_STORE_FILE_BASE64" | base64 -d > opensong_tablet/app/release-keystore.jks
-          echo "✅ Decoded keystore: $(ls -l opensong_tablet/app/release-keystore.jks)"
+          echo "✅ MYAPP_STORE_FILE_BASE64 has $(echo -n "$MYAPP_STORE_FILE_BASE64" | wc -c | tr -d ' ') chars"
+          # Robust decode stripping any newlines/spaces
+          echo "$MYAPP_STORE_FILE_BASE64" | tr -d '\n\r ' | base64 -di > opensong_tablet/app/release-keystore.jks || echo "❌ base64 decode failed!"
+          echo "✅ Decoded keystore size: $(wc -c < opensong_tablet/app/release-keystore.jks || echo 0) bytes"
         fi
         echo "MYAPP_KEY_ALIAS is: ${MYAPP_KEY_ALIAS:-(not set)}"
-        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon
+        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon > ../build_log.txt 2>&1 || { echo "❌ Gradle Build failed"; cat ../build_log.txt; exit 1; }
+        cat ../build_log.txt
 
     - name: Prepare Artifacts
       if: always()
