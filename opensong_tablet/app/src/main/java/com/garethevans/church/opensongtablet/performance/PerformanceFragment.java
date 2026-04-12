@@ -303,9 +303,35 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     private void executeFaceAction(String prefKey, String defaultValue) {
         String action = mainActivityInterface.getPreferences().getMyPreferenceString(prefKey, defaultValue);
         if (action != null && !action.isEmpty()) {
-            mainActivityInterface.getMainHandler().post(() ->
-                    mainActivityInterface.getPerformanceGestures().doAction(action, false));
+            mainActivityInterface.getMainHandler().post(() -> {
+                triggerCryoFlipFlash();
+                mainActivityInterface.getPerformanceGestures().doAction(action, false);
+            });
         }
+    }
+
+    private void triggerCryoFlipFlash() {
+        if (myView == null || myView.getRoot() == null || getContext() == null) return;
+        
+        android.view.View flashView = new android.view.View(getContext());
+        flashView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        
+        // Edge glow aesthetic (subtle Cyan)
+        flashView.setBackgroundColor(android.graphics.Color.argb(45, 0, 255, 255));
+        // Ensure it doesn't block clicks
+        flashView.setClickable(false);
+        flashView.setFocusable(false);
+        
+        ((ViewGroup) myView.getRoot()).addView(flashView);
+        
+        flashView.setAlpha(0f);
+        flashView.animate().alpha(1f).setDuration(120).withEndAction(() -> {
+            flashView.animate().alpha(0f).setDuration(250).withEndAction(() -> {
+                if (myView != null && myView.getRoot() != null) {
+                    ((ViewGroup) myView.getRoot()).removeView(flashView);
+                }
+            }).start();
+        }).start();
     }
 
     private void bindCameraUseCases(@NonNull ProcessCameraProvider cameraProvider) {

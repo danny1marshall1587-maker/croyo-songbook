@@ -194,6 +194,9 @@ public class DisplayExtraFragment extends Fragment {
             ExposedDropDownArrayAdapter flowPatternAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.cryoFlowPattern, R.layout.view_exposed_dropdown_item, flowPatterns);
             myView.cryoFlowPattern.setAdapter(flowPatternAdapter);
             myView.cryoFlowPattern.setText(mainActivityInterface.getPreferences().getMyPreferenceString("cryoFlowPatternName", "Tide"));
+            
+            myView.cryoFlowSpeed.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowSpeed", 1.0f));
+            myView.faceGestureSensitivity.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("faceGestureSensitivity", 0.5f));
 
             // --- Face Gesture Mappings ---
             setupFaceGestureDropdowns();
@@ -571,6 +574,23 @@ public class DisplayExtraFragment extends Fragment {
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 mainActivityInterface.getPreferences().setMyPreferenceFloat("cryoFlowIntensity", slider.getValue());
                 displayInterface.updateDisplay("setSongContentPrefs");
+            }
+        });
+
+        myView.cryoFlowSpeed.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override public void onStartTrackingTouch(@NonNull Slider slider) {}
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("cryoFlowSpeed", slider.getValue());
+                displayInterface.updateDisplay("setSongContentPrefs");
+            }
+        });
+
+        myView.faceGestureSensitivity.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override public void onStartTrackingTouch(@NonNull Slider slider) {}
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("faceGestureSensitivity", slider.getValue());
             }
         });
 

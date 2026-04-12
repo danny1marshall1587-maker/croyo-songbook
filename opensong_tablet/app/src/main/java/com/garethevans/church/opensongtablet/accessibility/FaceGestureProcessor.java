@@ -26,7 +26,7 @@ public class FaceGestureProcessor {
     private static final long COOLDOWN_MS = 1500;
 
     // Thresholds for gestures
-    private static final float MOUTH_OPEN_THRESHOLD = 0.5f; // jawOpen
+    private float mouthOpenThreshold = 0.5f; // jawOpen dynamic threshold
     private static final float EYE_BLINK_THRESHOLD = 0.8f;  // eyeBlinkLeft/Right
 
     public interface FaceGestureListener {
@@ -42,6 +42,10 @@ public class FaceGestureProcessor {
         this.context = context;
         this.listener = listener;
         setupFaceLandmarker();
+    }
+
+    public void setMouthOpenThreshold(float threshold) {
+        this.mouthOpenThreshold = threshold;
     }
 
     private void setupFaceLandmarker() {
@@ -85,8 +89,8 @@ public class FaceGestureProcessor {
             }
 
             // Gesture Logic: Mouth Open (jawOpen) -> Flip Next (Custom Action)
-            if (label.equals("jawOpen") && score > MOUTH_OPEN_THRESHOLD) {
-                Log.d(TAG, "Mouth Open detected! Score: " + score);
+            if (label.equals("jawOpen") && score > mouthOpenThreshold) {
+                Log.d(TAG, "Mouth Open detected! Score: " + score + " (Threshold: " + mouthOpenThreshold + ")");
                 lastTriggerTime = currentTime;
                 listener.onMouthOpen();
                 return;
