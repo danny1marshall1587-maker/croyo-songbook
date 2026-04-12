@@ -238,7 +238,7 @@ public class StorageAccess {
             // pickedDir.getName() returns the visible folder name (e.g., "OpenSong")
             if (appFolder.equalsIgnoreCase(pickedDir.getName())) {
                 // They picked the OpenSong folder directly
-                return pickedDir.getUri();
+                return treeUri;
             } else {
                 // They picked a parent folder (like 'Documents' or 'SD Card')
                 // We look for "OpenSong" inside it
@@ -251,7 +251,13 @@ public class StorageAccess {
                 }
 
                 if (openSongDir != null && openSongDir.exists() && openSongDir.canWrite()) {
-                    return openSongDir.getUri();
+                    // We must return a Tree URI, not a Document URI.
+                    // The most reliable way across SAF versions is to append %2FOpenSong to the treeUri string.
+                    String s = treeUri.toString();
+                    if (!s.endsWith(appFolder)) {
+                        s = s + "%2F" + appFolder;
+                    }
+                    return Uri.parse(s);
                 } else {
                     Log.e(TAG, "Failed to create or access the OpenSong child directory");
                 }
