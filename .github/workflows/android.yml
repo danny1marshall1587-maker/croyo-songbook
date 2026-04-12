@@ -41,11 +41,26 @@ jobs:
           sed -i '/org.gradle.java.home/d' opensong_tablet/gradle.properties
         fi
 
-    # - name: Run Lint
-    #   run: cd opensong_tablet && ./gradlew lint${{ matrix.flavor }}Debug --no-daemon
-
     - name: Build Debug APK
       run: cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Debug --no-daemon
+
+    - name: Decode Keystore (on tag)
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        MYAPP_STORE_FILE_BASE64: ${{ secrets.MYAPP_STORE_FILE_BASE64 }}
+      run: |
+        echo "--- Keystore decode diagnostic ---"
+        if [ -z "$MYAPP_STORE_FILE_BASE64" ]; then
+          echo "⚠️ MYAPP_STORE_FILE_BASE64 secret is EMPTY — release will be unsigned"
+        else
+          CHAR_COUNT=$(echo -n "$MYAPP_STORE_FILE_BASE64" | wc -c | tr -d ' ')
+          echo "✅ Secret has $CHAR_COUNT chars"
+          echo "$MYAPP_STORE_FILE_BASE64" | base64 -d > opensong_tablet/app/release-keystore.jks
+          FILESIZE=$(wc -c < opensong_tablet/app/release-keystore.jks | tr -d ' ')
+          echo "✅ Decoded keystore: $FILESIZE bytes"
+          # Verify it's a valid JKS
+          file opensong_tablet/app/release-keystore.jks
+        fi
 
     - name: Build Release APK (on tag)
       if: startsWith(github.ref, 'refs/tags/v')
@@ -55,18 +70,8 @@ jobs:
         MYAPP_KEY_ALIAS: ${{ secrets.MYAPP_KEY_ALIAS }}
         MYAPP_KEY_PASSWORD: ${{ secrets.MYAPP_KEY_PASSWORD }}
       run: |
-        echo "--- Keystore decode diagnostic ---"
-        if [ -z "$MYAPP_STORE_FILE_BASE64" ]; then
-          echo "⚠️ MYAPP_STORE_FILE_BASE64 secret is EMPTY — build will be unsigned"
-        else
-          echo "✅ MYAPP_STORE_FILE_BASE64 has $(echo -n "$MYAPP_STORE_FILE_BASE64" | wc -c | tr -d ' ') chars"
-          # Robust decode stripping any newlines/spaces
-          echo "$MYAPP_STORE_FILE_BASE64" | tr -d '\n\r ' | base64 -di > opensong_tablet/app/release-keystore.jks || echo "❌ base64 decode failed!"
-          echo "✅ Decoded keystore size: $(wc -c < opensong_tablet/app/release-keystore.jks || echo 0) bytes"
-        fi
-        echo "MYAPP_KEY_ALIAS is: ${MYAPP_KEY_ALIAS:-(not set)}"
-        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon > ../build_log.txt 2>&1 || { echo "❌ Gradle Build failed"; cat ../build_log.txt >> $GITHUB_STEP_SUMMARY; cat ../build_log.txt; exit 1; }
-        cat ../build_log.txt
+        cd opensong_tablet
+        ./gradlew assemble${{ matrix.flavor }}Release --no-daemon --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/build_log_${{ matrix.flavor }}.txt"
 
     - name: Prepare Artifacts
       if: always()
@@ -74,19 +79,17 @@ jobs:
         VERSION=${{ steps.get_version.outputs.VERSION }}
         FLAVOR=${{ matrix.flavor }}
         
-        # Ensure target directory exists for artifacts if previous steps failed
         mkdir -p artifacts_out
         
-        # Move Debug (search robustly)
-        DEBUG_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/debug -name "*.apk" | head -n 1)
+        # Move Debug
+        DEBUG_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/debug -name "*.apk" 2>/dev/null | head -n 1)
         if [ -f "$DEBUG_APK" ]; then
           cp "$DEBUG_APK" "artifacts_out/CryoSongbook-v$VERSION-$FLAVOR-debug.apk"
         fi
         
         # Move Release if exists
-        RELEASE_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/release -name "*.apk" | head -n 1)
+        RELEASE_APK=$(find opensong_tablet/app/build/outputs/apk/$FLAVOR/release -name "*.apk" 2>/dev/null | head -n 1)
         if [ -f "$RELEASE_APK" ]; then
-          # Check if it was signed
           if [ -f "opensong_tablet/app/release-keystore.jks" ]; then
             cp "$RELEASE_APK" "artifacts_out/CryoSongbook-v$VERSION-$FLAVOR-release-signed.apk"
           else
@@ -101,13 +104,13 @@ jobs:
         name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-debug
         path: artifacts_out/*debug.apk
 
-    - name: Upload Build Log
-      if: always()
+    - name: Upload Build Log (on tag)
+      if: always() && startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@v4
       with:
         name: Gradle-Build-Log-${{ matrix.flavor }}
-        path: ../build_log.txt
-        retention-days: 1
+        path: build_log_${{ matrix.flavor }}.txt
+        retention-days: 3
 
     - name: Upload Release Artifacts (on tag)
       if: always() && startsWith(github.ref, 'refs/tags/v')
