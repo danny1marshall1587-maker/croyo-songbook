@@ -133,6 +133,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
 
     private FaceGestureProcessor faceGestureProcessor;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private androidx.activity.result.ActivityResultLauncher<String> cameraPermissionLauncher;
 
     // Attaching and destroying
     @Override
@@ -142,6 +143,17 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         actionInterface = (ActionInterface) context;
         displayInterface = (DisplayInterface) context;
         mainActivityInterface.registerFragment(this, "Performance");
+        
+        cameraPermissionLauncher = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        startFaceGestureProcessor();
+                    } else {
+                        mainActivityInterface.getPreferences().setMyPreferenceBoolean("faceGestureFlipEnabled", false);
+                        mainActivityInterface.getShowToast().doIt("Permissions required for Facial Tracking");
+                    }
+                });
     }
 
     @Override
@@ -237,6 +249,11 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         // ONLY start the processor if explicitly enabled in preferences
         boolean isEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("faceGestureFlipEnabled", false);
         if (!isEnabled) return;
+        
+        if (!mainActivityInterface.getAppPermissions().hasCameraPermission()) {
+            cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+            return;
+        }
 
         faceGestureProcessor = new FaceGestureProcessor(getContext(), new FaceGestureProcessor.FaceGestureListener() {
             @Override
