@@ -65,7 +65,7 @@ jobs:
           echo "✅ Decoded keystore size: $(wc -c < opensong_tablet/app/release-keystore.jks || echo 0) bytes"
         fi
         echo "MYAPP_KEY_ALIAS is: ${MYAPP_KEY_ALIAS:-(not set)}"
-        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon > ../build_log.txt 2>&1 || { echo "❌ Gradle Build failed"; cat ../build_log.txt; exit 1; }
+        cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon > ../build_log.txt 2>&1 || { echo "❌ Gradle Build failed"; cat ../build_log.txt >> $GITHUB_STEP_SUMMARY; cat ../build_log.txt; exit 1; }
         cat ../build_log.txt
 
     - name: Prepare Artifacts
@@ -100,6 +100,14 @@ jobs:
       with:
         name: CryoSongbook-${{ matrix.flavor }}-v${{ steps.get_version.outputs.VERSION }}-debug
         path: artifacts_out/*debug.apk
+
+    - name: Upload Build Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Gradle-Build-Log-${{ matrix.flavor }}
+        path: ../build_log.txt
+        retention-days: 1
 
     - name: Upload Release Artifacts (on tag)
       if: always() && startsWith(github.ref, 'refs/tags/v')
