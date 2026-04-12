@@ -171,7 +171,8 @@ public class ImportOptionsFragment extends Fragment {
                             // Change the exif data to match the device orientation
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                                 try {
-                                    int surfaceRotation = myView.getRoot().getDisplay().getRotation();
+                                    android.view.Display display = myView.getRoot().getDisplay();
+                                    int surfaceRotation = display != null ? display.getRotation() : android.view.Surface.ROTATION_0;
                                     int newExifRotation = 0;
                                     switch (surfaceRotation) {
                                         case Surface.ROTATION_0:

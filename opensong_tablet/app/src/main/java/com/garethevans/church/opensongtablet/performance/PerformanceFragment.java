@@ -760,7 +760,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 mainActivityInterface.setWhattodo("");
 
                 // Sync the AI Agent with the current song context for alignment
-                if (mainActivityInterface.getSong() != null) {
+                if (mainActivityInterface != null && mainActivityInterface.getSong() != null && mainActivityInterface.getAiAgentManager() != null) {
                     try {
                         String lyrics = mainActivityInterface.getSong().getLyrics();
                         if (lyrics != null && !lyrics.isEmpty()) {

@@ -113,7 +113,8 @@ public class WindowFlags {
     public void setInsetsCompat(WindowInsetsCompat insetsCompat) {
         // This is sent from the main activity when the window is created and accessible
         this.insetsCompat = insetsCompat;
-        firstBootRotation = w.getDecorView().getDisplay().getRotation();
+        Display display = w.getDecorView().getDisplay();
+        firstBootRotation = display != null ? display.getRotation() : Surface.ROTATION_0;
         displayCutoutCompat = insetsCompat.getDisplayCutout();
         navBars = insetsCompat.getInsetsIgnoringVisibility(typeNavBars);
         statusBars = insetsCompat.getInsetsIgnoringVisibility(typeStatusBars);

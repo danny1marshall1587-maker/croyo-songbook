@@ -533,8 +533,13 @@ public class StorageAccess {
         }
 
         if (openSongRoot == null || !openSongRoot.exists()) {
-            updateFileActivityLog("Failure: Cannot access OpenSong root");
-            return "Failure";
+            String errorMsg = "Failure: Cannot access OpenSong root. ";
+            if (openSongRoot == null) errorMsg += "(openSongRoot is null)";
+            else errorMsg += "(openSongRoot does not exist)";
+            
+            updateFileActivityLog(errorMsg);
+            Log.e(TAG, errorMsg);
+            return "Failure: Storage Access Denied";
         }
 
         // Update internal reference
@@ -572,12 +577,14 @@ public class StorageAccess {
                 if (parts.length < 2) continue;
 
                 DocumentFile parent = openSongRoot.findFile(parts[0]);
-                if (parent != null) {
+                if (parent != null && parent.exists()) {
                     DocumentFile cacheFolder = parent.findFile(parts[1]);
-                    if (cacheFolder == null) {
+                    if (cacheFolder == null || !cacheFolder.exists()) {
                         logBuilder.append("\nCreating cache: ").append(cachePath);
                         parent.createDirectory(parts[1]);
                     }
+                } else {
+                    logBuilder.append("\nParent folder missing for cache: ").append(parts[0]);
                 }
             } catch (Exception e) {
                  logBuilder.append("\nFailed to process cache: ").append(cachePath).append(" error: ").append(e.getMessage());

@@ -26,6 +26,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -1175,7 +1176,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Also set the initial screen rotation
             if (windowFlags.getInsetsCompat() == null) {
                 windowFlags.setInsetsCompat(insets);
-                windowFlags.setCurrentRotation(this.getWindow().getDecorView().getDisplay().getRotation());
+                android.view.Display display = this.getWindow().getDecorView().getDisplay();
+                windowFlags.setCurrentRotation(display != null ? display.getRotation() : Surface.ROTATION_0);
             }
 
             // If we have opened the soft keyboard we can get the height
@@ -4987,7 +4989,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         presenterFragment.orientationInlineSet(newConfig.orientation);
                     }
                 }
-                windowFlags.setCurrentRotation(this.getWindow().getDecorView().getDisplay().getRotation());
+                Display display2 = this.getWindow().getDecorView().getDisplay();
+                windowFlags.setCurrentRotation(display2 != null ? display2.getRotation() : Surface.ROTATION_0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
