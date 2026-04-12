@@ -600,7 +600,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     getWindow().getDecorView().setDefaultFocusHighlightEnabled(false);
                 }
 
-                // Set up the helpers
+                // Set up the core helpers synchronously before anything else
+                coreBoot();
+
+                // Set up the remaining helpers
                 setupHelpers();
 
                 // Set up the action bar
@@ -888,8 +891,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         getPreferences().setMyPreferenceBoolean("intentAlreadyDealtWith", false);
     }
 
+    /**
+     * coreBoot() ensures that the most critical helpers (The Holy Trinity)
+     * are initialized synchronously on the main thread before any other helpers
+     * or background fragments attempt to access them.
+     */
+    private void coreBoot() {
+        Log.d(TAG, "coreBoot: Initializing primary survivors...");
+        getPreferences();
+        getStorageAccess();
+        getSQLiteHelper();
+        getAppPermissions();
+        getMyThemeColors();
+    }
+
     private void setupHelpers() {
-        // The get methods check for null and if so, create new instances
+        // The coreBoot() has already initialized the most critical ones
+        // but it doesn't hurt to keep these calls for documentation/redundancy
+        // as the synchronized getters will handle it.
         getStorageAccess();
         getPreferences();
 
@@ -3071,6 +3090,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     // Databases
     @Override
+    public synchronized com.garethevans.church.opensongtablet.ai.AiAgentManager getAiAgentManager() {
+        return com.garethevans.church.opensongtablet.ai.AiAgentManager.getInstance(this);
+    }
+
+    @Override
     public synchronized SQLiteHelper getSQLiteHelper() {
         if (sqLiteHelper == null) {
             sqLiteHelper = new SQLiteHelper(this);
@@ -3079,7 +3103,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public NonOpenSongSQLiteHelper getNonOpenSongSQLiteHelper() {
+    public synchronized NonOpenSongSQLiteHelper getNonOpenSongSQLiteHelper() {
         if (nonOpenSongSQLiteHelper == null) {
             try {
                 nonOpenSongSQLiteHelper = new NonOpenSongSQLiteHelper(this);
@@ -3091,7 +3115,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public CommonSQL getCommonSQL() {
+    public synchronized CommonSQL getCommonSQL() {
         if (commonSQL == null) {
             commonSQL = new CommonSQL(this);
         }
@@ -3437,7 +3461,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public AppPermissions getAppPermissions() {
+    public synchronized AppPermissions getAppPermissions() {
         if (appPermissions == null) {
             appPermissions = new AppPermissions(this);
         }
@@ -3445,7 +3469,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public MyFonts getMyFonts() {
+    public synchronized MyFonts getMyFonts() {
         if (myFonts == null) {
             myFonts = new MyFonts(this);
         }

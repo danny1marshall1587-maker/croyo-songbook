@@ -22,6 +22,7 @@ import com.garethevans.church.opensongtablet.appdata.CheckInternet;
 import com.garethevans.church.opensongtablet.appdata.FixLocale;
 import com.garethevans.church.opensongtablet.appdata.MyFonts;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
+import com.garethevans.church.opensongtablet.ai.AiAgentManager;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
 import com.garethevans.church.opensongtablet.bible.Bible;
@@ -126,6 +127,7 @@ public interface MainActivityInterface {
     MyFonts getMyFonts();
     ThemeColors getMyThemeColors();
     AppPermissions getAppPermissions();
+    AiAgentManager getAiAgentManager();
     void prepareStrings();
 
     // Song stuff

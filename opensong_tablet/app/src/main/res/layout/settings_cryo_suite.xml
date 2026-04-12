@@ -18,16 +18,18 @@
 
             <!-- Section 1: Prompter -->
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
-                style="@style/largeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/cryo_prompter" />
+                android:text="CRYO PROMPTER"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
                 android:id="@+id/cryoPrompterEnable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/cryo_prompter"
                 android:hint="@string/cryo_prompter_info"/>
 
@@ -36,7 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/active_line_scale" />
+                android:text="@string/active_line_scale"
+                android:textStyle="bold"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
                 android:id="@+id/prompterScaleSlider"
@@ -50,17 +53,18 @@
 
             <!-- Section 2: Flow Animation -->
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
-                style="@style/largeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/cryo_flow_settings" />
+                android:text="FLOW ANIMATION"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
                 android:id="@+id/cryoFlowEnable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/cryo_flow_enable"/>
 
             <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
@@ -74,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="16dp">
                 <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                     android:id="@+id/flowPrimaryColor"
                     android:layout_width="0dp"
@@ -93,11 +97,13 @@
 
             <!-- Section 3: Face Gestures -->
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
-                style="@style/largeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/face_gesture_flip" />
+                android:text="FACE GESTURES"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
                 android:id="@+id/faceGestureEnable"

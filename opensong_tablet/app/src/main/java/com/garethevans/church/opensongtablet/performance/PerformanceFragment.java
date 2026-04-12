@@ -110,6 +110,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         autoHideHighlighterHandler = new Handler(),
         focalSnapHandler = new Handler();
     private final Runnable sendSongAfterDelayRunnable = () -> {
+        if (!isAdded()) return;
         // IV - The send is always called by the 'if' and will return true if a large file has been sent
         if (mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendSongPayload()) {
             mainActivityInterface.getShowToast().doIt(nearby_large_file_string);
@@ -119,7 +120,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     private final Runnable autoHideHighlighterRunnable = new Runnable() {
         @Override
         public void run() {
-            if (myView!=null) {
+            if (isAdded() && myView!=null) {
                 myView.highlighterView.setVisibility(View.GONE);
             }
         }
@@ -306,9 +307,11 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     }
 
     private void executeFaceAction(String prefKey, String defaultValue) {
+        if (!isAdded()) return;
         String action = mainActivityInterface.getPreferences().getMyPreferenceString(prefKey, defaultValue);
         if (action != null && !action.isEmpty()) {
             mainActivityInterface.getMainHandler().post(() -> {
+                if (!isAdded()) return;
                 triggerCryoFlipFlash();
                 mainActivityInterface.getPerformanceGestures().doAction(action, false);
             });
@@ -755,6 +758,19 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                     mainActivityInterface.closeDrawer(true);
                 }
                 mainActivityInterface.setWhattodo("");
+
+                // Sync the AI Agent with the current song context for alignment
+                if (mainActivityInterface.getSong() != null) {
+                    try {
+                        String lyrics = mainActivityInterface.getSong().getLyrics();
+                        if (lyrics != null && !lyrics.isEmpty()) {
+                            mainActivityInterface.getAiAgentManager().setSongContext(java.util.Arrays.asList(lyrics.split("\n")));
+                            Log.d(TAG, "AI Context synced for: " + filename);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "AI Sync failed during song load", e);
+                    }
+                }
 
                 mainActivityInterface.checkSetMenuItemHighlighted(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet());
 

@@ -67,9 +67,6 @@ public class ThemeSetupFragment extends Fragment {
         prepareStrings();
         webAddress = website_themes_string;
 
-        String text = presenter_mode_string + " / " + stage_mode_string;
-        myView.presenterStageMode.setText(text);
-
         // Initialise the themes
         setUpTheme();
 
@@ -297,33 +294,10 @@ public class ThemeSetupFragment extends Fragment {
         myView.pageButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsBackgroundColor());
         myView.lyricsButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsTextColor());
         myView.chordsButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsChordsColor());
-        myView.capoButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsCapoColor());
-        myView.multilingualButton.setColor(mainActivityInterface.getMyThemeColors().getMultilingualTextColor());
-
-        myView.verseButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsVerseColor());
-        myView.chorusButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsChorusColor());
-        myView.bridgeButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsBridgeColor());
-        myView.commentButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsCommentColor());
-        myView.prechorusButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsPreChorusColor());
-        myView.tagButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsTagColor());
-        myView.customButton.setColor(mainActivityInterface.getMyThemeColors().getLyricsCustomColor());
-        myView.chordHighlighting.setColor(mainActivityInterface.getMyThemeColors().getHighlightChordColor());
-        myView.titleHighlighting.setColor(mainActivityInterface.getMyThemeColors().getHighlightHeadingColor());
 
         myView.presoButton.setColor(mainActivityInterface.getMyThemeColors().getPresoFontColor());
         myView.presoChordButton.setColor(mainActivityInterface.getMyThemeColors().getPresoChordColor());
-        myView.presoInfoButton.setColor(mainActivityInterface.getMyThemeColors().getPresoInfoFontColor());
-        myView.presoAlertButton.setColor(mainActivityInterface.getMyThemeColors().getPresoAlertColor());
-        myView.presoCapoButton.setColor(mainActivityInterface.getMyThemeColors().getPresoCapoColor());
-        myView.presoMultilingualButton.setColor(mainActivityInterface.getMyThemeColors().getPresoMultilingualColor());
-        myView.presoShadowButton.setColor(mainActivityInterface.getMyThemeColors().getPresoShadowColor());
 
-        myView.metronomeButton.setColor(mainActivityInterface.getMyThemeColors().getMetronomeColor());
-        myView.stickytextButton.setColor(mainActivityInterface.getMyThemeColors().getStickyTextColor());
-        myView.stickybackgroundButton.setColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor());
-        myView.hotZoneButton.setColor(mainActivityInterface.getMyThemeColors().getHotZoneColor());
-        myView.abctextButton.setColor(mainActivityInterface.getMyThemeColors().getAbcPopupTextColor());
-        myView.abcbackgroundButton.setColor(mainActivityInterface.getMyThemeColors().getAbcPopupColor());
         updateCustomColorPreview();
         updateChips();
     }
@@ -332,8 +306,6 @@ public class ThemeSetupFragment extends Fragment {
         myView.chipVerse.setColor(mainActivityInterface.getMyThemeColors().getLyricsVerseColor());
         myView.chipChorus.setColor(mainActivityInterface.getMyThemeColors().getLyricsChorusColor());
         myView.chipBridge.setColor(mainActivityInterface.getMyThemeColors().getLyricsBridgeColor());
-        myView.chipPreChorus.setColor(mainActivityInterface.getMyThemeColors().getLyricsPreChorusColor());
-        myView.chipTag.setColor(mainActivityInterface.getMyThemeColors().getLyricsTagColor());
     }
 
     private void setListeners() {
@@ -341,37 +313,14 @@ public class ThemeSetupFragment extends Fragment {
         myView.lyricsButton.setOnClickListener(v-> chooseColor("lyricsTextColor"));
         myView.presoButton.setOnClickListener(v-> chooseColor("presoFontColor"));
         myView.presoChordButton.setOnClickListener(v-> chooseColor("presoChordColor"));
-        myView.presoInfoButton.setOnClickListener(v -> chooseColor("presoInfoFontColor"));
         myView.chordsButton.setOnClickListener(v-> chooseColor("lyricsChordsColor"));
-        myView.capoButton.setOnClickListener(v-> chooseColor("lyricsCapoColor"));
-        myView.multilingualButton.setOnClickListener(v -> chooseColor("multilingualTextColor"));
         myView.pageButton.setOnClickListener(v-> chooseColor("lyricsBackgroundColor"));
-        myView.verseButton.setOnClickListener(v-> chooseColor("lyricsVerseColor"));
-        myView.chorusButton.setOnClickListener(v-> chooseColor("lyricsChorusColor"));
-        myView.prechorusButton.setOnClickListener(v-> chooseColor("lyricsPreChorusColor"));
-        myView.bridgeButton.setOnClickListener(v-> chooseColor("lyricsBridgeColor"));
-        myView.tagButton.setOnClickListener(v-> chooseColor("lyricsTagColor"));
-        myView.commentButton.setOnClickListener(v-> chooseColor("lyricsCommentColor"));
-        myView.customButton.setOnClickListener(v-> chooseColor("lyricsCustomColor"));
-        myView.chordHighlighting.setOnClickListener(v -> chooseColor("highlightChordColor"));
-        myView.titleHighlighting.setOnClickListener(v -> chooseColor("highlightHeadingColor"));
-        myView.metronomeButton.setOnClickListener(v-> chooseColor("metronomeColor"));
-        myView.stickytextButton.setOnClickListener(v-> chooseColor("stickyTextColor"));
-        myView.stickybackgroundButton.setOnClickListener(v-> chooseColor("stickyBackgroundColor"));
-        myView.hotZoneButton.setOnClickListener(v-> chooseColor("hotZoneColor"));
-        myView.presoAlertButton.setOnClickListener(v -> chooseColor("presoAlertColor"));
-        myView.presoCapoButton.setOnClickListener(v -> chooseColor("presoCapoColor"));
-        myView.presoMultilingualButton.setOnClickListener(v -> chooseColor("presoMultilingualColor"));
-        myView.presoShadowButton.setOnClickListener(v -> chooseColor("presoShadowColor"));
+
         myView.resetTheme.setOnClickListener(v -> mainActivityInterface.displayAreYouSure("resetColors",myView.themeName.getText().toString() + ": "+reset_colours_string,null,"themeSetupFragment",this,null));
-        myView.abctextButton.setOnClickListener(v -> chooseColor("abcPopupTextColor"));
-        myView.abcbackgroundButton.setOnClickListener(v -> chooseColor("abcPopupColor"));
 
         myView.chipVerse.setOnClickListener(v -> chooseColor("lyricsVerseColor"));
         myView.chipChorus.setOnClickListener(v -> chooseColor("lyricsChorusColor"));
         myView.chipBridge.setOnClickListener(v -> chooseColor("lyricsBridgeColor"));
-        myView.chipPreChorus.setOnClickListener(v -> chooseColor("lyricsPreChorusColor"));
-        myView.chipTag.setOnClickListener(v -> chooseColor("lyricsTagColor"));
     }
 
     private void chooseColor(String which) {
@@ -406,44 +355,23 @@ public class ThemeSetupFragment extends Fragment {
 
     private void invalidateViews() {
         mainActivityInterface.getMainHandler().post(() -> {
+            if (myView == null) return;
             myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
             myView.invertPDF.setPalette(mainActivityInterface.getPalette());
             myView.resetTheme.setPalette(mainActivityInterface.getPalette());
             myView.themeName.setPalette(mainActivityInterface.getPalette());
             myView.lyricsButton.setPalette(mainActivityInterface.getPalette());
             myView.chordsButton.setPalette(mainActivityInterface.getPalette());
-            myView.capoButton.setPalette(mainActivityInterface.getPalette());
-            myView.multilingualButton.setPalette(mainActivityInterface.getPalette());
             myView.pageButton.setPalette(mainActivityInterface.getPalette());
-            myView.verseButton.setPalette(mainActivityInterface.getPalette());
-            myView.chorusButton.setPalette(mainActivityInterface.getPalette());
-            myView.prechorusButton.setPalette(mainActivityInterface.getPalette());
-            myView.bridgeButton.setPalette(mainActivityInterface.getPalette());
-            myView.tagButton.setPalette(mainActivityInterface.getPalette());
-            myView.commentButton.setPalette(mainActivityInterface.getPalette());
-            myView.customButton.setPalette(mainActivityInterface.getPalette());
-            myView.titleHighlighting.setPalette(mainActivityInterface.getPalette());
-            myView.chordHighlighting.setPalette(mainActivityInterface.getPalette());
+
             myView.presoButton.setPalette(mainActivityInterface.getPalette());
             myView.presoChordButton.setPalette(mainActivityInterface.getPalette());
-            myView.presoCapoButton.setPalette(mainActivityInterface.getPalette());
-            myView.presoMultilingualButton.setPalette(mainActivityInterface.getPalette());
-            myView.presoInfoButton.setPalette(mainActivityInterface.getPalette());
-            myView.presoAlertButton.setPalette(mainActivityInterface.getPalette());
-            myView.presoShadowButton.setPalette(mainActivityInterface.getPalette());
-            myView.metronomeButton.setPalette(mainActivityInterface.getPalette());
-            myView.hotZoneButton.setPalette(mainActivityInterface.getPalette());
-            myView.stickytextButton.setPalette(mainActivityInterface.getPalette());
-            myView.stickybackgroundButton.setPalette(mainActivityInterface.getPalette());
-            myView.abctextButton.setPalette(mainActivityInterface.getPalette());
-            myView.abcbackgroundButton.setPalette(mainActivityInterface.getPalette());
+
             myView.elementPicker.setPalette(mainActivityInterface.getPalette());
             myView.customColorButton.setPalette(mainActivityInterface.getPalette());
             myView.chipVerse.setPalette(mainActivityInterface.getPalette());
             myView.chipChorus.setPalette(mainActivityInterface.getPalette());
             myView.chipBridge.setPalette(mainActivityInterface.getPalette());
-            myView.chipPreChorus.setPalette(mainActivityInterface.getPalette());
-            myView.chipTag.setPalette(mainActivityInterface.getPalette());
         });
     }
 

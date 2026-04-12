@@ -13,7 +13,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:padding="16dp"
             android:paddingBottom="@dimen/extra_scroll_space_large">
+
+            <!-- Section 1: Prompter & AI -->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PROMPTER &amp; AI"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/modeButton"
@@ -22,10 +33,7 @@
                 android:text="@string/choose_app_mode"
                 android:hint="@string/performance_mode"
                 android:drawableStart="@drawable/account"
-                app:size="large"/>
-
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/cryoButton"
@@ -34,20 +42,17 @@
                 android:text="@string/cryo_performance"
                 android:hint="@string/cryo_prompter"
                 android:drawableStart="@drawable/bullseye"
-                app:size="large"/>
+                app:size="medium"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
-
+            <!-- Section 2: Display & Themes -->
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/storageButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/storage"
-                android:hint="@string/storage_options_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:text="DISPLAY &amp; THEMES"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/displayButton"
@@ -55,9 +60,27 @@
                 android:layout_height="wrap_content"
                 android:text="@string/display"
                 android:hint="@string/display_settings"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/projector"
+                app:size="medium"/>
+
+            <!-- Section 3: Library & Storage -->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LIBRARY &amp; STORAGE"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
+
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:id="@+id/storageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/storage"
+                android:hint="@string/storage_options_info"
+                android:drawableStart="@drawable/folder_open"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/actionsButton"
@@ -65,9 +88,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/song_actions"
                 android:hint="@string/song_actions_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/music_note"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/setActionsButton"
@@ -75,9 +97,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/set_manage"
                 android:hint="@string/set_manage_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/inline_set"
+                app:size="medium"/>
+
+            <!-- Section 4: Connections & Input -->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONNECTIONS &amp; INPUT"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/gesturesButton"
@@ -85,9 +116,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/controls"
                 android:hint="@string/controls_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/pedal"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/connectButton"
@@ -95,10 +125,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/connections_connect"
                 android:hint="@string/connections_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                android:id="@+id/connectLine"
-                style="@style/MyDividerLine" />
+                android:drawableStart="@drawable/share"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/webServerButton"
@@ -106,9 +134,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/web_server"
                 android:hint="@string/web_server_hint"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/web"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/midiButton"
@@ -116,9 +143,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/midi"
                 android:hint="@string/midi_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/midi"
+                app:size="medium"/>
+
+            <!-- Section 5: Account & Help -->
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ACCOUNT &amp; HELP"
+                android:textStyle="bold"
+                app:size="large"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/profilesButton"
@@ -126,9 +162,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profile"
                 android:hint="@string/profile_explanation"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/account"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/ccliButton"
@@ -136,9 +171,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/ccli"
                 android:hint="@string/ccli_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/book"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/utilitiesButton"
@@ -146,9 +180,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/utilities"
                 android:hint="@string/utilities_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/settings"
+                app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/aboutButton"
@@ -156,9 +189,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/about"
                 android:hint="@string/about_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+                android:drawableStart="@drawable/information"
+                app:size="medium"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

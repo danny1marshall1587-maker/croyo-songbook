@@ -123,7 +123,6 @@ public class SettingsCategories extends Fragment {
 
     private void setPlayEnabled(boolean enabled) {
         myView.connectButton.setEnabled(enabled);
-        myView.connectLine.setEnabled(enabled);
         if (!enabled) {
             myView.connectButton.setHint(play_services_error_string);
         }
