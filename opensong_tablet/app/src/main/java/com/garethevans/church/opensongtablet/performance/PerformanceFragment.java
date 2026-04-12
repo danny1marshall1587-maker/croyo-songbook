@@ -178,6 +178,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 myView.cryoFlowBackground.setVisibility(View.VISIBLE);
                 myView.cryoFlowBackground.setPatternMode(mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowPatternIndex", 0));
                 myView.cryoFlowBackground.setIntensity(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowIntensity", 1.0f));
+                myView.cryoFlowBackground.setSpeed(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowSpeed", 1.0f));
                 
                 int primary = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowPrimaryColor", Color.BLUE);
                 int secondary = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowSecondaryColor", Color.CYAN);
@@ -286,6 +287,10 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 executeFaceAction("gestureRaise", "up");
             }
         });
+
+        // Bug fix: Apply the user's lip sensitivity preference to the processor
+        float sensitivity = mainActivityInterface.getPreferences().getMyPreferenceFloat("faceGestureSensitivity", 0.5f);
+        faceGestureProcessor.setMouthOpenThreshold(sensitivity);
         
         // ... (rest of the camera setup remains the same)
 

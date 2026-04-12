@@ -26,6 +26,7 @@ public class CryoFlowView extends View {
     private long startTime;
     private int patternMode = 0; // 0-9
     private float intensity = 1.0f;
+    private float speedMultiplier = 1.0f;
     private int primaryColor = Color.BLUE;
     private int secondaryColor = Color.CYAN;
     private int backgroundColor = Color.WHITE;
@@ -78,6 +79,10 @@ public class CryoFlowView extends View {
         this.intensity = intensity;
     }
 
+    public void setSpeed(float speed) {
+        this.speedMultiplier = speed;
+    }
+
     public void setColors(int primary, int secondary, int background) {
         this.primaryColor = primary;
         this.secondaryColor = secondary;
@@ -97,7 +102,7 @@ public class CryoFlowView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         float elapsed = (System.currentTimeMillis() - startTime) / 1000f;
-        float timeScale = elapsed * intensity;
+        float timeScale = elapsed * intensity * speedMultiplier;
 
         canvas.drawColor(backgroundColor);
 

@@ -17,4 +17,7 @@ __pycache__
 *.pyc
 .env.local
 .next
-.github
+# --- Signing secrets (NEVER commit) ---
+local.properties
+*.jks
+*.keystore
