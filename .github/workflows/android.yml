@@ -55,9 +55,15 @@ jobs:
         MYAPP_KEY_ALIAS: ${{ secrets.MYAPP_KEY_ALIAS }}
         MYAPP_KEY_PASSWORD: ${{ secrets.MYAPP_KEY_PASSWORD }}
       run: |
-        if [ -n "$MYAPP_STORE_FILE_BASE64" ]; then
+        echo "--- Keystore decode diagnostic ---"
+        if [ -z "$MYAPP_STORE_FILE_BASE64" ]; then
+          echo "⚠️ MYAPP_STORE_FILE_BASE64 secret is EMPTY — build will be unsigned"
+        else
+          echo "✅ MYAPP_STORE_FILE_BASE64 has $(echo "$MYAPP_STORE_FILE_BASE64" | wc -c | tr -d ' ') chars"
           echo "$MYAPP_STORE_FILE_BASE64" | base64 -d > opensong_tablet/app/release-keystore.jks
+          echo "✅ Decoded keystore: $(ls -l opensong_tablet/app/release-keystore.jks)"
         fi
+        echo "MYAPP_KEY_ALIAS is: ${MYAPP_KEY_ALIAS:-(not set)}"
         cd opensong_tablet && ./gradlew assemble${{ matrix.flavor }}Release --no-daemon
 
     - name: Prepare Artifacts
