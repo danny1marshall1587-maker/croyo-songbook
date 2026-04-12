@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import com.garethevans.church.opensongtablet.R;
 import com.garethevans.church.opensongtablet.databinding.BootupLogoBinding;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+import android.os.Build;
+import android.util.Log;
 
 /*
 This fragment is the first one that the main activity loads up.
@@ -108,6 +110,17 @@ public class BootUpFragment extends Fragment {
 
     // Checks made before starting the app
     public void startOrSetUp() {
+        // 1. Check for all non-storage permissions first (Bluetooth, Location, Audio, Camera)
+        if (!mainActivityInterface.getAppPermissions().hasNearbyPermissions() ||
+            !mainActivityInterface.getAppPermissions().hasAudioPermissions() ||
+            !mainActivityInterface.getAppPermissions().hasCameraPermission()) {
+
+            Log.d(TAG, "Requesting master permissions...");
+            mainActivityInterface.requestMasterPermissions();
+            return;
+        }
+
+        // 2. Proceed to storage check
         if (storageIsCorrectlySet()) {
             if (!mainActivityInterface.getAlertChecks().showUpdateInfo() &&
                     mainActivityInterface.getPreferences().getMyPreferenceBoolean("indexSkipAllowed",false)) {
@@ -125,10 +138,13 @@ public class BootUpFragment extends Fragment {
         }
     }
     private boolean storageIsCorrectlySet() {
-        // Check that storage permission is granted and that it has been set and that it exists
+        // Check that storage permission is granted (either All Files Access or SAF tree)
+        // and that it has been set and that it exists
         return (storagePermissionGranted() && storageLocationSet() && storageLocationValid());
     }
     private boolean storagePermissionGranted() {
+        // If they have All Files Access on Android 11+, we are good.
+        // Otherwise they still need standard SAF storage check
         return mainActivityInterface.getAppPermissions().hasStoragePermissions();
     }
     private boolean storageLocationSet() {
@@ -141,6 +157,27 @@ public class BootUpFragment extends Fragment {
     }
 
     private void requireStorageCheck() {
+        // If we are on Android 11+ and don't have All Files Access yet, we might want to prompt for it
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !mainActivityInterface.getAppPermissions().hasFullStoragePermission()) {
+            // Show a dialog explaining All Files Access
+            CustomAlertDialog.showStyledDialog(
+                    getContext(),
+                    mainActivityInterface,
+                    getString(R.string.storage),
+                    "To ensure smooth operation and avoid 'Access Denied' errors on Android 11+, " +
+                    "Cryo-Songbook recommends 'All Files Access'. \n\n" +
+                    "Would you like to enable this now, or continue with restricted folder access?",
+                    (dialog, which) -> mainActivityInterface.requestAllFilesAccess(),
+                    (dialog, which) -> {
+                        // Fallback to SAF selection
+                        mainActivityInterface.setWhattodo("storageBad");
+                        mainActivityInterface.navigateToFragment(deeplink_set_storage, 0);
+                    },
+                    R.drawable.folder_open
+            );
+            return;
+        }
+
         // Either permission hasn't been granted, or it isn't set properly
         // Switch to the set storage fragment
         mainActivityInterface.setWhattodo("storageBad");

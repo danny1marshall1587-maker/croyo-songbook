@@ -16,6 +16,7 @@ import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -222,6 +223,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private boolean rebooted = false, alreadyBackPressed = false;
 
     public static final Gson gson = new Gson();
+
+    // Permission Launchers
+    private ActivityResultLauncher<String[]> masterPermissionLauncher;
+    private ActivityResultLauncher<Intent> allFilesAccessLauncher;
 
     // Initialize the Executors and main handlers for async tasks
     ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
@@ -509,6 +514,31 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
             });
         }
+
+        // Register Permission Launchers
+        masterPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    Log.d(TAG, "Master permissions result: " + result);
+                    // Notify BootUpFragment if it's currently active
+                    Fragment currentFragment = getMyFragmentManager().findFragmentByTag("BootUpFragment");
+                    if (currentFragment instanceof com.garethevans.church.opensongtablet.appdata.BootUpFragment) {
+                        ((com.garethevans.church.opensongtablet.appdata.BootUpFragment) currentFragment).startOrSetUp();
+                    }
+                }
+        );
+
+        allFilesAccessLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Log.d(TAG, "All Files Access result");
+                    // Notify BootUpFragment if it's currently active
+                    Fragment currentFragment = getMyFragmentManager().findFragmentByTag("BootUpFragment");
+                    if (currentFragment instanceof com.garethevans.church.opensongtablet.appdata.BootUpFragment) {
+                        ((com.garethevans.church.opensongtablet.appdata.BootUpFragment) currentFragment).startOrSetUp();
+                    }
+                }
+        );
 
         // Get the user locale and prepare the strings
         prepareStrings();
@@ -1180,6 +1210,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public boolean getFirstRun() {
         return firstRun;
+    }
+
+    @Override
+    public void requestMasterPermissions() {
+        if (masterPermissionLauncher != null) {
+            masterPermissionLauncher.launch(getAppPermissions().getMasterPermissionList());
+        }
+    }
+
+    @Override
+    public void requestAllFilesAccess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && allFilesAccessLauncher != null) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            allFilesAccessLauncher.launch(intent);
+        }
     }
 
     @Override

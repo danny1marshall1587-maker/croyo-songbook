@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -179,7 +180,20 @@ public class AppPermissions {
     }
 
     public boolean hasStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // On Android 11+, check if they have granted All Files Access
+            // If they have, we are golden. If not, they still need to pick a folder via SAF
+            // as a fallback.
+            return hasFullStoragePermission() || mainActivityInterface.getStorageAccess().uriTreeValid(null);
+        }
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || checkForPermission(getStoragePermissions());
+    }
+
+    public boolean hasFullStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        }
+        return true;
     }
 
     // CAMERA
@@ -227,6 +241,33 @@ public class AppPermissions {
         permissionsLog = "";
     }
 
+
+    public String[] getMasterPermissionList() {
+        java.util.List<String> permissions = new java.util.ArrayList<>();
+
+        // Basic Storage (Legacy but still good for some folders)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        // Bluetooth & Location (Combined for Nearby/MIDI)
+        for (String p : getNearbyPermissions()) {
+            if (p != null && !p.isEmpty()) {
+                permissions.add(p);
+            }
+        }
+
+        // Audio & Camera
+        permissions.add(getAudioPermissions());
+        permissions.add(getCameraPermissions());
+
+        // Notifications (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add("android.permission.POST_NOTIFICATIONS");
+        }
+
+        return permissions.toArray(new String[0]);
+    }
 
     public void checkAgeVerification() {
         // From 1st Jan 2026 Texas requires that apps check age from Google Play API

@@ -138,6 +138,8 @@ public interface MainActivityInterface {
     void setTempSong(Song tempSong);
     String getMainfoldername();
     MultiTrackPlayer getMultiTrackPlayer();
+    void requestMasterPermissions();
+    void requestAllFilesAccess();
 
     // Capo
     void dealWithCapo();
