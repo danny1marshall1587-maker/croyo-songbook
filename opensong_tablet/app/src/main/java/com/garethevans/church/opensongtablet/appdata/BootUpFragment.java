@@ -288,6 +288,13 @@ public class BootUpFragment extends Fragment {
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error during boot process", e);
+                    // Add full stack trace to crash log for better diagnostics
+                    try {
+                        mainActivityInterface.getStorageAccess().updateCrashLog("BOOT_PROCESS_ERROR:\n" + Log.getStackTraceString(e));
+                    } catch (Exception logError) {
+                        e.printStackTrace();
+                    }
+                    
                     mainActivityInterface.getMainHandler().post(() -> {
                         if (isAdded()) {
                             String errorMsg = e.getLocalizedMessage();

@@ -3071,7 +3071,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     // Databases
     @Override
-    public SQLiteHelper getSQLiteHelper() {
+    public synchronized SQLiteHelper getSQLiteHelper() {
         if (sqLiteHelper == null) {
             sqLiteHelper = new SQLiteHelper(this);
         }
@@ -3123,7 +3123,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public Midi getMidi() {
+    public synchronized Midi getMidi() {
         if (midi == null) {
             midi = new Midi(this, this);
         }
@@ -3322,7 +3322,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public StorageAccess getStorageAccess() {
+    public synchronized StorageAccess getStorageAccess() {
         if (storageAccess == null) {
             storageAccess = new StorageAccess(this);
         }
@@ -3429,7 +3429,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public Preferences getPreferences() {
+    public synchronized Preferences getPreferences() {
         if (preferences == null) {
             preferences = new Preferences(this);
         }
@@ -3550,7 +3550,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public Song getSong() {
+    public synchronized Song getSong() {
         if (song == null) {
             song = new Song();
         }

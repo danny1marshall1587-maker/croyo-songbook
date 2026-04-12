@@ -341,6 +341,7 @@ public class CommonSQL {
             args.add("%" + titleVal + "%");
         }
         if (searchByFilter && filterVal != null && !filterVal.isEmpty()) {
+            String escapedFilter = filterVal.replace("%", "\\%").replace("_", "\\_");
             sqlMatch += "(" + SQLite.COLUMN_LYRICS + " LIKE ? OR ";
             sqlMatch += SQLite.COLUMN_FILENAME + " LIKE ? OR ";
             sqlMatch += SQLite.COLUMN_TITLE + " LIKE ? OR ";
@@ -350,15 +351,16 @@ public class CommonSQL {
             sqlMatch += SQLite.COLUMN_USER1 + " LIKE ? OR ";
             sqlMatch += SQLite.COLUMN_USER2 + " LIKE ? OR ";
             sqlMatch += SQLite.COLUMN_USER3 + " LIKE ? )";
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
-            args.add("%" + filterVal + "%");
+            String arg = "%" + escapedFilter + "%";
+            args.add(arg); // lyrics
+            args.add(arg); // filename
+            args.add(arg); // title
+            args.add(arg); // copyright
+            args.add(arg); // hymnnum
+            args.add(arg); // ccli
+            args.add(arg); // user1
+            args.add(arg); // user2
+            args.add(arg); // user3
         }
 
         if (!sqlMatch.isEmpty()) {
