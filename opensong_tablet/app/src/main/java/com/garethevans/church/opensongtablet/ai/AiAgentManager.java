@@ -16,12 +16,17 @@ public class AiAgentManager {
     private List<String> currentSongLines;
 
     private AiAgentManager(Context context) {
-        this.context = context.getApplicationContext();
-        loadActiveAgent(context);
+        if (context != null) {
+            this.context = context.getApplicationContext();
+            loadActiveAgent(context);
+        } else {
+            this.context = null;
+            Log.e(TAG, "AiAgentManager initialized with NULL context!");
+        }
     }
 
     public static synchronized AiAgentManager getInstance(Context context) {
-        if (instance == null) {
+        if (instance == null && context != null) {
             instance = new AiAgentManager(context);
         }
         return instance;
@@ -29,14 +34,15 @@ public class AiAgentManager {
 
     private void loadActiveAgent(Context initContext) {
         if (initContext instanceof MainActivityInterface) {
-            String savedAgent = ((MainActivityInterface) initContext).getPreferences()
-                    .getMyPreferenceString("aiAgentActive", AiAgent.GEMINI_3_FLASH.name());
-            activeAgent = AiAgent.fromString(savedAgent);
+            MainActivityInterface mainInterface = (MainActivityInterface) initContext;
+            if (mainInterface.getPreferences() != null) {
+                String savedAgent = mainInterface.getPreferences()
+                        .getMyPreferenceString("aiAgentActive", AiAgent.GEMINI_3_FLASH.name());
+                activeAgent = AiAgent.fromString(savedAgent);
+            }
         } else {
-            // Fallback: If we only have application context, we might not be able to easy-access 
-            // the custom Preferences wrapper if it requires MainActivityInterface, 
-            // but let's at least check if we can get it from the Activity directly if it's a known boot sequence.
-            Log.d(TAG, "loadActiveAgent: Context is not MainActivityInterface, using default agent.");
+            // Fallback: Default agent already set as FIELD GEMINI_3_FLASH
+            Log.d(TAG, "loadActiveAgent: Context is not MainActivityInterface or Preferences missing.");
         }
     }
 

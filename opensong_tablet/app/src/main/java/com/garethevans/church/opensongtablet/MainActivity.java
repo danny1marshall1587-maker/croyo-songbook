@@ -408,6 +408,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         EdgeToEdge.enable(this);
 
+        // Set the hardware acceleration
+        setHardwareAcceleration();
+
         // Set up crash collector
         setUpCrashCollector();
 
@@ -547,9 +550,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // Attempt stuff using the threadPooleExecutor
         getThreadPoolExecutor().execute(() -> {
 
-            // Set the hardware acceleration
-            setHardwareAcceleration();
-
+            // TooLargeTool logging
             mainLooper.post(() -> {
                 TooLargeTool.startLogging(this.getApplication());
                 WindowCompat.setDecorFitsSystemWindows(getWindow(), false);

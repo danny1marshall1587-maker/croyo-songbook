@@ -2409,7 +2409,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         java.util.List<String> lines = new java.util.ArrayList<>();
         extractLinesRecursive(myView.songView, lines);
         
-        if (!lines.isEmpty()) {
+        if (getContext() != null) {
             com.garethevans.church.opensongtablet.ai.AiAgentManager.getInstance(getContext())
                 .setSongContext(lines);
         }

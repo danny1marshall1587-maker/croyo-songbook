@@ -631,7 +631,9 @@ public class DisplayExtraFragment extends Fragment {
                 String selected = s.toString();
                 mainActivityInterface.getPreferences().setMyPreferenceString("aiAgentActive", selected);
                 AiAgent agent = AiAgent.fromString(selected);
-                AiAgentManager.getInstance(getContext()).setActiveAgent(agent);
+                if (getContext() != null) {
+                    AiAgentManager.getInstance(getContext()).setActiveAgent(agent);
+                }
             }
         });
     }
