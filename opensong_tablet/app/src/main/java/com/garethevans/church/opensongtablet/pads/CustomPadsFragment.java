@@ -84,11 +84,11 @@ public class CustomPadsFragment extends Fragment {
                 Uri uri = result.getData().getData();
                 Log.d(TAG, "uri=" + uri);
 
-                // If this is a localised (i.e. inside OpenSong folder), we don't need to take the permissions
+                // If this is a localised (i.e. inside Dyslexa folder), we don't need to take the permissions
                 // There is a limit of 128-512 permissions allowed (depending on Android version).
                 prefValue = mainActivityInterface.getStorageAccess().fixUriToLocal(uri);
                 text = prefValue;
-                if (!prefValue.contains("../OpenSong/") && getActivity() != null) {
+                if (!prefValue.contains("../Dyslexa/") && getActivity() != null) {
                     ContentResolver resolver = getActivity().getContentResolver();
                     resolver.takePersistableUriPermission(uri, mainActivityInterface.getStorageAccess().getTakePersistentReadUriFlags());
                 }
@@ -98,7 +98,7 @@ public class CustomPadsFragment extends Fragment {
                 text = pad_auto_string;
             }
             mainActivityInterface.getPreferences().setMyPreferenceString(prefName, prefValue);
-            myMaterialEditText.setText(text.replace("../OpenSong/Pads/",""));
+            myMaterialEditText.setText(text.replace("../Dyslexa/Pads/",""));
         });
     }
 
@@ -134,7 +134,7 @@ public class CustomPadsFragment extends Fragment {
         if (pref == null || pref.isEmpty() || pref.equals("auto")) {
             pref = pad_auto_string;
         }
-        myMaterialEditText.setText(pref.replace("../OpenSong/Pads/",""));
+        myMaterialEditText.setText(pref.replace("../Dyslexa/Pads/",""));
         myMaterialEditText.setFocusable(false);
         final String prefVal = pref;
         myMaterialEditText.setOnClickListener(view -> selectFile(myMaterialEditText, prefName, prefVal));

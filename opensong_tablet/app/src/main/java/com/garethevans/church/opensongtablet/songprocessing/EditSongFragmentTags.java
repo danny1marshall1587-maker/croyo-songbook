@@ -344,10 +344,10 @@ public class EditSongFragmentTags extends Fragment {
 
                 // Update the persistent database if it isn't an XML file, but PDF/IMG
                 if (thisSong.getFiletype().equals("PDF") || thisSong.getFiletype().equals("IMG")) {
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(thisSong);
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(thisSong);
 
                 } else if (thisSong.getFiletype().equals("XML")) {
-                    // Update the actual OpenSong file since it is XML
+                    // Update the actual Dyslexa file since it is XML
                     mainActivityInterface.getSaveSong().updateSong(thisSong,false);
                 }
             }

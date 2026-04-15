@@ -294,7 +294,7 @@ public class ImportOSBFragment extends Fragment {
                         myView.includeHighlighter.setVisibility(View.GONE);
                         myView.includeHighlighter.setChecked(false);
                     }
-                    // If the NonOpenSongSongs.db file was found, give the user the option
+                    // If the NonDyslexaSongs.db file was found, give the user the option
                     if (hasPersistentDB) {
                         myView.includePersistentDB.setVisibility(View.VISIBLE);
                         myView.includePersistentDB.setChecked(true);
@@ -553,7 +553,7 @@ public class ImportOSBFragment extends Fragment {
                         // We will use SQL to merge the database to our existing one
                         // If we are allowing overwrite, we use REPLACE, if not we use INSERT OR IGNORE
                         String dbPath = tempDBFile.getPath();
-                        mainActivityInterface.getNonOpenSongSQLiteHelper().importDB(dbPath, canoverwrite);
+                        mainActivityInterface.getNonDyslexaSQLiteHelper().importDB(dbPath, canoverwrite);
                         tempDBFile = null;
                     }
 
@@ -571,7 +571,7 @@ public class ImportOSBFragment extends Fragment {
 
                         // Update the song index
                         if (myView.includePersistentDB.getChecked()) {
-                            mainActivityInterface.getNonOpenSongSQLiteHelper().copyUserDatabase();
+                            mainActivityInterface.getNonDyslexaSQLiteHelper().copyUserDatabase();
                         }
                         mainActivityInterface.getSQLiteHelper().insertFast();
                         mainActivityInterface.getSongListBuildIndex().setIndexRequired(true);

@@ -47,7 +47,7 @@ public class LoadSong {
         String filename = thisSong.getFilename();
 
         if (filename!=null && filename.equals(c.getString(R.string.welcome))) {
-            filename = "Welcome to OpenSongApp";
+            filename = "Welcome to DyslexaApp";
             thisSong.setFilename(filename);
         }
 
@@ -74,7 +74,7 @@ public class LoadSong {
             // or this is a custom slide/note as identified by the folder (which aren't indexed)
             return doLoadSongFile(thisSong, indexing);
         } else {
-            if (thisSong.getFilename().equals("Welcome to OpenSongApp") || thisSong.getFilename().endsWith(c.getString(R.string.welcome))) {
+            if (thisSong.getFilename().equals("Welcome to DyslexaApp") || thisSong.getFilename().endsWith(c.getString(R.string.welcome))) {
                 return mainActivityInterface.getSong().showWelcomeSong(c, thisSong);
             } else {
                 thisSong = mainActivityInterface.getSQLiteHelper().getSpecificSong(
@@ -114,7 +114,7 @@ public class LoadSong {
             thisSong.setFolder(c.getString(R.string.mainfoldername));
         }
         if (thisSong.getFilename() == null || thisSong.getFilename().isEmpty()) {
-            thisSong.setFilename("Welcome to OpenSongApp");
+            thisSong.setFilename("Welcome to DyslexaApp");
         }
 
         // Set the song load status to false (helps check if it didn't load).  This is set to true after success
@@ -125,7 +125,7 @@ public class LoadSong {
         // When getting the uri, it runs a check for custom folders **Variation, etc.
         String where = "Songs";
 
-        // Determine the filetype by extension - the best songs are xml (OpenSong formatted).
+        // Determine the filetype by extension - the best songs are xml (Dyslexa formatted).
         // If we are importing and ost file, we have already set this if appropriate to XML
         // Normally this is bad, but not as we are importing from a temp location
         if (!importingFile) {
@@ -153,7 +153,7 @@ public class LoadSong {
 
                 String utf;
                 // Go through our options one at a time
-                if (thisSong.getFilename().equals("Welcome to OpenSongApp")) {
+                if (thisSong.getFilename().equals("Welcome to DyslexaApp")) {
                     // 1. We are using the default song
                     thisSong = thisSong.showWelcomeSong(c, thisSong);
                     // Don't update the songLoadSuccess as this isn't what the user really wants
@@ -187,21 +187,21 @@ public class LoadSong {
                     // 3.  Run the OnSongConvert script (which converts then resaves)
                     mainActivityInterface.getConvertOnSong().convertTextToTags(uri, thisSong);
 
-                    // Now read in the proper OpenSong xml file
+                    // Now read in the proper Dyslexa xml file
                     try {
                         readFileAsXML(thisSong, where, uri, "UTF-8");
                     } catch (Exception e) {
-                        Log.d(TAG, "Error performing grabOpenSongXML()");
+                        Log.d(TAG, "Error performing grabDyslexaXML()");
                     }
                 } else if (thisSong.getFiletype().equals("CHO") || lyricsHaveChoProTags(thisSong.getLyrics())) {
                     // 4.  Run the ChordProConvert script (which converts then resaves)
                     thisSong = mainActivityInterface.getConvertChoPro().convertTextToTags(uri, thisSong);
 
-                    // Now read in the proper OpenSong xml file
+                    // Now read in the proper Dyslexa xml file
                     try {
                         readFileAsXML(thisSong, where, uri, "UTF-8");
                     } catch (Exception e) {
-                        Log.d(TAG, "Error performing grabOpenSongXML()");
+                        Log.d(TAG, "Error performing grabDyslexaXML()");
                     }
                 } else if (thisSong.getFiletype().equals("TXT")) {
                     // 5.  Run the text convert script
@@ -225,7 +225,7 @@ public class LoadSong {
                 thisSong.setTitle(thisSong.getFilename());
 
             }
-        } else if (thisSong.getFilename().equals("Welcome to OpenSongApp")) {
+        } else if (thisSong.getFilename().equals("Welcome to DyslexaApp")) {
             thisSong = mainActivityInterface.getSong().showWelcomeSong(c,thisSong);
         } else {
             // Not found.  This will get the default 'not found' from the database query
@@ -295,11 +295,11 @@ public class LoadSong {
         // Update the song menu
         mainActivityInterface.updateSongList();
 
-        // Now read in the proper OpenSong xml file
+        // Now read in the proper Dyslexa xml file
         try {
             thisSong = readFileAsXML(thisSong, "Songs", uri, "UTF-8");
         } catch (Exception e) {
-            Log.d(TAG, "Error performing grabOpenSongXML()");
+            Log.d(TAG, "Error performing grabDyslexaXML()");
         }
 
         return thisSong;
@@ -322,10 +322,10 @@ public class LoadSong {
             mainActivityInterface.getPreferences().setMyPreferenceString("songFolder", thisSong.getFolder());
         } else {
             // Something was wrong, so set the welcome song
-            thisSong.setFilename("Welcome to OpenSongApp");
+            thisSong.setFilename("Welcome to DyslexaApp");
             thisSong.setFolder(c.getString(R.string.mainfoldername));
             mainActivityInterface.getSong().showWelcomeSong(c,thisSong);
-            mainActivityInterface.getPreferences().setMyPreferenceString("songFilename", "Welcome to OpenSongApp");
+            mainActivityInterface.getPreferences().setMyPreferenceString("songFilename", "Welcome to DyslexaApp");
             mainActivityInterface.getPreferences().setMyPreferenceString("songFolder", c.getString(R.string.mainfoldername));
         }
     }
@@ -393,7 +393,7 @@ public class LoadSong {
         }
         uri = mainActivityInterface.getStorageAccess().getUriForItem(where, folder, filename);
         if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
-            if (filetype.equals("XML") && !filename.equals("Welcome to OpenSongApp")) {
+            if (filetype.equals("XML") && !filename.equals("Welcome to DyslexaApp")) {
                 return mainActivityInterface.getStorageAccess().getUTFEncoding(uri);
             } else {
                 return null;
@@ -604,7 +604,7 @@ public class LoadSong {
                         }
                         inputStream.close();
 
-                        if (thisSong.getFilename().equals("Welcome to OpenSongApp")) {
+                        if (thisSong.getFilename().equals("Welcome to DyslexaApp")) {
                             thisSong = thisSong.showWelcomeSong(c, thisSong);
                         }
 

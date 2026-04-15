@@ -63,8 +63,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
     private final String conflictCheckFile = "conflictCheck.json";
     private OpenChordsConflictCheck openChordsConflictCheck;
     private ArrayList<OpenChordsConflictObject> openChordsConflictObjects = new ArrayList<>();
-    private OpenSongFolderObject openSongFolderObject;
-    private ArrayList<OpenSongFolderRecordObject> openSongFolderRecordObjects = new ArrayList<>();
+    private DyslexaFolderObject openSongFolderObject;
+    private ArrayList<DyslexaFolderRecordObject> openSongFolderRecordObjects = new ArrayList<>();
     private ArrayList<OpenChordsConflictItemObject> conflictItemRecords = new ArrayList<>();
     private final String openChordsUsername;
     private final String openChordsPassword;
@@ -144,8 +144,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
     }
 
     public void initialiseRecords() {
-        // Deal with the OpenSongFolderObject
-        loadAndCheckOpenSongFolderObject();
+        // Deal with the DyslexaFolderObject
+        loadAndCheckDyslexaFolderObject();
 
         // Deal with the conflict check json
         loadConflictObject();
@@ -157,7 +157,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             // Look to see if we have a folder that matches the uuid already
             // The uuid was set in the intent already, so don't update that
             // Set our foldername to null or the matching folder
-            openChordsFolderName = getOpenSongFolderNameFromUUID(openChordsFolderUuid);
+            openChordsFolderName = getDyslexaFolderNameFromUUID(openChordsFolderUuid);
             // If this isn't null, then we have a matching folder, so we can set that name
             // If it is null, we will get the new folder name from the server later
             if (openChordsFolderName != null) {
@@ -172,7 +172,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             // We set this using a local folder, so just find the uuid using our save preference
             openChordsFolderName = mainActivityInterface.getPreferences().getMyPreferenceString(
                     "openChordsFolderName", mainActivityInterface.getMainfoldername());
-            openChordsFolderUuid = getOpenSongFolderUuidFromName(openChordsFolderName);
+            openChordsFolderUuid = getDyslexaFolderUuidFromName(openChordsFolderName);
         }
     }
 
@@ -309,16 +309,16 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         }
 
         if (localFolderName != null) {
-            ArrayList<Song> localOpenSongSongs = mainActivityInterface.getSQLiteHelper().openChordsSyncGetSongsFromFolder(getLocalFolderName());
+            ArrayList<Song> localDyslexaSongs = mainActivityInterface.getSQLiteHelper().openChordsSyncGetSongsFromFolder(getLocalFolderName());
             // For each found song, create an OpenChordsSong object and add it to the array
-            for (int i = 0; i < localOpenSongSongs.size(); i++) {
-                Song localOpenSongSong = localOpenSongSongs.get(i);
+            for (int i = 0; i < localDyslexaSongs.size(); i++) {
+                Song localDyslexaSong = localDyslexaSongs.get(i);
                 // Only allow xml songs (no PDF/images)
-                if (!mainActivityInterface.getStorageAccess().isIMGorPDF(localOpenSongSong)) {
-                    updateProgress(c.getString(R.string.sync_checking_local_item) + "\n" + localOpenSongSong.getTitle());
-                    localSongs.add(convertOpenSongToOpenChords(localOpenSongSong));
-                    localSongsCompareObjects.add(createOpenChordsCompareObject(localOpenSongSong.getUuid(),
-                            localOpenSongSong.getFilename(), localOpenSongSong.getLastModified(), "song"));
+                if (!mainActivityInterface.getStorageAccess().isIMGorPDF(localDyslexaSong)) {
+                    updateProgress(c.getString(R.string.sync_checking_local_item) + "\n" + localDyslexaSong.getTitle());
+                    localSongs.add(convertDyslexaToOpenChords(localDyslexaSong));
+                    localSongsCompareObjects.add(createOpenChordsCompareObject(localDyslexaSong.getUuid(),
+                            localDyslexaSong.getFilename(), localDyslexaSong.getLastModified(), "song"));
                 }
             }
             if (!localSongs.isEmpty()) {
@@ -330,8 +330,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             if (setNames != null && !setNames.isEmpty()) {
                 for (int i = 0; i < setNames.size(); i++) {
                     String setName = setNames.get(i);
-                    if (setName!=null && setName.startsWith(getOpenSongSetCategoryStart())) {
-                        OpenChordsSetList openChordsSetList = convertOpenSongSetToOpenChordsSetList(setName);
+                    if (setName!=null && setName.startsWith(getDyslexaSetCategoryStart())) {
+                        OpenChordsSetList openChordsSetList = convertDyslexaSetToOpenChordsSetList(setName);
                         if (openChordsSetList!=null && openChordsSetList.getTitle()!=null) {
                             openChordsSetList.setTitle(openChordsSetList.getTitle().replace("¦¦", "|"));
                             localSetLists.add(openChordsSetList);
@@ -775,18 +775,18 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
 
                 boolean haveFolder = false;
                 // Do we have a local folder with the same UUID
-                String localFolderName = getOpenSongFolderNameFromUUID(openChordsFolderUuid);
+                String localFolderName = getDyslexaFolderNameFromUUID(openChordsFolderUuid);
                 if (localFolderName == null) {
                     // We don't have a folder with this UUID.
                     // Let's check if we have a folder with the same name
                     for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-                        OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+                        DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
                         if (openSongFolderRecordObject.getFolderName() != null && openSongFolderRecordObject.getFolderName().equals(openChordsFolderName)) {
                             // We have this folder, but the uuid is wrong!
                             // Change the UUID and then tell the user
                             openSongFolderRecordObject.setFolderUuid(openChordsFolderUuid);
                             openSongFolderRecordObject.setFolderOwnerUuid(openChordsFolderUuid);
-                            saveOpenSongFolderObject();
+                            saveDyslexaFolderObject();
                             folderIsDifferentUuid = true;
                             haveFolder = true;
                             break;
@@ -798,14 +798,14 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 // Check we don't somehow have a local folder with the same uuid, but different name
                 if (!haveFolder) {
                     for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-                        OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+                        DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
                         if (openSongFolderRecordObject.getFolderUuid() != null &&
                                 openSongFolderRecordObject.getFolderUuid().equalsIgnoreCase(openChordsFolderUuid)) {
                             // We have somehow managed to have no folder names that match,
                             // However, one of our folders (different name) has the same uuid as the OpenChords folder
                             // We need to change the id of the offending folder to a new random value
-                            changeOpenSongFolderUUID(openSongFolderRecordObject.getFolderUuid(), String.valueOf(UUID.randomUUID()));
-                            saveOpenSongFolderObject();
+                            changeDyslexaFolderUUID(openSongFolderRecordObject.getFolderUuid(), String.valueOf(UUID.randomUUID()));
+                            saveDyslexaFolderObject();
                         }
                     }
                 }
@@ -864,8 +864,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
     }
 
 
-    // Convert OpenChords objects into OpenSong objects
-    public Song convertOpenChordsToOpenSong(String filename, String title, String lastModified, OpenChordsSong openChordsSong) {
+    // Convert OpenChords objects into Dyslexa objects
+    public Song convertOpenChordsToDyslexa(String filename, String title, String lastModified, OpenChordsSong openChordsSong) {
         Song song = new Song();
         song.setFolder(getLocalFolderName());
         song.setFilename(filename);
@@ -873,7 +873,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         song.setLastModified(lastModified);
         song.setUuid(openChordsSong.getId());
         song.setAuthor(openChordsSong.getArtist());
-        song.setLyrics(mainActivityInterface.getConvertJustChords().getOpenSongLyrics(openChordsSong.getRawData()));
+        song.setLyrics(mainActivityInterface.getConvertJustChords().getDyslexaLyrics(openChordsSong.getRawData()));
         song.setLyrics(song.getLyrics().replace("Pre-[C]","P"));
         song.setAutoscrolllength(getEmptyForZero(mainActivityInterface.getTimeTools().getTotalSecsFromColonTimes(openChordsSong.getDuration())));
         song.setTimesig(openChordsSong.getTimeSignature());
@@ -893,7 +893,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         song.setCopyright(openChordsSong.getCopyright());
         song.setCcli(openChordsSong.getCcli());
         // Now get the tags
-        song.setTheme(getTagsFromOpenChordsForOpenSong(openChordsSong));
+        song.setTheme(getTagsFromOpenChordsForDyslexa(openChordsSong));
         // Now get the presentation order
         if (openChordsSong.getStructure()!=null) {
             StringBuilder stringBuilder = new StringBuilder();
@@ -933,7 +933,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         return song;
     }
 
-    private String getTagsFromOpenChordsForOpenSong(OpenChordsSong openChordsSong) {
+    private String getTagsFromOpenChordsForDyslexa(OpenChordsSong openChordsSong) {
         StringBuilder tagStringBuilder = new StringBuilder();
         String[] tags = openChordsSong.getTags();
         if (tags != null) {
@@ -960,8 +960,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         if (setFilename == null) {
             setFilename = getOpenChordsFolderName() + c.getString(R.string.unknown);
         }
-        if (!setFilename.startsWith(getOpenSongSetCategoryStart())) {
-            setFilename = getOpenSongSetCategoryStart() + setFilename;
+        if (!setFilename.startsWith(getDyslexaSetCategoryStart())) {
+            setFilename = getDyslexaSetCategoryStart() + setFilename;
         }
         localSet.setSetCurrentLastName(setFilename);
         localSet.setNotes(jsonNullIfEmpty(serverSetList.getNotes()));
@@ -1068,11 +1068,11 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         return xml;
     }
 
-    private String convertOpenChordsSetNameToOpenSongSetName(String openChordsSetName) {
-        if (openChordsSetName != null && openChordsSetName.startsWith(getOpenSongSetCategoryStart())) {
+    private String convertOpenChordsSetNameToDyslexaSetName(String openChordsSetName) {
+        if (openChordsSetName != null && openChordsSetName.startsWith(getDyslexaSetCategoryStart())) {
             return openChordsSetName;
         } else if (openChordsSetName != null) {
-            return getOpenSongSetCategoryStart() +
+            return getDyslexaSetCategoryStart() +
                     mainActivityInterface.getStorageAccess().removeWhiteSpaceFromFilename(openChordsSetName);
         } else {
             return null;
@@ -1084,8 +1084,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
     }
 
 
-    // Convert OpenSong objects into OpenChords objects
-    public OpenChordsSong convertOpenSongToOpenChords(Song openSongSong) {
+    // Convert Dyslexa objects into OpenChords objects
+    public OpenChordsSong convertDyslexaToOpenChords(Song openSongSong) {
         OpenChordsSong openChordsSong = new OpenChordsSong();
 
         openChordsSong.setId(openSongSong.getUuid());
@@ -1173,11 +1173,11 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
     }
 
     private ArrayList<OpenChordsSongStructureItem> getOpenChordsStructure(Song openSongSong) {
-        // OpenSong desktop looked like this: V1 V2 C B C V3
-        // OpenSongApp pre v6.4.1 presentation order looked like this: Verse 1;V2;C;Break;
+        // Dyslexa desktop looked like this: V1 V2 C B C V3
+        // DyslexaApp pre v6.4.1 presentation order looked like this: Verse 1;V2;C;Break;
 
         ArrayList<OpenChordsSongStructureItem> structureItems = new ArrayList<>();
-        // Try to extract OpenSong presentation order
+        // Try to extract Dyslexa presentation order
         // Get a note of the section headings in the song
         openSongSong.setSongSectionHeadings(new ArrayList<>());
         openSongSong.setGroupedSections(new ArrayList<>());
@@ -1204,13 +1204,13 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         }
     }
 
-    public OpenChordsSetList convertOpenSongSetToOpenChordsSetList(String filename) {
+    public OpenChordsSetList convertDyslexaSetToOpenChordsSetList(String filename) {
         // This is a newer method that parsers the set into a setObject first
         if (filename!=null) {
             // The set should start with OpenChords__, but we need to check there aren't 2 of them!
-            if (filename.startsWith(getOpenSongSetCategoryStart())) {
-                filename = filename.replaceFirst(getOpenSongSetCategoryStart(), "");
-                filename = getOpenSongSetCategoryStart() + filename;
+            if (filename.startsWith(getDyslexaSetCategoryStart())) {
+                filename = filename.replaceFirst(getDyslexaSetCategoryStart(), "");
+                filename = getDyslexaSetCategoryStart() + filename;
             }
             SetObject setObject = mainActivityInterface.getSetActions().createSetObjectFromFilename(filename);
 
@@ -1228,7 +1228,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 String title = jsonNullIfEmpty(setObject.getSetName());
                 if (title!=null) {
                     // Don't include the OpenChords category in the title here
-                    title = title.replace(getOpenSongSetCategoryStart(),"");
+                    title = title.replace(getDyslexaSetCategoryStart(),"");
                 }
                 openChordsSetList.setTitle(title);
                 // Now we need to go through the set items and add them
@@ -1283,12 +1283,12 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         }
     }
 
-    private String convertOpenSongSetNameToOpenChordsSetName(String openSongSetName) {
+    private String convertDyslexaSetNameToOpenChordsSetName(String openSongSetName) {
         return mainActivityInterface.getStorageAccess().removeWhiteSpaceFromFilename(openSongSetName).
-                replace(getOpenSongSetCategoryStart(), "");
+                replace(getDyslexaSetCategoryStart(), "");
     }
 
-    private String getOpenSongSetCategoryStart() {
+    private String getDyslexaSetCategoryStart() {
         return "OpenChords" + mainActivityInterface.getSetActions().getSetCategorySeparator();
     }
 
@@ -1373,15 +1373,15 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
 
                     mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(false, songUri, null,
                             "Songs", getLocalFolderName(), filename);
-                    Song newOpenSongSong = convertOpenChordsToOpenSong(filename, title, lastModified, serverSong);
+                    Song newDyslexaSong = convertOpenChordsToDyslexa(filename, title, lastModified, serverSong);
 
                     // Save the song
                     mainActivityInterface.getSQLiteHelper().createSong(getLocalFolderName(), filename);
                     mainActivityInterface.getSaveSong().setResetLastModified(resetLastModified);
                     if (resetLastModified) {
-                        newOpenSongSong.setLastModified(mainActivityInterface.getTimeTools().getNowIsoTime());
+                        newDyslexaSong.setLastModified(mainActivityInterface.getTimeTools().getNowIsoTime());
                     }
-                    mainActivityInterface.getSaveSong().updateSong(newOpenSongSong, false);
+                    mainActivityInterface.getSaveSong().updateSong(newDyslexaSong, false);
                     mainActivityInterface.getSaveSong().setResetLastModified(true);
 
                     // Remove this item from the compareObjects since we have dealt with it
@@ -1422,7 +1422,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                             getLocalFolderName(), existingSong.getFilename());
                     mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(true, songUri, null,
                             "Songs", getLocalFolderName(), existingSong.getFilename());
-                    Song newOpenSongSong = convertOpenChordsToOpenSong(filename, title, serverSong.getLastUpdated(), serverSong);
+                    Song newDyslexaSong = convertOpenChordsToDyslexa(filename, title, serverSong.getLastUpdated(), serverSong);
 
                     // If we have changed the title/filename, we need to update the database
                     String oldtitle = existingSong.getTitle();
@@ -1432,8 +1432,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                         mainActivityInterface.getSQLiteHelper().createSong(getLocalFolderName(), filename);
                     }
 
-                    // Update the existing song with the info received (not all OpenSong stuff is in OpenChords!)
-                    updateExistingOpenSongWithOpenChords(existingSong, newOpenSongSong);
+                    // Update the existing song with the info received (not all Dyslexa stuff is in OpenChords!)
+                    updateExistingDyslexaWithOpenChords(existingSong, newDyslexaSong);
 
                     // Save the song
                     mainActivityInterface.getSaveSong().setResetLastModified(false);
@@ -1464,7 +1464,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                         compareObject.getUuid().equalsIgnoreCase(serverSetList.getId())) {
                     // This is a setList we want
                     String title = compareObject.getTitle();
-                    String filename = convertOpenChordsSetNameToOpenSongSetName(title);
+                    String filename = convertOpenChordsSetNameToDyslexaSetName(title);
                     updateProgress(c.getString(R.string.sync_creating_new_item) + " (" + c.getString(R.string.set) + ")\n" + title);
 
                     String setXML = convertOpenChordsSetList(serverSetList);
@@ -1496,13 +1496,13 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                         compareObject.getUuid().equalsIgnoreCase(serverSetList.getId())) {
                     // This is a setList we want
                     String title = serverSetList.getTitle();
-                    String filename = convertOpenChordsSetNameToOpenSongSetName(title);
+                    String filename = convertOpenChordsSetNameToDyslexaSetName(title);
 
                     updateProgress(c.getString(R.string.sync_updating_item) + " (" + c.getString(R.string.set) + ")\n" + title);
 
                     // Delete the old setlist if the filename has changed
                     String oldtitle = compareObject.getTitle();
-                    String oldfilename = convertOpenChordsSetNameToOpenSongSetName(oldtitle);
+                    String oldfilename = convertOpenChordsSetNameToDyslexaSetName(oldtitle);
                     if (!filename.equals(oldfilename)) {
                         try {
                             mainActivityInterface.getStorageAccess().doDeleteFile("Sets", "", oldfilename);
@@ -1529,33 +1529,33 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         updateConflictItem("lastDownloadSetChanges");
     }
 
-    private void updateExistingOpenSongWithOpenChords(Song existingSong, Song newOpenSongSong) {
+    private void updateExistingDyslexaWithOpenChords(Song existingSong, Song newDyslexaSong) {
         // existingSong is the one currently in local storage
-        // newOpenSongSong is the one received from the server
+        // newDyslexaSong is the one received from the server
         // OpenChords only holds some song information, so just update those bits
 
-        existingSong.setFolder(newOpenSongSong.getFolder());
-        existingSong.setFilename(newOpenSongSong.getFilename());
-        existingSong.setUuid(newOpenSongSong.getUuid());
-        existingSong.setTitle(newOpenSongSong.getTitle());
-        existingSong.setLyrics(newOpenSongSong.getLyrics());
-        existingSong.setAuthor(newOpenSongSong.getAuthor());
-        existingSong.setAutoscrolllength(newOpenSongSong.getAutoscrolllength());
-        existingSong.setTempo(DrumCalculations.getFixedTempoString(newOpenSongSong.getTempo(),false));
+        existingSong.setFolder(newDyslexaSong.getFolder());
+        existingSong.setFilename(newDyslexaSong.getFilename());
+        existingSong.setUuid(newDyslexaSong.getUuid());
+        existingSong.setTitle(newDyslexaSong.getTitle());
+        existingSong.setLyrics(newDyslexaSong.getLyrics());
+        existingSong.setAuthor(newDyslexaSong.getAuthor());
+        existingSong.setAutoscrolllength(newDyslexaSong.getAutoscrolllength());
+        existingSong.setTempo(DrumCalculations.getFixedTempoString(newDyslexaSong.getTempo(),false));
         /*if (mainActivityInterface.getDrumViewModel().getBpm()>-1) {
             existingSong.setTempo(String.valueOf(mainActivityInterface.getDrumViewModel().getBpm()));
         } else {
             existingSong.setTempo("");
         }*/
-        //existingSong.setTempo(newOpenSongSong.getTempo());
-        existingSong.setTimesig(DrumCalculations.getFixedTimeSignatureString(newOpenSongSong.getTimesig(),false));
-        existingSong.setKey(newOpenSongSong.getKey());
-        //existingSong.setCapo(newOpenSongSong.getCapo());
-        existingSong.setNotes(newOpenSongSong.getNotes());
-        existingSong.setCcli(newOpenSongSong.getCcli());
-        existingSong.setLastModified(newOpenSongSong.getLastModified());
-        existingSong.setTheme(newOpenSongSong.getTheme());
-        existingSong.setPresentationorder(newOpenSongSong.getPresentationorder());
+        //existingSong.setTempo(newDyslexaSong.getTempo());
+        existingSong.setTimesig(DrumCalculations.getFixedTimeSignatureString(newDyslexaSong.getTimesig(),false));
+        existingSong.setKey(newDyslexaSong.getKey());
+        //existingSong.setCapo(newDyslexaSong.getCapo());
+        existingSong.setNotes(newDyslexaSong.getNotes());
+        existingSong.setCcli(newDyslexaSong.getCcli());
+        existingSong.setLastModified(newDyslexaSong.getLastModified());
+        existingSong.setTheme(newDyslexaSong.getTheme());
+        existingSong.setPresentationorder(newDyslexaSong.getPresentationorder());
     }
 
     public void forcePull() {
@@ -1593,7 +1593,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         ArrayList<String> setFiles = mainActivityInterface.getStorageAccess().listFilesInFolder("Sets", "");
         for (int i = 0; i < setFiles.size(); i++) {
             String setFile = setFiles.get(i);
-            if (setFile.startsWith(getOpenSongSetCategoryStart())) {
+            if (setFile.startsWith(getDyslexaSetCategoryStart())) {
                 mainActivityInterface.getStorageAccess().doDeleteFile("Sets", "", setFile);
             }
         }
@@ -1606,11 +1606,11 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 String title = serverSong.getTitle();
                 updateProgress(c.getString(R.string.sync_creating_new_item) + " (" + c.getString(R.string.song) + ")\n" + title);
                 String filename = mainActivityInterface.getStorageAccess().safeFilename(mainActivityInterface.getStorageAccess().removeWhiteSpaceFromFilename(title)).replace("/","-");
-                Song newOpenSongSong = convertOpenChordsToOpenSong(filename, title, serverSong.getLastUpdated(), serverSong);
+                Song newDyslexaSong = convertOpenChordsToDyslexa(filename, title, serverSong.getLastUpdated(), serverSong);
                 // Save the song
                 mainActivityInterface.getSQLiteHelper().createSong(getLocalFolderName(), filename);
                 mainActivityInterface.getSaveSong().setResetLastModified(false);
-                mainActivityInterface.getSaveSong().updateSong(newOpenSongSong, false);
+                mainActivityInterface.getSaveSong().updateSong(newDyslexaSong, false);
                 mainActivityInterface.getSaveSong().setResetLastModified(true);
 
                 addNewConflictItemObject(c.getString(R.string.sync_song_force_downloaded), title, nowTime);
@@ -1622,7 +1622,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             OpenChordsSetList serverSetList = serverSetLists.get(i);
             if (serverSetList.getTitle() != null) {
                 String title = mainActivityInterface.getStorageAccess().removeWhiteSpaceFromFilename(mainActivityInterface.getStorageAccess().safeFilename(serverSetList.getTitle()));
-                String filename = convertOpenChordsSetNameToOpenSongSetName(title);
+                String filename = convertOpenChordsSetNameToDyslexaSetName(title);
                 updateProgress(c.getString(R.string.sync_creating_new_item) + " (" + c.getString(R.string.set_list) + ")\n" + title);
 
                 // Get the xml for the setlist
@@ -1688,8 +1688,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             for (int i = 0; i < setsForUpload.size(); i++) {
                 OpenChordsSetList setForUpload = setsForUpload.get(i);
                 if (setForUpload.getTitle() != null &&
-                        setForUpload.getTitle().startsWith(getOpenSongSetCategoryStart())) {
-                    setForUpload.setTitle(setForUpload.getTitle().replace(getOpenSongSetCategoryStart(), "").replace("¦¦","|"));
+                        setForUpload.getTitle().startsWith(getDyslexaSetCategoryStart())) {
+                    setForUpload.setTitle(setForUpload.getTitle().replace(getDyslexaSetCategoryStart(), "").replace("¦¦","|"));
                 }
             }
         }
@@ -1758,7 +1758,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             OpenChordsCompareObject compareObject = songsNotOnServer.get(i);
             updateProgress(c.getString(R.string.sync_preparing_item) + " (" + c.getString(R.string.song) + ")\n" + compareObject.getTitle());
             Song song = mainActivityInterface.getSQLiteHelper().getOpenChordsSong(getLocalFolderName(), compareObject.getUuid());
-            OpenChordsSong newSong = convertOpenSongToOpenChords(song);
+            OpenChordsSong newSong = convertDyslexaToOpenChords(song);
             songsForUpload.add(newSong);
             addNewConflictItemObject(c.getString(R.string.sync_song_uploaded), newSong.getTitle(), null);
         }
@@ -1779,7 +1779,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                         serverSong.getId().equalsIgnoreCase(compareObject.getUuid())) {
                     updateProgress(c.getString(R.string.sync_preparing_item) + " (" + c.getString(R.string.song) + ")\n" + compareObject.getTitle());
                     Song song = mainActivityInterface.getSQLiteHelper().getSpecificSong(getLocalFolderName(), compareObject.getTitle());
-                    OpenChordsSong newSong = convertOpenSongToOpenChords(song);
+                    OpenChordsSong newSong = convertDyslexaToOpenChords(song);
                     songsForUpload.add(newSong);
                     addNewConflictItemObject(c.getString(R.string.sync_song_update_uploaded), newSong.getTitle(), null);
                     found = true;
@@ -1807,7 +1807,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         for (int i = 0; i < setListsNotOnServer.size(); i++) {
             OpenChordsCompareObject compareObject = setListsNotOnServer.get(i);
             updateProgress(c.getString(R.string.sync_preparing_item) + " (" + c.getString(R.string.set_list) + ")\n" + compareObject.getTitle());
-            OpenChordsSetList openChordsSetList = convertOpenSongSetToOpenChordsSetList(compareObject.getTitle());
+            OpenChordsSetList openChordsSetList = convertDyslexaSetToOpenChordsSetList(compareObject.getTitle());
             setsForUpload.add(openChordsSetList);
             addNewConflictItemObject(c.getString(R.string.sync_set_uploaded), openChordsSetList.getTitle(), null);
         }
@@ -1826,7 +1826,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 OpenChordsCompareObject compareObject = setListsOnServerOlder.get(j);
                 if (serverSetList.getId() != null && serverSetList.getId().equalsIgnoreCase(compareObject.getUuid())) {
                     updateProgress(c.getString(R.string.sync_preparing_item) + " (" + c.getString(R.string.set) + ")\n" + compareObject.getTitle());
-                    OpenChordsSetList openChordsSetList = convertOpenSongSetToOpenChordsSetList(getOpenSongSetCategoryStart() + compareObject.getTitle());
+                    OpenChordsSetList openChordsSetList = convertDyslexaSetToOpenChordsSetList(getDyslexaSetCategoryStart() + compareObject.getTitle());
                     setsForUpload.add(openChordsSetList);
                     addNewConflictItemObject(c.getString(R.string.sync_set_update_uploaded), openChordsSetList.getTitle(), null);
                     found = true;
@@ -1915,7 +1915,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         // Do this in a new thread
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             // This gets the songs that are in the local folder that aren't in the remote one
-            // These get moved to the OpenSong/Backups/ folder
+            // These get moved to the Dyslexa/Backups/ folder
             checkForConflictObject();
             String nowTime = mainActivityInterface.getTimeTools().getNowIsoTime();
             for (int i = 0; i < songsNotOnServer.size(); i++) {
@@ -1974,7 +1974,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             for (int k = 0; k < songsToBackup.size(); k++) {
                 OpenChordsSong songToBackup = songsToBackup.get(k);
                 String title = songToBackup.getTitle();
-                Song backup = convertOpenChordsToOpenSong(title, title, nowTime, songToBackup);
+                Song backup = convertOpenChordsToDyslexa(title, title, nowTime, songToBackup);
                 backup.setFolder("Backups");
                 String xml = mainActivityInterface.getProcessSong().getXML(backup);
                 if (!mainActivityInterface.getStorageAccess().writeFileFromString("Backups", "", title + ".ost", xml)) {
@@ -2010,7 +2010,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             checkForConflictObject();
             // This gets the sets that are in the local folder that aren't in the remote one
-            // These get moved to the OpenSong/Backups/ folder
+            // These get moved to the Dyslexa/Backups/ folder
             String nowTime = mainActivityInterface.getTimeTools().getNowIsoTime();
             for (int i = 0; i < setListsNotOnServer.size(); i++) {
                 OpenChordsCompareObject openChordsCompareObject = setListsNotOnServer.get(i);
@@ -2018,8 +2018,8 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 updateProgress(c.getString(R.string.sync_local_set_deleted) + ":\n" + title);
 
                 // Get the oldUri and move to the newUri (append the .osts file extension)
-                if (title != null && !title.startsWith(getOpenSongSetCategoryStart())) {
-                    title = getOpenSongSetCategoryStart() + title;
+                if (title != null && !title.startsWith(getDyslexaSetCategoryStart())) {
+                    title = getDyslexaSetCategoryStart() + title;
                 }
                 Uri uriOld = mainActivityInterface.getStorageAccess().getUriForItem("Sets",
                         "", title);
@@ -2069,9 +2069,9 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                     OpenChordsSetList setToBackup = setsToBackup.get(k);
                     setToBackup.setLastUpdated(nowTime);
                     String title = setToBackup.getTitle();
-                    title = title == null ? getOpenSongSetCategoryStart() + "backup" : title;
-                    if (!title.startsWith(getOpenSongSetCategoryStart())) {
-                        title = getOpenSongSetCategoryStart() + title;
+                    title = title == null ? getDyslexaSetCategoryStart() + "backup" : title;
+                    if (!title.startsWith(getDyslexaSetCategoryStart())) {
+                        title = getDyslexaSetCategoryStart() + title;
                     }
                     String xml = convertOpenChordsSetList(setToBackup);
                     if (!mainActivityInterface.getStorageAccess().writeFileFromString("Backups", "", title + ".osts", xml)) {
@@ -2473,7 +2473,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         return validFolders;
     }
 
-    private void loadAndCheckOpenSongFolderObject() {
+    private void loadAndCheckDyslexaFolderObject() {
         // This checks our json file/object for our record of folders and uuids
         // If the object doesn't exist, a new one is created
         // If the object is out of date (i.e. has different folders), update it
@@ -2483,15 +2483,15 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
 
         if (!mainActivityInterface.getStorageAccess().uriExists(openSongFolderUri)) {
             // Create a new one
-            openSongFolderObject = new OpenSongFolderObject();
+            openSongFolderObject = new DyslexaFolderObject();
             openSongFolderObject.setOwnerID(String.valueOf(UUID.randomUUID()));
-            OpenSongFolderRecordObject openSongFolderRecordObject;
+            DyslexaFolderRecordObject openSongFolderRecordObject;
             // Go through each folder in our system and create a UUID
             openSongFolderRecordObjects = new ArrayList<>();
             for (int i = 0; i < validFolders.size(); i++) {
                 // Create a new record
                 String folder = validFolders.get(i);
-                openSongFolderRecordObject = new OpenSongFolderRecordObject();
+                openSongFolderRecordObject = new DyslexaFolderRecordObject();
                 openSongFolderRecordObject.setFolderName(folder);
                 openSongFolderRecordObject.setFolderUuid(String.valueOf(UUID.randomUUID()));
                 openSongFolderRecordObject.setFolderOwnerUuid(String.valueOf(UUID.randomUUID()));
@@ -2499,23 +2499,23 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 openSongFolderRecordObjects.add(openSongFolderRecordObject);
             }
             // Add the records to our folderObject
-            openSongFolderObject.setOpenSongFolderRecordObjects(openSongFolderRecordObjects);
+            openSongFolderObject.setDyslexaFolderRecordObjects(openSongFolderRecordObjects);
             // Now save the new json file
-            saveOpenSongFolderObject();
+            saveDyslexaFolderObject();
         } else {
             // Load the existing information
             openSongFolderObject = gson.fromJson(
                     mainActivityInterface.getStorageAccess().readTextFileToString(
                             mainActivityInterface.getStorageAccess().getInputStream(openSongFolderUri)),
-                    OpenSongFolderObject.class);
-            openSongFolderRecordObjects = openSongFolderObject.getOpenSongFolderRecordObjects();
+                    DyslexaFolderObject.class);
+            openSongFolderRecordObjects = openSongFolderObject.getDyslexaFolderRecordObjects();
 
             // Now check if the entries are valid (i.e. the folder exists)
             boolean changes = false;
             // Check for references to folders that are no longer valid
             if (openSongFolderRecordObjects != null) {
                 for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-                    OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+                    DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
                     if (!validFolders.contains(openSongFolderRecordObject.getFolderName())) {
                         // This folder is no longer valid, so remove it
                         openSongFolderRecordObjects.remove(openSongFolderRecordObjects.get(i));
@@ -2530,7 +2530,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                     String folder = validFolders.get(i);
                     boolean found = false;
                     for (int j = 0; j < openSongFolderRecordObjects.size(); j++) {
-                        OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(j);
+                        DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(j);
                         if (openSongFolderRecordObject.getFolderName() != null && openSongFolderRecordObject.getFolderName().equals(folder)) {
                             found = true;
                             break;
@@ -2545,21 +2545,21 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
                 }
             }
             if (changes) {
-                saveOpenSongFolderObject();
+                saveDyslexaFolderObject();
             }
         }
     }
 
-    private void saveOpenSongFolderObject() {
-        openSongFolderObject.setOpenSongFolderRecordObjects(openSongFolderRecordObjects);
+    private void saveDyslexaFolderObject() {
+        openSongFolderObject.setDyslexaFolderRecordObjects(openSongFolderRecordObjects);
         mainActivityInterface.getStorageAccess().writeFileFromString("Settings", "",
                 songFolderUUIDsFile, gson.toJson(openSongFolderObject));
     }
 
-    public String getOpenSongFolderUuidFromName(@Nullable String folderName) {
+    public String getDyslexaFolderUuidFromName(@Nullable String folderName) {
         if (folderName != null) {
             for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-                OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+                DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
                 if (openSongFolderRecordObject.getFolderName() != null &&
                         openSongFolderRecordObject.getFolderName().equals(folderName)) {
                     return openSongFolderRecordObject.getFolderUuid();
@@ -2569,10 +2569,10 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         return null;
     }
 
-    public @Nullable String getOpenSongFolderNameFromUUID(@Nullable String folderUuid) {
+    public @Nullable String getDyslexaFolderNameFromUUID(@Nullable String folderUuid) {
         if (folderUuid != null) {
             for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-                OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+                DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
                 if (openSongFolderRecordObject.getFolderUuid() != null &&
                         openSongFolderRecordObject.getFolderUuid().equalsIgnoreCase(folderUuid)) {
                     return openSongFolderRecordObject.getFolderName();
@@ -2582,12 +2582,12 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         return null;
     }
 
-    public void changeOpenSongFolderUUID(String oldUuid, String newUuid) {
+    public void changeDyslexaFolderUUID(String oldUuid, String newUuid) {
         // This will be called if we receive a link for an OpenChords folder
         // This is needed as we already have this folder, but with our own uuid
         // We need to update our local uuid to match the OpenChords folder
         for (int i = 0; i < openSongFolderRecordObjects.size(); i++) {
-            OpenSongFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
+            DyslexaFolderRecordObject openSongFolderRecordObject = openSongFolderRecordObjects.get(i);
             if (openSongFolderRecordObject.getFolderUuid() != null && openSongFolderRecordObject.getFolderUuid().equalsIgnoreCase(oldUuid)) {
                 openSongFolderRecordObject.setFolderUuid(newUuid);
                 openSongFolderRecordObject.setFolderOwnerUuid(String.valueOf(newUuid));
@@ -2595,12 +2595,12 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             }
         }
         // Now save the json file
-        saveOpenSongFolderObject();
+        saveDyslexaFolderObject();
     }
 
-    private OpenSongFolderRecordObject createNewFolderRecordObject(String folderName,
+    private DyslexaFolderRecordObject createNewFolderRecordObject(String folderName,
                                                                    String folderUuid) {
-        OpenSongFolderRecordObject openSongFolderRecordObject = new OpenSongFolderRecordObject();
+        DyslexaFolderRecordObject openSongFolderRecordObject = new DyslexaFolderRecordObject();
         openSongFolderRecordObject.setFolderName(folderName);
         openSongFolderRecordObject.setFolderUuid(folderUuid);
         openSongFolderRecordObject.setFolderOwnerUuid(folderUuid);
@@ -2609,13 +2609,13 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
 
     private void checkCreateLocalFolder() {
         // If we don't have a folder, create it
-        String folderName = getOpenSongFolderNameFromUUID(openChordsFolderUuid);
+        String folderName = getDyslexaFolderNameFromUUID(openChordsFolderUuid);
         if (folderName == null && !openChordsFolderName.equalsIgnoreCase("MAIN") &&
                 !openChordsFolderName.equalsIgnoreCase(mainActivityInterface.getMainfoldername())) {
             mainActivityInterface.getStorageAccess().createFolder("Songs", "", openChordsFolderName, false);
             localFolderName = openChordsFolderName;
             openSongFolderRecordObjects.add(createNewFolderRecordObject(openChordsFolderName, openChordsFolderUuid));
-            saveOpenSongFolderObject();
+            saveDyslexaFolderObject();
         }
     }
 
@@ -2641,7 +2641,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
             for (int i = 0; i < localSetListNeedsServerUUID.size(); i++) {
                 OpenChordsCompareObject openChordsCompareObject = localSetListNeedsServerUUID.get(i);
                 // Get the existing local song
-                String setName = getOpenSongSetCategoryStart() + openChordsCompareObject.getTitle();
+                String setName = getDyslexaSetCategoryStart() + openChordsCompareObject.getTitle();
                 Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", setName);
                 if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
                     String xml = mainActivityInterface.getStorageAccess().readTextFileToString(

@@ -67,13 +67,14 @@ public class ThemeSetupFragment extends Fragment {
         prepareStrings();
         webAddress = website_themes_string;
 
+        // Initialise the element picker BEFORE themes to ensure elementKeys exists
+        setUpElementPicker();
+
         // Initialise the themes
         setUpTheme();
 
         // Set the button listeners
         setListeners();
-        
-        setUpElementPicker();
 
         return myView.getRoot();
     }
@@ -270,7 +271,7 @@ public class ThemeSetupFragment extends Fragment {
     }
 
     private void updateCustomColorPreview() {
-        if (selectedElementIndex >= 0 && selectedElementIndex < elementKeys.length) {
+        if (elementKeys != null && selectedElementIndex >= 0 && selectedElementIndex < elementKeys.length) {
             String key = elementKeys[selectedElementIndex];
             int color;
             if (key.equals("focalTrackerColor")) {

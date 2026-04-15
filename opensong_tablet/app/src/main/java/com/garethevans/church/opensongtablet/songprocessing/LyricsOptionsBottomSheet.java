@@ -172,13 +172,13 @@ public class LyricsOptionsBottomSheet extends BottomSheetCommon {
             this.dismiss();
         });
         myView.openSong.setOnClickListener(v -> {
-            // Only do this if we aren't editing as OpenSong already
+            // Only do this if we aren't editing as Dyslexa already
             if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
                 mainActivityInterface.getTempSong().setEditingAsChoPro(false);
                 mainActivityInterface.getPreferences().setMyPreferenceBoolean("editAsChordPro",false);
                 openSongOrChoProButtonColor();
                 if (openingFragment!=null) {
-                    openingFragment.convertToOpenSong();
+                    openingFragment.convertToDyslexa();
                 }
                 this.dismiss();
             }

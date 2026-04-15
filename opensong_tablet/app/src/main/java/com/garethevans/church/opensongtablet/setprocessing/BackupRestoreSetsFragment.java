@@ -127,7 +127,7 @@ public class BackupRestoreSetsFragment extends Fragment {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd", mainActivityInterface.getLocale());
             String formattedDate = df.format(cal.getTime());
-            myView.backupName.setText("OpenSongSetBackup_" + formattedDate + ".osbs");
+            myView.backupName.setText("DyslexaSetBackup_" + formattedDate + ".osbs");
 
             toolBarTitle = backup_sets_string;
 
@@ -253,7 +253,7 @@ public class BackupRestoreSetsFragment extends Fragment {
         // Do the main lifting in a new thread
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             if (backupFilename.isEmpty()) {
-                backupFilename = "OpenSongSetBackup.osbs";
+                backupFilename = "DyslexaSetBackup.osbs";
             }
             if (!backupFilename.endsWith(".osbs")) {
                 backupFilename = backupFilename + ".osbs";

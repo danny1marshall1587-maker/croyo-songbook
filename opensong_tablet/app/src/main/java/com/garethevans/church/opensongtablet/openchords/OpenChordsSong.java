@@ -27,7 +27,7 @@ public class OpenChordsSong {
     @Nullable private String ccli;            // The CCLI information
     @Nullable private String lastUpdated;     // The last time the song was updated ISO 8601 format e.g. 2025-01-14T07:17:02Z
     @Nullable private String[] tags;          // The tags for the song.  These are UUIDs that get looked up
-    @Nullable private ArrayList<OpenChordsSongStructureItem> structure;     // Any song structure/presentation order in OpenSongApp
+    @Nullable private ArrayList<OpenChordsSongStructureItem> structure;     // Any song structure/presentation order in DyslexaApp
 
     // The getters
     @Nullable public String getId() {

@@ -188,7 +188,7 @@ public class AudioProcessor {
 
 
     public Uri getMultiTrackSongFolderUri() {
-        // This is the default (OpenSong/Multitrack/Song name/)
+        // This is the default (Dyslexa/Multitrack/Song name/)
         multiTrackFolderUri = mainActivityInterface.getStorageAccess().getUriForItem("Multitrack",getExpectedMultiTrackFolder(),null);
         return multiTrackFolderUri;
     }

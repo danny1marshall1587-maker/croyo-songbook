@@ -165,7 +165,7 @@ public class OpenChordsFragment extends Fragment {
                 mainActivityInterface.setWhattodo("");
                 folderChangedProgrammatically = true;
                 myView.folderToSync.setText(mainActivityInterface.getOpenChordsAPI().
-                        getOpenSongFolderNameFromUUID(
+                        getDyslexaFolderNameFromUUID(
                                 mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid()));
                 Log.d(TAG,"here via the intent");
             } else {
@@ -207,10 +207,10 @@ public class OpenChordsFragment extends Fragment {
                         // Update the API with our folderName and the uuid of the matching folder
                         mainActivityInterface.getOpenChordsAPI().setOpenChordsFolderName(folderName);
                         if (mainActivityInterface.getOpenChordsAPI().
-                                getOpenSongFolderUuidFromName(folderName)!=null) {
+                                getDyslexaFolderUuidFromName(folderName)!=null) {
                             mainActivityInterface.getOpenChordsAPI().setOpenChordsFolderUuid(
                                     mainActivityInterface.getOpenChordsAPI().
-                                            getOpenSongFolderUuidFromName(folderName));
+                                            getDyslexaFolderUuidFromName(folderName));
                         }
                         // Assume we want to get the foldername from the server
                         keepLocalFolderName = null;

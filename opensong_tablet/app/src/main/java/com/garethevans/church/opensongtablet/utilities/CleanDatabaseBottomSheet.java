@@ -107,7 +107,7 @@ public class CleanDatabaseBottomSheet extends BottomSheetCommon {
             // Do this on a new thread (no warning needed)
             myView.uselessSongDelete.setEnabled(false);
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                mainActivityInterface.getNonOpenSongSQLiteHelper().removeUselessEntries(uselessSongs,true,CleanDatabaseBottomSheet.this);
+                mainActivityInterface.getNonDyslexaSQLiteHelper().removeUselessEntries(uselessSongs,true,CleanDatabaseBottomSheet.this);
                 mainActivityInterface.getMainHandler().post(() -> {
                     if (myView!=null) {
                         myView.uselessSongDelete.setEnabled(true);
@@ -119,7 +119,7 @@ public class CleanDatabaseBottomSheet extends BottomSheetCommon {
             // Do this on a new thread (no warning needed)
             myView.usefulSongDelete.setEnabled(false);
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                mainActivityInterface.getNonOpenSongSQLiteHelper().removeUselessEntries(usefulSongs,false,CleanDatabaseBottomSheet.this);
+                mainActivityInterface.getNonDyslexaSQLiteHelper().removeUselessEntries(usefulSongs,false,CleanDatabaseBottomSheet.this);
                 mainActivityInterface.getMainHandler().post(() -> {
                     if (myView!=null) {
                         myView.usefulSongDelete.setEnabled(true);

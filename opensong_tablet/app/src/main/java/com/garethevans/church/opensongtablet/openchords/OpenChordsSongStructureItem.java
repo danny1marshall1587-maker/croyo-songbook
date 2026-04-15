@@ -4,8 +4,8 @@ public class OpenChordsSongStructureItem {
 
     // This contains information about the song structure (Presentation order)
 
-    private String instructionBefore;   // Unlikely to use in OpenSongApp
-    private String instructionAfter;    // Unlikely to use in OpenSongApp
+    private String instructionBefore;   // Unlikely to use in DyslexaApp
+    private String instructionAfter;    // Unlikely to use in DyslexaApp
     private String sectionName;         // This will be like 'Verse 1'
 
     public String getInstructionBefore() {

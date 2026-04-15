@@ -491,7 +491,7 @@ public class NearbyReceivePayloads {
                             tempSong.setFolder(folder);
                             tempSong.setFilename(filename);
                             // Add info to the persistent database
-                            mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(tempSong);
+                            mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(tempSong);
                             mainActivityInterface.getSQLiteHelper().updateSong(tempSong);
                             mainActivityInterface.setSong(tempSong);
                         }

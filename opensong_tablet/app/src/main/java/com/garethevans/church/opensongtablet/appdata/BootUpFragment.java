@@ -122,7 +122,9 @@ public class BootUpFragment extends Fragment {
         }
 
         // 2. Proceed to storage check
+        mainActivityInterface.getBreadcrumbManager().add("BootUp: Starting storage checks");
         if (storageIsCorrectlySet()) {
+            mainActivityInterface.getBreadcrumbManager().add("BootUp: Storage correctly set");
             if (!mainActivityInterface.getAlertChecks().showUpdateInfo() &&
                     mainActivityInterface.getPreferences().getMyPreferenceBoolean("indexSkipAllowed",false)) {
                 try {
@@ -154,7 +156,8 @@ public class BootUpFragment extends Fragment {
     }
     private boolean storageLocationValid() {
         uriTree = Uri.parse(uriTreeString);
-        return mainActivityInterface.getStorageAccess().uriTreeValid(uriTree);
+        return mainActivityInterface.getStorageAccess().uriTreeValid(uriTree) &&
+               mainActivityInterface.getStorageAccess().isStorageAccessAuthorized(uriTree);
     }
 
     private void requireStorageCheck() {
@@ -166,7 +169,7 @@ public class BootUpFragment extends Fragment {
                     mainActivityInterface,
                     getString(R.string.storage),
                     "To ensure smooth operation and avoid 'Access Denied' errors on Android 11+, " +
-                    "Cryo-Songbook recommends 'All Files Access'. \n\n" +
+                    "DyslexaSongbook recommends 'All Files Access'. \n\n" +
                     "Would you like to enable this now, or continue with restricted folder access?",
                     (dialog, which) -> mainActivityInterface.requestAllFilesAccess(),
                     (dialog, which) -> {
@@ -203,25 +206,28 @@ public class BootUpFragment extends Fragment {
                         message = "Initialising";
                     }
                     updateMessage();
-                    mainActivityInterface.initialiseActivity();
-
-                    // Tell the user we're initialising the storage
-                    if (getContext() != null) {
-                        message = processing + ": " + storage;
-                    } else {
-                        message = "Processing: Storage";
-                    }
-                    updateMessage();
-
                     // Get the last used song and folder.  If the song failed to load, reset to default
                     setFolderAndSong();
 
                     // Check for saved storage locations
+                    mainActivityInterface.getBreadcrumbManager().add("BootUp: Checking Root Folders");
                     final String progress = mainActivityInterface.getStorageAccess().
                             createOrCheckRootFolders(uriTree);
+                    
+                    if (progress == null) {
+                        Log.e(TAG, "Storage check returned null! Denying boot.");
+                        mainActivityInterface.getMainHandler().post(this::requireStorageCheck);
+                        return;
+                    }
+
                     boolean foldersok = progress.equalsIgnoreCase("Success");
 
                     if (foldersok) {
+                        // NOW initialise activity components that might depend on storage
+                        mainActivityInterface.getBreadcrumbManager().add("BootUp: Initialising Activity After Storage Confirmed");
+                        mainActivityInterface.getStorageAccess().updateGeneralLog("BootUp: Storage OK, Initialising Activity");
+                        mainActivityInterface.initialiseActivity();
+
                         // Build the basic song index by scanning the songs and creating a songIDs file
                         if (getContext() != null) {
                             message = processing + "\n" + wait;
@@ -234,6 +240,7 @@ public class BootUpFragment extends Fragment {
 
                         if (needIndex) {
                             // Check for bad files
+                            mainActivityInterface.getBreadcrumbManager().add("BootUp: Building song menu index");
                             mainActivityInterface.getSongListBuildIndex().setIndexComplete(false);
                             mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", false);
                             mainActivityInterface.quickSongMenuBuild();
@@ -271,6 +278,8 @@ public class BootUpFragment extends Fragment {
                         }
 
                         // Set up the rest of the main activity (on the main thread)
+                        mainActivityInterface.getBreadcrumbManager().add("BootUp: Finalizing, navigating home");
+                        mainActivityInterface.getStorageAccess().updateGeneralLog("BootUp: Success, navigating home");
                         mainActivityInterface.getMainHandler().post(() -> {
                             mainActivityInterface.navHome();
                             mainActivityInterface.showActionBar();
@@ -334,7 +343,7 @@ public class BootUpFragment extends Fragment {
             temp_welcome = welcome;
         } else {
             temp_mainfoldername = "MAIN";
-            temp_welcome = "Welcome to OpenSongApp";
+            temp_welcome = "Welcome to DyslexaSongbook";
         }
         mainActivityInterface.getSong().setFolder(mainActivityInterface.getPreferences().getMyPreferenceString("songFolder",
                 temp_mainfoldername));
@@ -345,7 +354,7 @@ public class BootUpFragment extends Fragment {
         if (!mainActivityInterface.getPreferences().getMyPreferenceBoolean("songLoadSuccess",false)) {
             mainActivityInterface.getSong().setFolder(temp_mainfoldername);
             mainActivityInterface.getPreferences().setMyPreferenceString("songFolder",mainActivityInterface.getSong().getFolder());
-            mainActivityInterface.getSong().setFilename("Welcome to OpenSongApp");
+            mainActivityInterface.getSong().setFilename("Welcome to DyslexaSongbook");
             mainActivityInterface.getPreferences().setMyPreferenceString("songFilename",temp_welcome);
         }
     }

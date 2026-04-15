@@ -154,7 +154,7 @@ public class AlertInfoBottomSheet extends BottomSheetCommon {
 
 
 
-        // Check for bad song files moved to OpenSong/Import
+        // Check for bad song files moved to Dyslexa/Import
         myView.badSongsMoved.setVisibility(mainActivityInterface.getAlertChecks().showBadSongMoved() ?
                     View.VISIBLE : View.GONE);
         myView.importMultiple.setOnClickListener(b -> {

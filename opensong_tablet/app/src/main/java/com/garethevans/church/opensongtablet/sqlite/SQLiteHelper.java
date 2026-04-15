@@ -331,7 +331,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
     public ArrayList<String> renameThemeTags(String oldTag, String newTag) {
         // Rename matching tags if found and don't already exist
-        try (SQLiteDatabase db = getDB(); SQLiteDatabase db2 = mainActivityInterface.getNonOpenSongSQLiteHelper().getDB()) {
+        try (SQLiteDatabase db = getDB(); SQLiteDatabase db2 = mainActivityInterface.getNonDyslexaSQLiteHelper().getDB()) {
             return mainActivityInterface.getCommonSQL().renameThemeTags(db, db2, oldTag, newTag);
         } catch (OutOfMemoryError | Exception e) {
             return new ArrayList<>();

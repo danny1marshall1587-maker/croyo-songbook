@@ -1070,9 +1070,9 @@ public class ThemeColors {
         setLyricsCapoColor(red);
         setPresoShadowColor(translucentDark);
         setThemeFont("Inter");
-        mainActivityInterface.getPreferences().setMyPreferenceString("cryoFlowPatternName", "Tide");
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorPrimary", android.graphics.Color.parseColor("#B3E5FC"));
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorSecondary", android.graphics.Color.parseColor("#E1F5FE"));
+        mainActivityInterface.getPreferences().setMyPreferenceString("dyslexaFlowPatternName", "Tide");
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorPrimary", android.graphics.Color.parseColor("#B3E5FC"));
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorSecondary", android.graphics.Color.parseColor("#E1F5FE"));
     }
 
     private void setThemeDyslexiaSepia() {
@@ -1086,9 +1086,9 @@ public class ThemeColors {
         setLyricsCapoColor(darkishred);
         setPresoShadowColor(translucentLight);
         setThemeFont("Inter");
-        mainActivityInterface.getPreferences().setMyPreferenceString("cryoFlowPatternName", "Drift");
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorPrimary", android.graphics.Color.parseColor("#D7CCC8"));
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorSecondary", android.graphics.Color.parseColor("#EFEBE9"));
+        mainActivityInterface.getPreferences().setMyPreferenceString("dyslexaFlowPatternName", "Drift");
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorPrimary", android.graphics.Color.parseColor("#D7CCC8"));
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorSecondary", android.graphics.Color.parseColor("#EFEBE9"));
     }
 
     private void setThemeDyslexiaNight() {
@@ -1102,9 +1102,9 @@ public class ThemeColors {
         setLyricsCapoColor(red);
         setPresoShadowColor(translucentDark);
         setThemeFont("Inter");
-        mainActivityInterface.getPreferences().setMyPreferenceString("cryoFlowPatternName", "Nebula");
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorPrimary", android.graphics.Color.parseColor("#311B92"));
-        mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowColorSecondary", android.graphics.Color.parseColor("#000000"));
+        mainActivityInterface.getPreferences().setMyPreferenceString("dyslexaFlowPatternName", "Nebula");
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorPrimary", android.graphics.Color.parseColor("#311B92"));
+        mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowColorSecondary", android.graphics.Color.parseColor("#000000"));
     }
 
     private void setThemeDyslexiaEmerald() {

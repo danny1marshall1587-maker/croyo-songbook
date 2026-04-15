@@ -10,6 +10,7 @@ package com.garethevans.church.opensongtablet.filemanagement;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -69,19 +70,19 @@ public class StorageAccess {
     private final Context c;
     private final MainActivityInterface mainActivityInterface;
     private boolean fileWriteLog, fileViewLog;
-    public final String appFolder = "OpenSong";
+    public final String appFolder = "DyslexaSongbook";
     private final String TAG = "StorageAccess";
     private final String[] rootFolders = {"Backgrounds", "Export", "Fonts", "Highlighter", "Images", "Media",
-            "Multitrack", "Notes", "OpenSong Scripture", "Pads", "Profiles", "Received", "Scripture",
+            "Multitrack", "Notes", "Dyslexa Scripture", "Pads", "Profiles", "Received", "Scripture",
             "Sets", "Settings", "Slides", "Songs", "Variations", "Backups", "Import"};
     private final String[] cacheFolders = {"Backgrounds/_cache", "Images/_cache", "Notes/_cache",
-            "OpenSong Scripture/_cache", "Scripture/_cache", "Slides/_cache", "Variations/_cache"};
+            "Dyslexa Scripture/_cache", "Scripture/_cache", "Slides/_cache", "Variations/_cache"};
     private Uri uriTreeHome = null; // This is the home folder.  Set as required from preferences.
     private int updateCrashLogAttempts = 0;
     private DocumentFile uriTreeDF, songsDF;
     private long databaseLastUpdate;
 
-    // Permissions for accessing non OpenSong folder uris
+    // Permissions for accessing non Dyslexa folder uris
     public int getTakePersistentReadUriFlags() {
         return Intent.FLAG_GRANT_READ_URI_PERMISSION;
     }
@@ -109,13 +110,13 @@ public class StorageAccess {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
-    // This gets the uri for the uriTreeHome (the uri of the ..../OpenSong folder
+    // This gets the uri for the uriTreeHome (the uri of the ..../Dyslexa folder
     // This may or may not be the same as uriTree as this could be the parent folder
     /*public Uri homeFolder(Uri uri) {
         // The user specified a storage folder when they started the app
-        // However, this might not be the OpenSong folder, but the folder containing it
+        // However, this might not be the Dyslexa folder, but the folder containing it
         // This function is called once when the app starts and fixes that
-        // We need a reference to the OpenSong as the root for the app
+        // We need a reference to the Dyslexa as the root for the app
 
         String uriTree_String;
         if (uri == null) {
@@ -143,9 +144,9 @@ public class StorageAccess {
     }*/
     public Uri homeFolder(Uri uri) {
         // The user specified a storage folder when they started the app
-        // However, this might not be the OpenSong folder, but the folder containing it
+        // However, this might not be the Dyslexa folder, but the folder containing it
         // This function is called once when the app starts and fixes that
-        // We need a reference to the OpenSong as the root for the app
+        // We need a reference to the Dyslexa as the root for the app
 
         // If no URI is passed, try to load from preferences
         if (uri == null) {
@@ -205,8 +206,8 @@ public class StorageAccess {
                 //uriTree = uri;
             }
 
-            // If uri doesn't end with /OpenSong/, fix that
-            if (uri != null && uri.getLastPathSegment() != null && !uri.getLastPathSegment().endsWith("OpenSong")) {
+            // If uri doesn't end with /Dyslexa/, fix that
+            if (uri != null && uri.getLastPathSegment() != null && !uri.getLastPathSegment().endsWith("Dyslexa")) {
                 String s = uri.toString();
                 s = s + "%2F" + appFolder;
                 uri = Uri.parse(s);
@@ -234,32 +235,43 @@ public class StorageAccess {
                 return null;
             }
 
-            // Check: Did they pick "OpenSong" itself, or the parent folder?
-            // pickedDir.getName() returns the visible folder name (e.g., "OpenSong")
+            // Check: Did they pick "Dyslexa" itself, or the parent folder?
+            // pickedDir.getName() returns the visible folder name (e.g., "Dyslexa")
             if (appFolder.equalsIgnoreCase(pickedDir.getName())) {
-                // They picked the OpenSong folder directly
+                // They picked the Dyslexa folder directly
                 return treeUri;
             } else {
                 // They picked a parent folder (like 'Documents' or 'SD Card')
-                // We look for "OpenSong" inside it
+                // We look for "Dyslexa" inside it
                 DocumentFile openSongDir = pickedDir.findFile(appFolder);
 
                 if (openSongDir == null) {
+                    // MIGRATION: Check if "OpenSong" folder exists to rename it
+                    DocumentFile oldOpenSongDir = pickedDir.findFile("OpenSong");
+                    if (oldOpenSongDir != null && oldOpenSongDir.exists()) {
+                        Log.i(TAG, "MIGRATION: Found old OpenSong folder, renaming to DyslexaSongbook...");
+                        if (oldOpenSongDir.renameTo(appFolder)) {
+                            openSongDir = pickedDir.findFile(appFolder);
+                        }
+                    }
+                }
+
+                if (openSongDir == null) {
                     // It doesn't exist yet, so we create it inside the parent they picked
-                    Log.d(TAG, "OpenSong folder not found, creating it...");
+                    Log.d(TAG, "Dyslexa folder not found, creating it...");
                     openSongDir = pickedDir.createDirectory(appFolder);
                 }
 
                 if (openSongDir != null && openSongDir.exists() && openSongDir.canWrite()) {
                     // We must return a Tree URI, not a Document URI.
-                    // The most reliable way across SAF versions is to append %2FOpenSong to the treeUri string.
+                    // The most reliable way across SAF versions is to append %2FDyslexa to the treeUri string.
                     String s = treeUri.toString();
                     if (!s.endsWith(appFolder)) {
                         s = s + "%2F" + appFolder;
                     }
                     return Uri.parse(s);
                 } else {
-                    Log.e(TAG, "Failed to create or access the OpenSong child directory");
+                    Log.e(TAG, "Failed to create or access the Dyslexa child directory");
                 }
             }
         } catch (Exception e) {
@@ -298,7 +310,7 @@ public class StorageAccess {
 
             f = new File(uriTree_String);
             if (f.mkdirs()) {
-                Log.d(TAG, "Created or identified OpenSong folder");
+                Log.d(TAG, "Created or identified Dyslexa folder");
             }
         } else {
             f = new File(uriTree_String);
@@ -422,13 +434,13 @@ public class StorageAccess {
             }
         }
 
-        // Keep a reference to the OpenSongs/ documentFile
+        // Keep a reference to the Dyslexas/ documentFile
         uriTreeDF = documentFile;
 
         setUriTreeHome(uriTreeHome);
 
         // Go through the main folders and try to create them
-        // We have a reference to the OpenSong/ folder now from above
+        // We have a reference to the Dyslexa/ folder now from above
         if (documentFile != null) {
             stringBuilder.append("\nuriTreeHome:").append(documentFile.getUri());
             for (String folder : rootFolders) {
@@ -453,7 +465,7 @@ public class StorageAccess {
                 }
             }
 
-            // Now we know we have the main folders, get a permanent reference to OpenSong/Songs
+            // Now we know we have the main folders, get a permanent reference to Dyslexa/Songs
             songsDF = uriTreeDF.findFile("Songs");
             stringBuilder.append("\nRoot folders done, now check _cache folder");
 
@@ -524,7 +536,7 @@ public class StorageAccess {
             return "Failure";
         }
 
-        // 2. Get the DocumentFile for our "OpenSong" home
+        // 2. Get the DocumentFile for our "Dyslexa" home
         DocumentFile openSongRoot = null;
         try {
             openSongRoot = DocumentFile.fromTreeUri(c, uriTreeHome);
@@ -533,7 +545,7 @@ public class StorageAccess {
         }
 
         if (openSongRoot == null || !openSongRoot.exists()) {
-            String errorMsg = "Failure: Cannot access OpenSong root. ";
+            String errorMsg = "Failure: Cannot access Dyslexa root. ";
             if (openSongRoot == null) errorMsg += "(openSongRoot is null)";
             else errorMsg += "(openSongRoot does not exist)";
             
@@ -621,8 +633,8 @@ public class StorageAccess {
             // Copies the background assets
             AssetManager assetManager = c.getAssets();
             String[] files = new String[2];
-            files[0] = "backgrounds/OpenSongApp_Background.png";
-            files[1] = "backgrounds/OpenSongApp_Logo.png";
+            files[0] = "backgrounds/DyslexaApp_Background.png";
+            files[1] = "backgrounds/DyslexaApp_Logo.png";
             Uri backgrounds = getUriForItem("Backgrounds", "", "");
 
             DocumentFile df = documentFileFromUri(backgrounds, backgrounds.getPath());
@@ -656,8 +668,8 @@ public class StorageAccess {
         try {
             AssetManager assetManager = c.getAssets();
             String[] assetFiles = {
-                    "backgrounds/OpenSongApp_Background.png",
-                    "backgrounds/OpenSongApp_Logo.png"
+                    "backgrounds/DyslexaApp_Background.png",
+                    "backgrounds/DyslexaApp_Logo.png"
             };
 
             Uri backgroundsUri = getUriForItem("Backgrounds", "", "");
@@ -717,7 +729,7 @@ public class StorageAccess {
                 path = c.getString(R.string.storage_ext);
             }
 
-            // The  storage location getPath is likely something like /tree/primary:/document/primary:/OpenSong
+            // The  storage location getPath is likely something like /tree/primary:/document/primary:/Dyslexa
             // This is due to the content using a document contract
             if (path.contains("primary:")) {
                 path = path.substring(path.lastIndexOf("primary"));
@@ -755,7 +767,7 @@ public class StorageAccess {
                     storageDetails[0] = c.getString(R.string.storage_ext);
                 }
 
-                // The  storage location getPath is likely something like /tree/primary:/document/primary:/OpenSong
+                // The  storage location getPath is likely something like /tree/primary:/document/primary:/Dyslexa
                 // This is due to the content using a document contract
                 if (storageDetails[1].contains("primary:")) {
                     storageDetails[1] = storageDetails[1].substring(storageDetails[1].lastIndexOf("primary"));
@@ -768,7 +780,7 @@ public class StorageAccess {
                 }
                 storageDetails[1] = storageDetails[1].replace("//", "/");
 
-                // Add the 'OpenSong' bit to the end if it isn't there already
+                // Add the 'Dyslexa' bit to the end if it isn't there already
                 if (!storageDetails[1].endsWith("/" + appFolder)) {
                     storageDetails[1] += "/" + appFolder;
                 }
@@ -822,7 +834,7 @@ public class StorageAccess {
                     c.getString(R.string.storage_ext) + " " + storageDetails[1].substring(0, storageDetails[1].indexOf("/")) + ")";
         }
 
-        // Add the 'OpenSong' bit to the end if it isn't there already
+        // Add the 'Dyslexa' bit to the end if it isn't there already
         if (!storageDetails[1].endsWith("/" + appFolder)) {
             storageDetails[1] += "/" + appFolder;
         }
@@ -967,7 +979,7 @@ public class StorageAccess {
         filename = filename.replace("|","¦");
         filename = filename.replaceAll("[*?<>&!#$+\":{}@\\\\]", " "); // Removes bad characters - leave ' and / though
         filename = filename.replaceAll("\\s{2,}", " ");  // Removes double spaces
-        // Don't allow the name OpenSong
+        // Don't allow the name Dyslexa
         filename = filename.replace(appFolder, "Open_Song");
         return filename.trim();  // Returns the trimmed value
     }*/
@@ -993,8 +1005,8 @@ public class StorageAccess {
 
     public Uri fixLocalisedUri(String uriString) {
         // This checks for localised filenames first and fixes the Uri
-        if (uriString.equals("OpenSongApp_Logo.png") || uriString.equals("OpenSongApp_Background.png")) {
-            uriString = "../OpenSong/Backgrounds/" + uriString;
+        if (uriString.equals("DyslexaApp_Logo.png") || uriString.equals("DyslexaApp_Background.png")) {
+            uriString = "../Dyslexa/Backgrounds/" + uriString;
         }
 
         // If uri has no localised folder location (i.e. just the filename as for v5 pads) add it
@@ -1002,11 +1014,11 @@ public class StorageAccess {
         // (bad choice for v5 to not include some path logic)
         // Assume a pad for now!
         if (!uriString.contains("/") && isSpecificFileExtension("audio",uriString)) {
-            uriString = "../OpenSong/Pads/" + uriString;
+            uriString = "../Dyslexa/Pads/" + uriString;
         }
-        // Basically replace ../OpenSong/ with the root app home folder
-        if (uriString.startsWith("../OpenSong/")) {
-            uriString = uriString.replace("../OpenSong/", "");
+        // Basically replace ../Dyslexa/ with the root app home folder
+        if (uriString.startsWith("../Dyslexa/")) {
+            uriString = uriString.replace("../Dyslexa/", "");
             String rootFolder = "";
             String subfolder = "";
             if (uriString.contains("/")) {
@@ -1034,13 +1046,13 @@ public class StorageAccess {
     }
 
     public String fixUriToLocal(Uri uri) {
-        // If a file is in the OpenSong/ folder, let's localise it (important for sync)
+        // If a file is in the Dyslexa/ folder, let's localise it (important for sync)
         String path = "";
         if (uri != null && uri.getPath() != null) {
             path = uri.getPath();
-            if (path.contains("OpenSong/")) {
-                path = path.substring(path.lastIndexOf("OpenSong/") + 9);
-                path = "../OpenSong/" + path;
+            if (path.contains("Dyslexa/")) {
+                path = path.substring(path.lastIndexOf("Dyslexa/") + 9);
+                path = "../Dyslexa/" + path;
             } else {
                 path = uri.toString();
             }
@@ -1049,10 +1061,10 @@ public class StorageAccess {
     }
 
     private String songFolderAndFileOnly(String uriString, String mainfolder) {
-        // Get rid of all the uri info up to the end of /OpenSong/Songs
+        // Get rid of all the uri info up to the end of /Dyslexa/Songs
         // Also adds mainfoldername if the song isn't in a subfolder
-        if (uriString.contains("OpenSong/Songs/")) {
-            uriString = uriString.substring(uriString.lastIndexOf("OpenSong/Songs/") + 15);
+        if (uriString.contains("Dyslexa/Songs/")) {
+            uriString = uriString.substring(uriString.lastIndexOf("Dyslexa/Songs/") + 15);
         }
         if (!uriString.contains("/")) {
             uriString = mainfolder + "/" + uriString;
@@ -1064,8 +1076,8 @@ public class StorageAccess {
     public String getPartOfUri(Uri uri) {
         // This gets the filename
         String path = uri.getPath();
-        if (path != null && path.contains("OpenSong/")) {
-            path = path.substring(path.lastIndexOf("OpenSong/"));
+        if (path != null && path.contains("Dyslexa/")) {
+            path = path.substring(path.lastIndexOf("Dyslexa/"));
         }
         return path;
     }
@@ -1222,10 +1234,19 @@ public class StorageAccess {
     }
 
     public boolean uriExists(Uri uri) {
-        if (lollipopOrLater()) {
-            return uriExists_SAF(uri);
-        } else {
-            return uriExists_File(uri);
+        if (uri == null) return false;
+        try {
+            if (lollipopOrLater()) {
+                return uriExists_SAF(uri);
+            } else {
+                return uriExists_File(uri);
+            }
+        } catch (SecurityException se) {
+            Log.e(TAG, "SecurityException checking uriExists: " + se.getMessage());
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking uriExists: " + e.getMessage());
+            return false;
         }
     }
 
@@ -1529,7 +1550,7 @@ public class StorageAccess {
             String rootDocId = DocumentsContract.getTreeDocumentId(uriTreeHome);
             StringBuilder pathBuilder = new StringBuilder(rootDocId);
 
-            // 2. Add the appFolder (OpenSong) if it's not already part of the rootDocId
+            // 2. Add the appFolder (Dyslexa) if it's not already part of the rootDocId
             if (!rootDocId.endsWith(appFolder)) {
                 pathBuilder.append("/").append(appFolder);
             }
@@ -1678,8 +1699,8 @@ public class StorageAccess {
                 return true;
             }
         } catch (FileNotFoundException e) {
-            // 2. File doesn't exist, navigate hierarchy: OpenSong -> Songs -> Category
-            DocumentFile root = DocumentFile.fromTreeUri(c, uriTreeHome); // "OpenSong/"
+            // 2. File doesn't exist, navigate hierarchy: Dyslexa -> Songs -> Category
+            DocumentFile root = DocumentFile.fromTreeUri(c, uriTreeHome); // "Dyslexa/"
             if (root != null) {
                 // Navigate into the "Songs" folder first
                 DocumentFile songsBaseDir = root.findFile("Songs");
@@ -2563,13 +2584,13 @@ public class StorageAccess {
                     while (cursor.moveToNext()) {
                         final String docId = cursor.getString(0);
                         final String mime = cursor.getString(2);
-                        if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mime) && docId.contains("OpenSong")) {
+                        if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mime) && docId.contains("Dyslexa")) {
                             final Uri newNode = getChildren(children, docId);
                             dirNodes.add(newNode);
-                            if (docId.contains("OpenSong/Songs/")) {
+                            if (docId.contains("Dyslexa/Songs/")) {
                                 songIds.add(songFolderAndFileOnly(docId + "/", mainfolder)); // In case the folder is empty add it as a songId
                             }
-                        } else if (docId.contains("OpenSong/Songs/")) {
+                        } else if (docId.contains("Dyslexa/Songs/")) {
                             songIds.add(songFolderAndFileOnly(docId, mainfolder));
                         }
                     }
@@ -2645,7 +2666,7 @@ public class StorageAccess {
                         filename.lastIndexOf(".")==filename.length()-5) &&
                 !filenameIsImage(filename) && !filename.endsWith(".pdf") &&
                 !filename.endsWith(".xml")) {
-            updateFileActivityLog("BAD file:"+filename+" should not be in an OpenSong song folder - please move it as soon as possible!");
+            updateFileActivityLog("BAD file:"+filename+" should not be in an Dyslexa song folder - please move it as soon as possible!");
             return true;
         }
         return false;
@@ -2852,6 +2873,51 @@ public class StorageAccess {
     }
 
     private boolean creatingLogFile = false;
+    public void updateGeneralLog(String logText) {
+        // Log to Logcat
+        Log.d(TAG, logText);
+        
+        // Append to persistent log file in Settings/GeneralLog.txt
+        String logLine = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(new Date()) + ": " + logText + "\n";
+        try {
+            // Check if log file exists, if not create it
+            Uri logUri = getUriForItem("Settings", "", "GeneralLog.txt");
+            if (logUri == null) {
+                Log.w(TAG, "Could not get URI for GeneralLog.txt - possibly no storage authorized");
+                return;
+            }
+
+            if (!uriExists(logUri)) {
+                writeFileFromString("Settings", "", "GeneralLog.txt", "=== Dyslexa-Songbook General Log ===\n");
+            }
+            
+            // Append by reading existing content and adding new line (SAF doesn't support easy append)
+            String currentLog = "";
+            try {
+                InputStream is = getInputStream(logUri);
+                if (is != null) {
+                    currentLog = readTextFileToString(is);
+                    is.close();
+                }
+            } catch (SecurityException se) {
+                Log.e(TAG, "SecurityException reading log: " + se.getMessage());
+                return; // Stop if we don't have permission
+            } catch (Exception e) {
+                // File might not exist yet or be empty
+            }
+            
+            // Limit log size to 100KB to prevent bloat
+            if (currentLog.length() > 100000) {
+                currentLog = currentLog.substring(currentLog.length() - 50000);
+            }
+            writeFileFromString("Settings", "", "GeneralLog.txt", currentLog + logLine);
+        } catch (SecurityException se) {
+            Log.e(TAG, "SecurityException writing log: " + se.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating general log: " + e.getMessage());
+        }
+    }
+
     public void updateFileActivityLog(String logText) {
         if (!creatingLogFile && uriTreeDF!=null && fileWriteLog && logText!=null) {
             DocumentFile settingsDir = uriTreeDF.findFile("Settings");
@@ -2884,11 +2950,11 @@ public class StorageAccess {
     }
 
     public void updateRemoveDBFile(String songValue) {
-        // Append songs that have been removed to the removedNonOpenSongSongs.csv file
+        // Append songs that have been removed to the removedNonDyslexaSongs.csv file
         if (songValue!=null && !songValue.isEmpty()) {
             try {
                 songValue = songValue.trim();
-                Uri removedUri = getUriForItem("Settings", "", "removedNonOpenSongSongs.csv");
+                Uri removedUri = getUriForItem("Settings", "", "removedNonDyslexaSongs.csv");
                 if (removedUri != null) {
                     OutputStream outputStream;
                     outputStream = c.getContentResolver().openOutputStream(removedUri, "wa");
@@ -3116,8 +3182,8 @@ public class StorageAccess {
     }
 
     public void fixBadSongs() {
-        // This will move bad song files out of the OpenSong/Songs folder and place them into the
-        // OpenSong/NonOpenSongSongs folder
+        // This will move bad song files out of the Dyslexa/Songs folder and place them into the
+        // Dyslexa/NonDyslexaSongs folder
         // It will then try to convert them and will update the song menu accordingly
         ArrayList<String> songIds = listSongs(true);
         mainActivityInterface.getAlertChecks().setBadSongMoved(false);
@@ -3143,10 +3209,40 @@ public class StorageAccess {
                         deleteFile(uriBad);
                         // Note that we did this
                         mainActivityInterface.getAlertChecks().setBadSongMoved(true);
-                        updateFileActivityLog("Moved bad file '"+songId+"' into Import folder.  This needs imported to convert to OpenSong format.");
+                        updateFileActivityLog("Moved bad file '"+songId+"' into Import folder.  This needs imported to convert to Dyslexa format.");
                     }
                 }
             }
+        }
+    }
+
+    public boolean isStorageAccessAuthorized(Uri treeUri) {
+        if (treeUri == null || c == null) return false;
+        try {
+            // Definitive check: Is this URI in our persisted permissions list?
+            boolean hasPermission = false;
+            List<UriPermission> permissions = c.getContentResolver().getPersistedUriPermissions();
+            for (UriPermission permission : permissions) {
+                if (permission.getUri().equals(treeUri) && permission.isWritePermission()) {
+                    hasPermission = true;
+                    break;
+                }
+            }
+            
+            if (!hasPermission) {
+                Log.w(TAG, "Storage URI not found in persisted permissions: " + treeUri);
+                return false;
+            }
+
+            // Secondary check: Can we actually "take" it? (This triggers SecurityException if revoked)
+            c.getContentResolver().takePersistableUriPermission(treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            return true;
+        } catch (SecurityException se) {
+            Log.w(TAG, "Storage URI failed authorization check: " + treeUri);
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -3161,7 +3257,7 @@ public class StorageAccess {
             String crashDate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
             String crashContent = "Please share this with crashlog@opensongapp.com\n" +
                 "=============================\n"+
-                "OpenSongApp version: "+appVersion + "\n" +
+                "DyslexaApp version: "+appVersion + "\n" +
                 "Android API: "+sdkInt+"\n" +
                 "Device: " + deviceCode + "\n" +
                 "Crash time: " + crashDate + "\n" +
@@ -3253,7 +3349,7 @@ public class StorageAccess {
         return writeFileFromString(content, outputStream);
     }
 
-    /** This function is used for non OpenSong/ folder content,
+    /** This function is used for non Dyslexa/ folder content,
      * Or when called from the method above (to reuse code)
      * @param content - the string to write
      * @param outputStream - a valid outputStream based on a registered uri
@@ -3291,7 +3387,7 @@ public class StorageAccess {
     private Uri createNewFile_SAF(String folder, String subfolder, String filename) {
         if (uriTreeHome == null) uriTreeHome = homeFolder(null);
 
-        // Start at the OpenSong root (which uriTreeHome should point to)
+        // Start at the Dyslexa root (which uriTreeHome should point to)
         DocumentFile currentDir = DocumentFile.fromTreeUri(c, uriTreeHome);
         if (currentDir == null) return null;
 

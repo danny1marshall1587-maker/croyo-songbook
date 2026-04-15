@@ -77,7 +77,7 @@
                 <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/cryo_section_colors"
+                    android:text="@string/dyslexa_section_colors"
                     android:textStyle="bold"
                     app:size="small" />
 

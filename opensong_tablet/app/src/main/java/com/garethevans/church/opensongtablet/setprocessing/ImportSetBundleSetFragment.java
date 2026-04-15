@@ -43,7 +43,7 @@ public class ImportSetBundleSetFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mainActivityInterface = (MainActivityInterface) context;
-        mainActivityInterface.getOpenSongSetBundle().setImportSetBundleSetFragment(this);
+        mainActivityInterface.getDyslexaSetBundle().setImportSetBundleSetFragment(this);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class ImportSetBundleSetFragment extends Fragment {
 
             // Hopefully we have dealt with the zip content already
             // If not the helper will update when it has finished
-            if (mainActivityInterface.getOpenSongSetBundle().getSetFile() != null) {
-                setSetName(mainActivityInterface.getOpenSongSetBundle().getSetFileName());
+            if (mainActivityInterface.getDyslexaSetBundle().getSetFile() != null) {
+                setSetName(mainActivityInterface.getDyslexaSetBundle().getSetFileName());
             }
 
             // The sort buttons
@@ -146,9 +146,9 @@ public class ImportSetBundleSetFragment extends Fragment {
                     if (!mainActivityInterface.getStorageAccess().uriExists(uri) || myView.overWrite.isChecked()) {
                         mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(true, uri, null, "Sets", "", newName);
                         OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
-                        if (outputStream != null && mainActivityInterface.getOpenSongSetBundle().getSetFile() != null
-                                && mainActivityInterface.getOpenSongSetBundle().getSetFile().exists()) {
-                            mainActivityInterface.getStorageAccess().copyFile(mainActivityInterface.getStorageAccess().getInputStream(Uri.fromFile(mainActivityInterface.getOpenSongSetBundle().getSetFile())), outputStream);
+                        if (outputStream != null && mainActivityInterface.getDyslexaSetBundle().getSetFile() != null
+                                && mainActivityInterface.getDyslexaSetBundle().getSetFile().exists()) {
+                            mainActivityInterface.getStorageAccess().copyFile(mainActivityInterface.getStorageAccess().getInputStream(Uri.fromFile(mainActivityInterface.getDyslexaSetBundle().getSetFile())), outputStream);
                             mainActivityInterface.getShowToast().success();
                         } else {
                             mainActivityInterface.getShowToast().error();

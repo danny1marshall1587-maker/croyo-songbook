@@ -31,7 +31,7 @@ public class Bible {
     // This class is instantiated from the Bible bottom sheets.  It will retain info until garbage collection
     private ArrayList<String> bibleFiles, defaultBibleBooks, bibleBooks, bibleChapters, bibleVerses, bibleTexts;
     private String bibleFile, bibleBook = "Genesis", bibleChapter = "1", bibleVerseFrom = "1",
-            bibleVerseTo = "1", bibleFormat = "OpenSong", bibleTranslation;
+            bibleVerseTo = "1", bibleFormat = "Dyslexa", bibleTranslation;
     private String tagtosearch_book = "";
     private String attributetosearch_book = "";
     private String attributetosearch_chapter = "";
@@ -46,10 +46,10 @@ public class Bible {
     private NamedNodeMap nmm;
     Uri bibleUri;
 
-    // Bible files in the OpenSong/OpenSong Scripture/ folder
+    // Bible files in the Dyslexa/Dyslexa Scripture/ folder
     public void buildBibleFiles() {
         bibleFiles = new ArrayList<>();
-        bibleFiles = mainActivityInterface.getStorageAccess().listFilesInFolder("OpenSong Scripture","");
+        bibleFiles = mainActivityInterface.getStorageAccess().listFilesInFolder("Dyslexa Scripture","");
         String myBiblePref = mainActivityInterface.getPreferences().getMyPreferenceString("bibleCurrentFile","");
         if (!myBiblePref.isEmpty() && bibleFiles.contains(myBiblePref)) {
             bibleFile = myBiblePref;
@@ -68,7 +68,7 @@ public class Bible {
         decideOnBibleFileFormat();
     }
     public void decideOnBibleFileFormat() {
-        bibleUri = mainActivityInterface.getStorageAccess().getUriForItem("OpenSong Scripture","",bibleFile);
+        bibleUri = mainActivityInterface.getStorageAccess().getUriForItem("Dyslexa Scripture","",bibleFile);
         if (bibleFileSafe()) {
             try {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -79,10 +79,10 @@ public class Bible {
                 XPathFactory xPathfactory = XPathFactory.newInstance();
                 xpath = xPathfactory.newXPath();
 
-                NodeList nl1 = documentElement.getElementsByTagName("b");            // OpenSong
+                NodeList nl1 = documentElement.getElementsByTagName("b");            // Dyslexa
                 NodeList nl2 = documentElement.getElementsByTagName("BIBLEBOOK");    // Zefania
                 if (nl1 != null && nl1.getLength() > 0) {
-                    bibleFormat = "OpenSong";
+                    bibleFormat = "Dyslexa";
                 } else if (nl2 != null && nl2.getLength() > 0) {
                     bibleFormat = "Zefania";
                 }
@@ -95,13 +95,13 @@ public class Bible {
     }
     private void getAttributeToSearch() {
         switch (bibleFormat) {
-            case "OpenSong":
+            case "Dyslexa":
             default:
                 tagtosearch_book = "b";
                 attributetosearch_book = "n";
                 attributetosearch_chapter = "n";
                 attributetosearch_verse = "n";
-                setOpenSongBibleName();
+                setDyslexaBibleName();
                 break;
 
             case "Zefania":
@@ -130,7 +130,7 @@ public class Bible {
             }
         }
     }
-    private void setOpenSongBibleName() {
+    private void setDyslexaBibleName() {
         if (bibleFileSafe()) {
             bibleTranslation = bibleFile.replace(".xmm","");
         }

@@ -159,7 +159,7 @@ public class ExportFragment extends Fragment {
         urisSetBundle = new ArrayList<>();
         mimeTypes = new ArrayList<>();
 
-        // Some options are hidden by default and only visible if we have a proper OpenSong song
+        // Some options are hidden by default and only visible if we have a proper Dyslexa song
         // If exporting a set, some options aren't allowed
         showUsable();
 
@@ -223,16 +223,16 @@ public class ExportFragment extends Fragment {
         myView.setBundle.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportSetBundle",true));
         myView.justChordsBundle.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportSetBundleJustChords",false));
         myView.setPDF.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportSetPDF",false));
-        myView.openSongAppSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOpenSongAppSet",false));
-        myView.openSongSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOpenSongSet",false));
-        myView.textSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOpenSongTextSet",false));
+        myView.openSongAppSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDyslexaAppSet",false));
+        myView.openSongSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDyslexaSet",false));
+        myView.textSet.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDyslexaTextSet",false));
         myView.setPNG.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportSetPNG",false));
 
         // Set the defaults for song export
         myView.currentFormat.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportCurrentFormat",false));
         myView.pdf.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportPDF",false));
         myView.image.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportPNG",false));
-        myView.openSongApp.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOpenSongApp",false));
+        myView.openSongApp.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDyslexaApp",false));
         myView.openSong.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDesktop",false));
         myView.justChords.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportJustChords",false));
         myView.onSong.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOnSong",false));
@@ -271,14 +271,14 @@ public class ExportFragment extends Fragment {
         myView.setBundle.setOnCheckedChangeListener(new MyCheckChanged("exportSetBundle"));
         myView.justChordsBundle.setOnCheckedChangeListener(new MyCheckChanged("exportSetBundleJustChords"));
         myView.setPDF.setOnCheckedChangeListener(new MyCheckChanged("exportSetPDF"));
-        myView.openSongAppSet.setOnCheckedChangeListener(new MyCheckChanged("exportOpenSongAppSet"));
-        myView.openSongSet.setOnCheckedChangeListener(new MyCheckChanged("exportOpenSongSet"));
-        myView.textSet.setOnCheckedChangeListener(new MyCheckChanged("exportOpenSongTextSet"));
+        myView.openSongAppSet.setOnCheckedChangeListener(new MyCheckChanged("exportDyslexaAppSet"));
+        myView.openSongSet.setOnCheckedChangeListener(new MyCheckChanged("exportDyslexaSet"));
+        myView.textSet.setOnCheckedChangeListener(new MyCheckChanged("exportDyslexaTextSet"));
         myView.setPNG.setOnCheckedChangeListener(new MyCheckChanged("exportSetPNG"));
         myView.currentFormat.setOnCheckedChangeListener(new MyCheckChanged("exportCurrentFormat"));
         myView.pdf.setOnCheckedChangeListener(new MyCheckChanged("exportPDF"));
         myView.image.setOnCheckedChangeListener(new MyCheckChanged("exportPNG"));
-        myView.openSongApp.setOnCheckedChangeListener(new MyCheckChanged("exportOpenSongApp"));
+        myView.openSongApp.setOnCheckedChangeListener(new MyCheckChanged("exportDyslexaApp"));
         myView.openSong.setOnCheckedChangeListener(new MyCheckChanged("exportDesktop"));
         myView.justChords.setOnCheckedChangeListener(new MyCheckChanged("exportJustChords"));
         myView.onSong.setOnCheckedChangeListener(new MyCheckChanged("exportOnSong"));
@@ -345,7 +345,7 @@ public class ExportFragment extends Fragment {
                         break;
                     case "XML":
                         // Must be a song!
-                        myView.openSongApp.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportOpenSongApp", false));
+                        myView.openSongApp.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDyslexaApp", false));
                         myView.openSong.setCheckBox(mainActivityInterface.getPreferences().getMyPreferenceBoolean("exportDesktop", false));
                         break;
                 }
@@ -446,7 +446,7 @@ public class ExportFragment extends Fragment {
         justChordsSetBundle = myView.justChordsBundle.isChecked();
         if (openSongSetBundle && getContext() != null) {
             // Initialise the helper
-            mainActivityInterface.getOpenSongSetBundle().setProgressText(myView.progressText);
+            mainActivityInterface.getDyslexaSetBundle().setProgressText(myView.progressText);
         }
 
         // Sets (separate files)
@@ -518,17 +518,17 @@ public class ExportFragment extends Fragment {
             // Add the .osts file
             if (openSongAppSet) {
                 // Copy the set(s) to an .osts file extensions and get the uri(s)
-                uris.addAll(mainActivityInterface.getExportActions().addOpenSongAppSetsToUris(setNames));
+                uris.addAll(mainActivityInterface.getExportActions().addDyslexaAppSetsToUris(setNames));
                 if (!mimeTypes.contains("text/xml")) {
                     mimeTypes.add("text/xml");
                 }
             }
             if (openSongSetBundle) {
-                urisSetBundle.addAll(mainActivityInterface.getExportActions().addOpenSongAppSetsToUris(setNames));
+                urisSetBundle.addAll(mainActivityInterface.getExportActions().addDyslexaAppSetsToUris(setNames));
             }
 
             // Go through the set and create any custom slides required (variations, slides, etc).
-            ArrayList<Uri> setFiles = mainActivityInterface.getExportActions().addOpenSongSetsToUris(setNames);
+            ArrayList<Uri> setFiles = mainActivityInterface.getExportActions().addDyslexaSetsToUris(setNames);
             for (Uri setFile:setFiles) {
                 mainActivityInterface.getSetActions().extractSetFile(setFile,mainActivityInterface.getCurrentSet(),true);
             }
@@ -659,7 +659,7 @@ public class ExportFragment extends Fragment {
                             }
                         }
 
-                        // Add OpenSongApp files
+                        // Add DyslexaApp files
                         if (!id.equals("ignore") && likelyXML &&
                                 (openSongApp || openSongSetBundle)) {
                             mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" doExportSet CopyFromTo Songs/"+location[0]+"/"+location[1]+" to Export/"+location[1]+".ost");
@@ -715,7 +715,7 @@ public class ExportFragment extends Fragment {
                             }
                             // If we want a set bundle, add the song to the class - deal with it at the end
                             if (justChordsSetBundle) {
-                                mainActivityInterface.getConvertJustChords().addOpenSongToArray(song);
+                                mainActivityInterface.getConvertJustChords().addDyslexaToArray(song);
                             }
                         }
 
@@ -767,7 +767,7 @@ public class ExportFragment extends Fragment {
             }
 
             if (openSongSetBundle && !urisSetBundle.isEmpty()) {
-                exportOpenSongSetBundle();
+                exportDyslexaSetBundle();
                 if (!mimeTypes.contains("application/zip")) {
                     mimeTypes.add("application/zip");
                     mimeTypes.add("application/x-zip");
@@ -1025,7 +1025,7 @@ public class ExportFragment extends Fragment {
                 if (uri != null) {
                     try {
                         InputStream inputStream = mainActivityInterface.getStorageAccess().getInputStream(uri);
-                        // Get the file name after the OpenSong/Export/ bit
+                        // Get the file name after the Dyslexa/Export/ bit
                         File file = getFileFromUri(uri, exportFolder);
                         if (file!=null) {
                             OutputStream outputStream = new FileOutputStream(file);
@@ -1108,11 +1108,11 @@ public class ExportFragment extends Fragment {
     private File getFileFromUri(Uri uri, File exportFolder) {
         if (uri!=null) {
             String name = uri.getLastPathSegment();
-            String bitToRemove = "OpenSong/Export/";
+            String bitToRemove = "Dyslexa/Export/";
             if (name.contains(bitToRemove) && !name.endsWith(bitToRemove)) {
                 name = name.substring(name.indexOf(bitToRemove) + bitToRemove.length());
             }
-            bitToRemove = "OpenSong%2FExport%2F";
+            bitToRemove = "Dyslexa%2FExport%2F";
             if (name.contains(bitToRemove) && !name.endsWith(bitToRemove)) {
                 name = name.substring(name.indexOf(bitToRemove) + bitToRemove.length());
             }
@@ -1657,7 +1657,7 @@ public class ExportFragment extends Fragment {
                     mainActivityInterface.getProcessSong().setForceSinglePagePDF(myView.forceSinglePage.getChecked());
 
                     // Go through the sets and create any custom slides required (variations, slides, etc).
-                    ArrayList<Uri> setFiles = mainActivityInterface.getExportActions().addOpenSongSetsToUris(setNames);
+                    ArrayList<Uri> setFiles = mainActivityInterface.getExportActions().addDyslexaSetsToUris(setNames);
                     for (Uri setFile : setFiles) {
                         mainActivityInterface.getSetActions().extractSetFile(setFile, mainActivityInterface.getCurrentSet(),true);
                     }
@@ -1692,30 +1692,30 @@ public class ExportFragment extends Fragment {
         });
     }
 
-    // OpenSongSet bundle export
-    private void exportOpenSongSetBundle() {
+    // DyslexaSet bundle export
+    private void exportDyslexaSetBundle() {
         // The song files should already now be in the export folder
         // We now need to add them to a zip file
         if (getContext()!=null && myView!=null) {
             if (openSongSetBundle) {
-                mainActivityInterface.getOpenSongSetBundle().zipFiles(setToExport, urisSetBundle, true);
+                mainActivityInterface.getDyslexaSetBundle().zipFiles(setToExport, urisSetBundle, true);
 
                 // Add the bundle files to the uris
-                Uri setBundleUri = mainActivityInterface.getOpenSongSetBundle().getSetBundleUri();
+                Uri setBundleUri = mainActivityInterface.getDyslexaSetBundle().getSetBundleUri();
                 if (setBundleUri != null) {
                     uris.add(setBundleUri);
                 }
             }
 
             /*if (justChordsSetBundle) {
-                //mainActivityInterface.getOpenSongSetBundle().zipFiles(setToExport, urisSetBundle, false);
+                //mainActivityInterface.getDyslexaSetBundle().zipFiles(setToExport, urisSetBundle, false);
 
-                Uri justChordsBundleUri = mainActivityInterface.getOpenSongSetBundle().getJustChordsBundleUri();
+                Uri justChordsBundleUri = mainActivityInterface.getDyslexaSetBundle().getJustChordsBundleUri();
                 if (justChordsBundleUri!=null) {
                         uris.add(justChordsBundleUri);
                 }
             }*/
-            mainActivityInterface.getOpenSongSetBundle().destroy();
+            mainActivityInterface.getDyslexaSetBundle().destroy();
         }
     }
 
@@ -1768,7 +1768,7 @@ public class ExportFragment extends Fragment {
                 mainActivityInterface.getAbcNotation().setExportFragment(null);
                 mainActivityInterface.getProcessSong().setPdfPrinting(false);
                 mainActivityInterface.getMakePDF().setIsSetListPrinting(false);
-                mainActivityInterface.getOpenSongSetBundle().setProgressText(null);
+                mainActivityInterface.getDyslexaSetBundle().setProgressText(null);
                 mainActivityInterface.getSong().setFolder(currentSongFolder);
                 mainActivityInterface.getSong().setFilename(currentSongFile);
                 mainActivityInterface.getLoadSong().doLoadSong(mainActivityInterface.getSong(),false);

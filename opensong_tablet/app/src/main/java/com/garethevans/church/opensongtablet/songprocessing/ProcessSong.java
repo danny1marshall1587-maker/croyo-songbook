@@ -109,9 +109,9 @@ public class ProcessSong {
     private StringBuilder htmlLyrics = new StringBuilder();
     private final String abc_on_override = "abc_on", abc_off_override = "abc_off",
             sticky_on_override = "sticky_on", sticky_off_override="sticky_off";
-    private boolean cryoPrompterEnabled = false;
-    private float cryoPrompterScale = 1.4f;
-    private int cryoPrompterActiveColor, cryoPrompterNextColor;
+    private boolean dyslexaPrompterEnabled = false;
+    private float dyslexaPrompterScale = 1.4f;
+    private int dyslexaPrompterActiveColor, dyslexaPrompterNextColor;
 
     public static int getColorWithAlpha(int color, float ratio) {
         int alpha = Math.round(Color.alpha(color) * ratio);
@@ -157,10 +157,10 @@ public class ProcessSong {
         curlyBracketsDevice = mainActivityInterface.getPreferences().getMyPreferenceBoolean("curlyBracketsDevice",false);
         forceColumns = mainActivityInterface.getPreferences().getMyPreferenceBoolean("forceColumns",true);
         hideInlineMidi = mainActivityInterface.getPreferences().getMyPreferenceBoolean("hideInlineMidi",false);
-        cryoPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("cryoPrompterEnabled", false);
-        cryoPrompterScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoPrompterScale", 1.4f);
-        cryoPrompterActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
-        cryoPrompterNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
+        dyslexaPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("dyslexaPrompterEnabled", false);
+        dyslexaPrompterScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaPrompterScale", 1.4f);
+        dyslexaPrompterActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
+        dyslexaPrompterNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
     }
 
     public boolean showingCapo(String capo) {
@@ -714,7 +714,7 @@ public class ProcessSong {
         return sections;
     }
 
-    public String parseLyrics(Locale locale, Song song, boolean changeTagsToOpenSong) {
+    public String parseLyrics(Locale locale, Song song, boolean changeTagsToDyslexa) {
         if (locale == null) {
             locale = Locale.getDefault();
         }
@@ -760,7 +760,7 @@ public class ProcessSong {
                 .replace("[[", "[")
                 .replace("]]", "]");
 
-        if (changeTagsToOpenSong) {
+        if (changeTagsToDyslexa) {
             // To replace [<Verse>] with [V] and [<Verse> 1] with [V1]
             String languageverseV = c.getResources().getString(R.string.verse);
             String languageverse_lowercaseV = languageverseV.toLowerCase(locale);
@@ -862,7 +862,7 @@ public class ProcessSong {
     }
 
     public String convertMultilingualSection(String sectionString) {
-        // OpenSong desktop introduced multilingual support using 'L' at the end of a section heading
+        // Dyslexa desktop introduced multilingual support using 'L' at the end of a section heading
         // Check for a suitable section heading, and if so, remove the L and change every second line
         // to be identified as a multilingual line
         String[] possibleSectionIdentifiers = new String[] {"[VL]", "[CL]", "[TL]", "[BL]", "[PL]",
@@ -1117,7 +1117,7 @@ public class ProcessSong {
         TableLayout tableLayout = newTableLayout();
         tableLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
         // Tag the table layout for prompter tracking
-        if (cryoPrompterEnabled) {
+        if (dyslexaPrompterEnabled) {
             tableLayout.setTag("prompterLine_" + lyricLineIndex);
         } else {
             tableLayout.setTag("lyricLineTable");
@@ -1208,7 +1208,7 @@ public class ProcessSong {
             if (presentation && !performancePresentation) {
                 tableRow.setGravity(mainActivityInterface.getPresenterSettings().getPresoLyricsAlign());
             }
-            if (cryoPrompterEnabled) {
+            if (dyslexaPrompterEnabled) {
                 tableRow.setGravity(Gravity.CENTER_HORIZONTAL);
             }
             linetype = getLineType(lines[t]);
@@ -1358,7 +1358,7 @@ public class ProcessSong {
                                 textView.setText(spannableString);
                                 // Tag for focal highlighting if needed
                                 textView.setTag("lyricLine_" + lyricLineIndex);
-                                if (cryoPrompterEnabled) {
+                                if (dyslexaPrompterEnabled) {
                                     textView.setGravity(Gravity.CENTER_HORIZONTAL);
                                 }
                                 lyricLineIndex++;
@@ -2124,14 +2124,14 @@ public class ProcessSong {
         }
 
         // Tag for focal highlighting if needed
-        if (cryoPrompterEnabled) {
+        if (dyslexaPrompterEnabled) {
             textView.setTag("prompterLine_" + lyricLineIndex);
         } else {
             textView.setTag("lyricLine_" + lyricLineIndex);
         }
         lyricLineIndex++;
 
-        if (cryoPrompterEnabled) {
+        if (dyslexaPrompterEnabled) {
             textView.setGravity(Gravity.CENTER_HORIZONTAL);
         }
 
@@ -2507,7 +2507,7 @@ public class ProcessSong {
 
     private String removeJustChordsFormatting(String line) {
         // When synchronising via OpenChords, we may receive text formatting from justchords songs
-        // OpenSongApp doesn't like this, so we hide it during rendering to the screen
+        // DyslexaApp doesn't like this, so we hide it during rendering to the screen
         // Colors can look like <yellow>....<     or <@yellow>....<
         // The < and > will likely already be encoded as &lt; and &gt;
         String[] colorsRecognised = new String[]{"black", "blue", "brown", "cyan", "darkGray", "gray",
@@ -3001,8 +3001,8 @@ public class ProcessSong {
     private MyMaterialSimpleTextView getTextView(String linetype, float size) {
         MyMaterialSimpleTextView textView = new MyMaterialSimpleTextView(c);
         
-        // If the Cryo-Prompter is enabled, we force horizontal centering for the "Teleprompter Style"
-        if (cryoPrompterEnabled) {
+        // If the Dyslexa-Prompter is enabled, we force horizontal centering for the "Teleprompter Style"
+        if (dyslexaPrompterEnabled) {
             textView.setGravity(Gravity.CENTER_HORIZONTAL);
             // Ensure width is set to match parent so centering works within the column
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -4511,7 +4511,7 @@ public class ProcessSong {
     // A check for songs we can edit, etc.
     public boolean isValidSong(Song thisSong) {
         boolean filenameOk = !thisSong.getFilename().equals(c.getString(R.string.welcome)) &&
-                !thisSong.getFilename().equals("Welcome to OpenSongApp");
+                !thisSong.getFilename().equals("Welcome to DyslexaApp");
         boolean lyricsOk = !thisSong.getLyrics().contains(c.getString(R.string.song_doesnt_exist));
         boolean folderOk = !thisSong.getFolder().contains("**Image") && !thisSong.getFolder().contains("../Image");
 

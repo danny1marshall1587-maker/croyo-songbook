@@ -322,11 +322,11 @@ public class MakePDF {
         exportingSongList = false;
     }
 
-    // The footer creation with OpenSongApp credit and page numbering if required
+    // The footer creation with DyslexaApp credit and page numbering if required
     private void createFooter() {
-        // The OpenSongApp credit.  This is drawn after the rest of the page content has finished
+        // The DyslexaApp credit.  This is drawn after the rest of the page content has finished
         Rect bounds = new Rect();
-        String string = "Prepared by OpenSongApp (<a href='https://www.opensongapp.com'>https://www.opensongapp.com</a>)";
+        String string = "Prepared by DyslexaApp (<a href='https://www.opensongapp.com'>https://www.opensongapp.com</a>)";
         footerPaint.getTextBounds(string,0,string.length(),bounds);
         pageCanvas.drawText(String.valueOf(Html.fromHtml(string)),cmToPx(margin_cm),docHeight-cmToPx(margin_cm)-cmToPx(footerHeight_cm),footerPaint);
         // The page numbering if there is more than 1 page needed

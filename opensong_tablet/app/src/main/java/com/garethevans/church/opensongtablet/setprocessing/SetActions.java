@@ -387,7 +387,7 @@ public class SetActions {
             if (key.isEmpty()) {
                 // Try to load the key from the database
                 if (mainActivityInterface.getStorageAccess().isSpecificFileExtension("imageorpdf",setItemInfo.songfilename)) {
-                    key = mainActivityInterface.getNonOpenSongSQLiteHelper().
+                    key = mainActivityInterface.getNonDyslexaSQLiteHelper().
                                     getKey(setItemInfo.songfolder, setItemInfo.songfilename);
                 } else {
                     key = mainActivityInterface.getSQLiteHelper().
@@ -1714,7 +1714,7 @@ public class SetActions {
         return xmlBit.toString();
     }
 
-    // Parse setObject (OpenSong) into OpenChordsSetList object
+    // Parse setObject (Dyslexa) into OpenChordsSetList object
     public OpenChordsSetListItem getOpenChordsSetListItemForSong(SetSlideGroupObject setSlideGroupObject) {
         OpenChordsSetListItem openChordsSetListItem = null;
         OpenChordsSetListSongItem openChordsSetListSongItem;
@@ -1878,7 +1878,7 @@ public class SetActions {
             "title": "Event"    */
 
         OpenChordsSetListItem openChordsSetListItem = new OpenChordsSetListItem();
-        // OpenSong doens't use uuid for custom set items
+        // Dyslexa doens't use uuid for custom set items
         openChordsSetListItem.setId(String.valueOf((UUID.randomUUID())));
         if (setSlideGroupObject.getName() != null && !setSlideGroupObject.getName().isEmpty()) {
             openChordsSetListItem.setTitle(setSlideGroupObject.getName());
@@ -1999,7 +1999,7 @@ public class SetActions {
             }
         }
 
-        // Deal with the different OpenSongApp variations of custom slides
+        // Deal with the different DyslexaApp variations of custom slides
         String noteStringOpt1 = "# " + c.getResources().getString(R.string.note) + " # - ";
         String noteStringOpt2 = "# Note # - ";
         String variationStringOpt1 = "# " + c.getResources().getString(R.string.variation) + " # - ";

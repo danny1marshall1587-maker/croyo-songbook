@@ -23,7 +23,7 @@ public class ModeFragment extends Fragment {
     private MainActivityInterface mainActivityInterface;
     private DisplayInterface displayInterface;
     private SettingsModeBinding myView;
-    private String choose_app_mode="", website_app_mode="";
+    private String choose_app_mode="", website_app_mode="", mode_performance, mode_presenter, mode_stage, mode_prompter, mode_slipmodel;
     private String webAddress;
 
     @Override
@@ -67,6 +67,11 @@ public class ModeFragment extends Fragment {
         if (getContext()!=null) {
             choose_app_mode = getString(R.string.choose_app_mode);
             website_app_mode = getString(R.string.website_app_mode);
+            mode_performance = getString(R.string.mode_performance);
+            mode_presenter = getString(R.string.mode_presenter);
+            mode_stage = getString(R.string.mode_stage);
+            mode_prompter = getString(R.string.mode_prompter);
+            mode_slipmodel = getString(R.string.mode_slipmodel);
         }
     }
     private void highlightMode() {
@@ -81,6 +86,9 @@ public class ModeFragment extends Fragment {
             case "Stage":
                 myView.stageMode.showCheckmark(true);
                 break;
+            case "Prompter":
+                myView.prompterMode.showCheckmark(true);
+                break;
         }
     }
 
@@ -88,6 +96,8 @@ public class ModeFragment extends Fragment {
         myView.performanceMode.setOnClickListener(v -> updatePreference("Performance"));
         myView.stageMode.setOnClickListener(v -> updatePreference("Stage"));
         myView.presenterMode.setOnClickListener(v -> updatePreference("Presenter"));
+        myView.prompterButton.setOnClickListener(v -> updatePreference(mode_prompter));
+        myView.slipmodelButton.setOnClickListener(v -> updatePreference(mode_slipmodel));
     }
 
     private void updatePreference(String which) {

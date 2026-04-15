@@ -83,6 +83,7 @@ public class PerformanceGestures {
 
 
     public void doAction(String action, boolean isLongPress) {
+        mainActivityInterface.getBreadcrumbManager().add("Gesture: " + action + (isLongPress ? " (long)" : ""));
         // Get the action we are trying to run
         switch (action) {
             case "pageButtons":
@@ -230,9 +231,9 @@ public class PerformanceGestures {
             case "scrolldown":
             case "down":
                 if (mainActivityInterface.getPerformanceFragment() != null &&
-                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                        mainActivityInterface.getPerformanceFragment().isDyslexaPrompterEnabled()) {
                     PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
-                    pf.cryoJumpToLine(pf.getCryoActiveLineIndex() + 1);
+                    pf.dyslexaJumpToLine(pf.getDyslexaActiveLineIndex() + 1);
                 } else {
                     scroll(true);
                 }
@@ -240,18 +241,18 @@ public class PerformanceGestures {
             case "scrollup":
             case "up":
                 if (mainActivityInterface.getPerformanceFragment() != null &&
-                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                        mainActivityInterface.getPerformanceFragment().isDyslexaPrompterEnabled()) {
                     PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
-                    pf.cryoJumpToLine(pf.getCryoActiveLineIndex() - 1);
+                    pf.dyslexaJumpToLine(pf.getDyslexaActiveLineIndex() - 1);
                 } else {
                     scroll(false);
                 }
                 break;
             case "next":
                 if (mainActivityInterface.getPerformanceFragment() != null &&
-                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                        mainActivityInterface.getPerformanceFragment().isDyslexaPrompterEnabled()) {
                     PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
-                    pf.cryoJumpToLine(pf.getCryoActiveLineIndex() + 1);
+                    pf.dyslexaJumpToLine(pf.getDyslexaActiveLineIndex() + 1);
                 } else {
                     nextSong();
                 }
@@ -259,9 +260,9 @@ public class PerformanceGestures {
             case "prev":
             case "previous":
                 if (mainActivityInterface.getPerformanceFragment() != null &&
-                        mainActivityInterface.getPerformanceFragment().isCryoPrompterEnabled()) {
+                        mainActivityInterface.getPerformanceFragment().isDyslexaPrompterEnabled()) {
                     PerformanceFragment pf = mainActivityInterface.getPerformanceFragment();
-                    pf.cryoJumpToLine(pf.getCryoActiveLineIndex() - 1);
+                    pf.dyslexaJumpToLine(pf.getDyslexaActiveLineIndex() - 1);
                 } else {
                     prevSong();
                 }

@@ -257,10 +257,10 @@ public class SetStorageLocationFragment extends Fragment {
     // Deal with the storage location set/chosen
     private void getUriTreeFromPreferences() {
         /*
-        The user could have specified the actual OpenSong folder (if it already existed),
-        or the location to create the OpenSong folder in on first run.  uriTree is the one we have
+        The user could have specified the actual DyslexaSongbook folder (if it already existed),
+        or the location to create the DyslexaSongbook folder in on first run.  uriTree is the one we have
         permission for and could be either.  If it is the parent folder, uriTreeHome becomes the
-        actual child OpenSong folder.  If it is the OpenSong folder, uriTree = uriTreeHome
+        actual child DyslexaSongbook folder.  If it is the DyslexaSongbook folder, uriTree = uriTreeHome
         Also it could be null!
         */
 
@@ -282,8 +282,8 @@ public class SetStorageLocationFragment extends Fragment {
     }
 
     private void warningCheck() {
-        // If the user tries to set the app storage to OpenSong/Songs/ warn them!
-        if (myView.chosenLocation.getText().toString().contains("OpenSong/Songs/") && getActivity()!=null) {
+        // If the user tries to set the app storage to Dyslexa/Songs/ warn them!
+        if (myView.chosenLocation.getText().toString().contains("DyslexaSongbook/Songs/") && getActivity()!=null) {
             Snackbar snackbar = make(getActivity().findViewById(R.id.drawer_layout), R.string.storage_warning,
                     LENGTH_INDEFINITE).setAction(android.R.string.ok, view -> {
             });
@@ -387,7 +387,7 @@ public class SetStorageLocationFragment extends Fragment {
                         displayWhere(where);
                         Log.d(TAG,"root:"+root+"  f:"+f);
 
-                        if (!where.contains(".estrongs") && !where.contains("com.ttxapps") && where.endsWith("/OpenSong/Songs")) {
+                        if (!where.contains(".estrongs") && !where.contains("com.ttxapps") && where.endsWith("/DyslexaSongbook/Songs")) {
                              int count = mainActivityInterface.getStorageAccess().songCountAtLocation(f);
                              extra = count + " Songs";
                              // Found one and it isn't in eStrongs recycle folder or the dropsync temp files!
@@ -431,9 +431,9 @@ public class SetStorageLocationFragment extends Fragment {
             myView.setStorage.clearAnimation();
             // After an attempt to change storage, set to show Welcome song
             mainActivityInterface.getSong().setFolder(mainfoldername_string);
-            mainActivityInterface.getSong().setFilename("Welcome to OpenSongApp");
+            mainActivityInterface.getSong().setFilename("Welcome to DyslexaSongbook");
             mainActivityInterface.getPreferences().setMyPreferenceString("songFolder",mainfoldername_string);
-            mainActivityInterface.getPreferences().setMyPreferenceString("songFilename","Welcome to OpenSongApp");
+            mainActivityInterface.getPreferences().setMyPreferenceString("songFilename","Welcome to DyslexaSongbook");
 
         } else {
             myView.firstRun.setVisibility(View.VISIBLE);

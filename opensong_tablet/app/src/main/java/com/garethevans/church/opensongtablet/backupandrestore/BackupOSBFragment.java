@@ -32,7 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class BackupOSBFragment extends Fragment {
-    // This Fragment allows the user to create an OpenSongApp backup file
+    // This Fragment allows the user to create an DyslexaApp backup file
     // Show the user which folders are detected and can be backed up.
     // By default it will be all of them
     // It will also include the persistent database and highlighter notes
@@ -149,7 +149,7 @@ public class BackupOSBFragment extends Fragment {
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd", mainActivityInterface.getLocale());
         String formattedDate = df.format(cal.getTime());
-        return "OpenSongBackup_" + formattedDate + ".osb";
+        return "DyslexaBackup_" + formattedDate + ".osb";
     }
 
     private void getCheckedFolders() {
@@ -221,7 +221,7 @@ public class BackupOSBFragment extends Fragment {
                     String message = string_processing + ": " + SQLite.NON_OS_DATABASE_NAME;
                     myView.progressText.setText(message);
                 });
-                Log.d(TAG,"DB copied: "+mainActivityInterface.getNonOpenSongSQLiteHelper().
+                Log.d(TAG,"DB copied: "+mainActivityInterface.getNonDyslexaSQLiteHelper().
                         copyUserDatabase());
                 Uri uriDB = mainActivityInterface.getStorageAccess().getUriForItem("Settings","", SQLite.NON_OS_DATABASE_NAME);
                 InputStream dbInputStream = mainActivityInterface.getStorageAccess().getInputStream(uriDB);

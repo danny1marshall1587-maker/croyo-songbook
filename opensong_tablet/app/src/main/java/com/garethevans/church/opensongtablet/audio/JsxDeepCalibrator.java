@@ -4,7 +4,7 @@ import android.util.Log;
 
 /**
  * Cyber-Denoiser LITE (5-Band Forensic - V92 Master)
- * Ported from JSx for OpenSongTablet
+ * Ported from JSx for DyslexaTablet
  * Author: Danny Marshall (ported by AI)
  */
 public class JsxDeepCalibrator {

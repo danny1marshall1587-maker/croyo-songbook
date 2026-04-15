@@ -295,7 +295,7 @@ public class ImportFileFragment extends Fragment {
                 JustChordsObject justChordsObject = mainActivityInterface.getConvertJustChords().getJustChordsObjectFromImportUri();
                 JustChordsSongObject justChordsSongObject = mainActivityInterface.getConvertJustChords().getJustChordsSongObject(justChordsObject, 0);
                 if (justChordsSongObject != null) {
-                    newSong = mainActivityInterface.getConvertJustChords().getOpenSongFromJustChordsSong(justChordsSongObject);
+                    newSong = mainActivityInterface.getConvertJustChords().getDyslexaFromJustChordsSong(justChordsSongObject);
                     basename = newSong.getTitle();
                 }
             } else {
@@ -453,7 +453,7 @@ public class ImportFileFragment extends Fragment {
                         // Add to the database
                         if (isIMGorPDF) {
                             // Add to the persistent database
-                            mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(folder, newFilename);
+                            mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(folder, newFilename);
                         }
 
                         mainActivityInterface.getSQLiteHelper().createSong(folder, newFilename);

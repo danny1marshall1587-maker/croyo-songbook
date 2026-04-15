@@ -258,8 +258,8 @@ public class ImageChooserBottomSheet extends BottomSheetCommon {
                             Uri uri = intent.getData();
                             if (uri!=null) {
                                 // Get permissions!
-                                if (getContext()!=null && !mainActivityInterface.getStorageAccess().fixUriToLocal(uri).startsWith("../OpenSong/")) {
-                                    // Only need to take permission if it isn't in the OpenSong folder
+                                if (getContext()!=null && !mainActivityInterface.getStorageAccess().fixUriToLocal(uri).startsWith("../Dyslexa/")) {
+                                    // Only need to take permission if it isn't in the Dyslexa folder
                                     getContext().getContentResolver().takePersistableUriPermission(
                                             uri, mainActivityInterface.getStorageAccess().getTakePersistentReadUriFlags());
                                 }

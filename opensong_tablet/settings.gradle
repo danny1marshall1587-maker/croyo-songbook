@@ -1,4 +1,4 @@
-rootProject.name = "OpenSongTablet"
+rootProject.name = "DyslexaTablet"
 
 include ':app'
 include ':wear'

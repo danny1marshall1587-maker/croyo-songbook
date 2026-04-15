@@ -13,8 +13,8 @@
     android:focusableInTouchMode="false"
     tools:context=".performance.PerformanceFragment">
 
-    <com.garethevans.church.opensongtablet.customviews.CryoFlowView
-        android:id="@+id/cryoFlowBackground"
+    <com.garethevans.church.opensongtablet.customviews.DyslexaFlowView
+        android:id="@+id/dyslexaFlowBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />

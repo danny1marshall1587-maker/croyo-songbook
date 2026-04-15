@@ -7,17 +7,33 @@
     android:background="@color/transparent"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/splashlogo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/currentAction"
+    <LinearLayout
+        android:id="@+id/brandLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/app_name"
-        android:padding="64dp"
-        android:scaleType="fitCenter"
-        android:visibility="visible"
-        app:srcCompat="@drawable/splash_logo" />
+        android:layout_above="@+id/currentAction"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/splashlogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_book_dyslexa"
+            app:tint="@color/white" />
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/brandName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="DyslexaSongbook"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
         android:id="@+id/currentAction"

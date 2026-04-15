@@ -380,7 +380,7 @@ public class MyToolbar extends MaterialToolbar {
     // Clicking on the song title/author/etc. opens up the song details bottom sheet
     private void openDetails() {
         if (mainActivityInterface.getSong()!=null && mainActivityInterface.getSong().getTitle()!=null &&
-                !mainActivityInterface.getSong().getTitle().equals("Welcome to OpenSongApp")) {
+                !mainActivityInterface.getSong().getTitle().equals("Welcome to DyslexaApp")) {
             SongDetailsBottomSheet songDetailsBottomSheet = new SongDetailsBottomSheet();
             songDetailsBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "songDetailsBottomSheet");
         }
@@ -389,7 +389,7 @@ public class MyToolbar extends MaterialToolbar {
     // Allow editing the song by long pressing on the title/author/etc. if not null
     private void editSong() {
         if (mainActivityInterface.getSong()!=null && mainActivityInterface.getSong().getTitle()!=null &&
-                !mainActivityInterface.getSong().getTitle().equals("Welcome to OpenSongApp")) {
+                !mainActivityInterface.getSong().getTitle().equals("Welcome to DyslexaApp")) {
             mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_edit), 0);
         }
     }

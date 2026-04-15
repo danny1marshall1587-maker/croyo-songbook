@@ -16,7 +16,7 @@ public class CreateHTML {
     // Each time the user sends a request, we also receive their preferences to put back into the HTML page
     // Their preference is showChords and showHostSong
 
-    // The host running OpenSongApp determines the following variables:
+    // The host running DyslexaApp determines the following variables:
     // - allowWebNavigation: Boolean - This decides if they can use the song/set menus
     // - ipAddress: String - The server web address (and port) Ktor is running on
     // - minSize: Boolean - If the song is already at its minimum scale size
@@ -37,7 +37,7 @@ public class CreateHTML {
         html.append("<div id=\"content\" style=\"width:fit-content; transform-origin: top left;\">\n");
 
         // Now add the splash image
-        Uri splashUri = mainActivityInterface.getStorageAccess().getUriForItem("Backgrounds","","OpenSongApp_Logo.png");
+        Uri splashUri = mainActivityInterface.getStorageAccess().getUriForItem("Backgrounds","","DyslexaApp_Logo.png");
         html.append(mainActivityInterface.getWebServer().getEmbeddedImageString(context,splashUri));
 
         // Finish with the common bottom bit
@@ -215,7 +215,7 @@ public class CreateHTML {
         string += "<!DOCTYPE html>\n";
         string += "<html lang=\"en\">\n";
         string += "<head>\n";
-        string += "<title>OpenSongApp</title>\n";
+        string += "<title>DyslexaApp</title>\n";
         string += getStyles(mainActivityInterface);
         string += getJavascript(mainActivityInterface, song, prevAndNext, ip, isMenu, isSongMenu);
         string += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" id=\"viewport-meta\">\n";

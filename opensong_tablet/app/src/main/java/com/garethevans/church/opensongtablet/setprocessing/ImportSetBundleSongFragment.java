@@ -26,7 +26,7 @@ public class ImportSetBundleSongFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mainActivityInterface = (MainActivityInterface) context;
-        mainActivityInterface.getOpenSongSetBundle().setImportSetBundleSongFragment(this);
+        mainActivityInterface.getDyslexaSetBundle().setImportSetBundleSongFragment(this);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ImportSetBundleSongFragment extends Fragment {
             if (importSetItemAdapter!=null) {
                 myView.scrimImportBundle.setVisibility(View.VISIBLE);
                 myView.progressText.setVisibility(View.VISIBLE);
-                mainActivityInterface.getOpenSongSetBundle().setAlive(true);
+                mainActivityInterface.getDyslexaSetBundle().setAlive(true);
                 myView.importSelectedSongs.setEnabled(false);
                 myView.importSelectedSongs.hide();
                 mainActivityInterface.getThreadPoolExecutor().execute(() ->
@@ -78,7 +78,7 @@ public class ImportSetBundleSongFragment extends Fragment {
         mainActivityInterface.getMainHandler().post(() -> {
             myView.scrimImportBundle.setVisibility(View.GONE);
             myView.progressText.setVisibility(View.GONE);
-            mainActivityInterface.getOpenSongSetBundle().setAlive(false);
+            mainActivityInterface.getDyslexaSetBundle().setAlive(false);
             myView.importSelectedSongs.setEnabled(true);
             myView.importSelectedSongs.show();
         });

@@ -110,7 +110,7 @@ import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.drummer.Drummer;
 import com.garethevans.church.opensongtablet.drummer.DrummerPopUp;
 import com.garethevans.church.opensongtablet.export.ExportActions;
-import com.garethevans.church.opensongtablet.export.OpenSongSetBundle;
+import com.garethevans.church.opensongtablet.export.DyslexaSetBundle;
 import com.garethevans.church.opensongtablet.export.PrepareFormats;
 import com.garethevans.church.opensongtablet.filemanagement.LoadSong;
 import com.garethevans.church.opensongtablet.filemanagement.SaveSong;
@@ -182,13 +182,14 @@ import com.garethevans.church.opensongtablet.songprocessing.Song;
 import com.garethevans.church.opensongtablet.songprocessing.SongActionsMenuFragment;
 import com.garethevans.church.opensongtablet.songprocessing.SongSheetHeaders;
 import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
-import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
+import com.garethevans.church.opensongtablet.sqlite.NonDyslexaSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment;
 import com.garethevans.church.opensongtablet.utilities.AudioPlayerBottomSheet;
 import com.garethevans.church.opensongtablet.utilities.AudioRecorderPopUp;
 import com.garethevans.church.opensongtablet.utilities.DatabaseUtilitiesFragment;
 import com.garethevans.church.opensongtablet.utilities.ForumFragment;
+import com.garethevans.church.opensongtablet.utilities.BreadcrumbManager;
 import com.garethevans.church.opensongtablet.utilities.TimeTools;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
@@ -222,6 +223,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActivityBinding myView;
     private boolean bootUpCompleted = false;
     private boolean rebooted = false, alreadyBackPressed = false;
+
+    private BreadcrumbManager breadcrumbManager;
+    
+    @Override
+    public BreadcrumbManager getBreadcrumbManager() {
+        if (breadcrumbManager == null) {
+            breadcrumbManager = new BreadcrumbManager();
+        }
+        return breadcrumbManager;
+    }
 
     public static final Gson gson = new Gson();
 
@@ -274,10 +285,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Midi midi;
     private MultiTrackPlayer multiTrackPlayer;
     private NearbyActions nearbyActions;
-    private NonOpenSongSQLiteHelper nonOpenSongSQLiteHelper;
+    private NonDyslexaSQLiteHelper nonDyslexaSQLiteHelper;
     private OCR ocr;
     private OpenChordsAPI openChordsAPI;
-    private OpenSongSetBundle openSongSetBundle;
+    private DyslexaSetBundle openSongSetBundle;
     private Pad pad;
     private PageButtons pageButtons;
     private Palette palette;
@@ -381,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             song_sections_project = "", menu_song_info = "", menu_set_info = "", add_songs = "",
             song_actions = "", deeplink_preferences = "", song_string = "", set_string = "",
             search_index_start = "", search_index_end = "", deeplink_metronome = "",
-            mode_presenter = "", mode_performance = "", mode_stage = "", success = "", okay = "", pad_playback_info = "",
+            mode_presenter = "", mode_performance = "", mode_stage = "", mode_prompter = "", mode_slipmodel = "", success = "", okay = "", pad_playback_info = "",
             no_suitable_application = "", indexing_string = "", deeplink_edit = "", cast_info_string = "",
             menu_showcase_info = "";
 
@@ -410,6 +421,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Set the hardware acceleration
         setHardwareAcceleration();
+
+        // Initialize breadcrumb manager
+        getBreadcrumbManager().add("App Start: onCreate");
 
         // Set up crash collector
         setUpCrashCollector();
@@ -672,15 +686,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
 
+            // Add breadcrumbs to the crash log
+            String breadcrumbs = getBreadcrumbManager().getFormattedBreadcrumbs();
+            String fullLog = breadcrumbs + "\n\nSTACK TRACE:\n" + sw.toString();
+
             // Write a crash log file
-            getStorageAccess().updateCrashLog(sw.toString());
+            getStorageAccess().updateCrashLog(fullLog);
 
             // Reset the unhandled exception handler
             Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
             // Now turn off the app while alerting the user
             try {
-                Toast.makeText(this, this.getString(R.string.crash_alert), Toast.LENGTH_LONG).show();
+                // We use Log instead of Toast in exception handler as context might be invalid
+                Log.e(TAG, "FATAL CRASH:\n" + fullLog);
                 throw e;
             } catch (Throwable ex) {
                 this.finish();
@@ -803,6 +822,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             mode_presenter = getString(R.string.mode_presenter);
             mode_performance = getString(R.string.mode_performance);
             mode_stage = getString(R.string.mode_stage);
+            mode_prompter = getString(R.string.mode_prompter);
+            mode_slipmodel = getString(R.string.mode_slipmodel);
             success = getString(R.string.success);
             okay = getString(R.string.okay);
             pad_playback_info = getString(R.string.pad_playback_info);
@@ -941,7 +962,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // The databases
         // sqLiteHelper = getSQLiteHelper();
-        // nonOpenSongSQLiteHelper = getNonOpenSongSQLiteHelper();
+        // nonDyslexaSQLiteHelper = getNonDyslexaSQLiteHelper();
         commonSQL = getCommonSQL();
 
         // Converting song formats and processing song content
@@ -1253,8 +1274,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void initialiseActivity() {
-        // This is called after successfully passing BootUpFragment
+        // Safety guard: Don't initialise if storage isn't authorized yet
+        Uri uriTree = Uri.parse(getPreferences().getMyPreferenceString("uriTree", ""));
+        if (!getStorageAccess().isStorageAccessAuthorized(uriTree)) {
+            Log.e(TAG, "initialiseActivity() called but storage NOT authorized. Blocking.");
+            return;
+        }
 
+        // This is called after successfully passing BootUpFragment
         // Set up song / set menu tabs
         setUpSongMenuTabs();
 
@@ -1288,8 +1315,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             whichMode = presenter;
         }
 
+        // If we are in Prompter or Slipmodel mode, ensure the prompter is enabled
+        if (whichMode.equals("Prompter") || whichMode.equals(mode_slipmodel)) {
+            getPreferences().setMyPreferenceBoolean("dyslexaPrompterEnabled", true);
+        }
+
         // Song location
-        song.setFilename(getPreferences().getMyPreferenceString("songFilename", "Welcome to OpenSongApp"));
+        song.setFilename(getPreferences().getMyPreferenceString("songFilename", "Welcome to DyslexaSongbook"));
         song.setFolder(getPreferences().getMyPreferenceString("songFolder", mainfoldername));
 
         // ThemeColors
@@ -1959,6 +1991,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             } else {
                 navigateToFragment(deeplink_performance, 0);
+                if (whichMode.equals(mode_slipmodel)) {
+                    myView.drawerLayout.post(() -> {
+                        myView.drawerLayout.openDrawer(GravityCompat.START);
+                        myView.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+                    });
+                }
             }
         }
     }
@@ -2583,6 +2621,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void closeDrawer(boolean close) {
+        // If we are in Slipmodel mode, we don't want to close the drawer
+        if (whichMode != null && whichMode.equals(mode_slipmodel)) {
+            return;
+        }
         if (close) {
             myView.drawerLayout.post(() -> myView.drawerLayout.closeDrawer(GravityCompat.START));
             menuOpen = false;
@@ -2831,7 +2873,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             getStorageAccess().writeSongIDFile(songIds);
             // Try to create the basic databases
             sqLiteHelper.resetDatabase();
-            nonOpenSongSQLiteHelper.initialise();
+            nonDyslexaSQLiteHelper.initialise();
             // Add entries to the database that have songid, folder and filename fields
             // This is the minimum that we need for the song menu.
             // It can be upgraded asynchronously in StageMode/PresenterMode to include author/key
@@ -3106,15 +3148,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public synchronized NonOpenSongSQLiteHelper getNonOpenSongSQLiteHelper() {
-        if (nonOpenSongSQLiteHelper == null) {
+    public synchronized NonDyslexaSQLiteHelper getNonDyslexaSQLiteHelper() {
+        if (nonDyslexaSQLiteHelper == null) {
             try {
-                nonOpenSongSQLiteHelper = new NonOpenSongSQLiteHelper(this);
+                nonDyslexaSQLiteHelper = new NonDyslexaSQLiteHelper(this);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to initialize NonOpenSongSQLiteHelper", e);
+                Log.e(TAG, "Failed to initialize NonDyslexaSQLiteHelper", e);
             }
         }
-        return nonOpenSongSQLiteHelper;
+        return nonDyslexaSQLiteHelper;
     }
 
     @Override
@@ -3361,26 +3403,26 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (importUri != null && importFilename != null && !importFilename.isEmpty()) {
             String dealingWithIntent = null;
             if (importFilename.toLowerCase(Locale.ROOT).endsWith(".osb")) {
-                // OpenSongApp backup file
+                // DyslexaApp backup file
                 dealingWithIntent = deeplink_import_osb;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".osbs")) {
-                // OpenSongApp sets backup file
+                // DyslexaApp sets backup file
                 setWhattodo("restoresets");
                 dealingWithIntent = deeplink_sets_backup_restore;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".ost")) {
-                // OpenSong song
+                // Dyslexa song
                 setWhattodo("intentlaunch");
                 dealingWithIntent = deeplink_import_file;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".osts") ||
                     importFilename.toLowerCase(Locale.ROOT).endsWith(".html")) {
-                // OpenSong (or OnSong) set
+                // Dyslexa (or OnSong) set
                 setWhattodo("importset");
                 dealingWithIntent = deeplink_import_file;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".backup")) {
                 // OnSong backup file
                 dealingWithIntent = deeplink_onsong;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".ossb")) {
-                // OpenSongApp set bundle
+                // DyslexaApp set bundle
                 setWhattodo("ossb");
                 dealingWithIntent = deeplink_set_bundle;
             } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".justchords")) {
@@ -3410,8 +3452,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } else {
                 // Might be an opensong file (with no extension)
                 // If the file size is small enough (<200kB), read it as text and look for </song> and </lyrics> or </set> and </slide_groups>
-                boolean isOpenSong = false;
-                boolean isOpenSongSet = false;
+                boolean isDyslexa = false;
+                boolean isDyslexaSet = false;
                 String content = "";
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(importUri);
@@ -3419,17 +3461,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         content = getStorageAccess().readTextFileToString(inputStream);
                     }
                     if (content != null && content.contains("</song>") && content.contains("</lyrics>")) {
-                        isOpenSong = true;
+                        isDyslexa = true;
                     }
                     if (content != null && content.contains("</set>") && content.contains("</slide_groups>")) {
-                        isOpenSongSet = true;
+                        isDyslexaSet = true;
                     }
-                    if (isOpenSongSet) {
+                    if (isDyslexaSet) {
                         setWhattodo("importset");
-                    } else if (isOpenSong) {
+                    } else if (isDyslexa) {
                         setWhattodo("importsong");
                     }
-                    if (isOpenSong || isOpenSongSet) {
+                    if (isDyslexa || isDyslexaSet) {
                         dealingWithIntent = deeplink_import_file;
                     } else {
                         // Can't handle the file, so delete it
@@ -3720,7 +3762,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Get the key of the song from the file
                 if (getStorageAccess().isSpecificFileExtension("imageorpdf", setFilename)) {
                     // This is a PDF, we query the persistent database
-                    originalKey = nonOpenSongSQLiteHelper.getKey(setFolder, setFilename);
+                    originalKey = nonDyslexaSQLiteHelper.getKey(setFolder, setFilename);
                 } else if (isNormalVariation) {
                     if (getStorageAccess().uriExists(setUri)) {
                         // We are a variation and the file already exists.
@@ -3779,7 +3821,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             // This was a straightforward song (i.e. not a standard variation)
                             // Get the song object from the database
                             if (getStorageAccess().isSpecificFileExtension("imageorpdf", setFilename)) {
-                                quickSong = nonOpenSongSQLiteHelper.getSpecificSong(originalFolder, originalFilename);
+                                quickSong = nonDyslexaSQLiteHelper.getSpecificSong(originalFolder, originalFilename);
                             } else {
                                 quickSong = sqLiteHelper.getSpecificSong(originalFolder, originalFilename);
                             }
@@ -3899,12 +3941,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             song.getFolder(), song.getFilename());
                     // Now remove from the SQL database
                     if (song.getFiletype() != null && (song.getFiletype().equals("PDF") || song.getFiletype().equals("IMG"))) {
-                        boolean deleted = nonOpenSongSQLiteHelper.deleteSong(song.getFolder(), song.getFilename());
+                        boolean deleted = nonDyslexaSQLiteHelper.deleteSong(song.getFolder(), song.getFilename());
                         Log.d(TAG, "deleted:" + deleted);
                     }
                     sqLiteHelper.deleteSong(song.getFolder(), song.getFilename());
                     // Set the welcome song
-                    song.setFilename("Welcome to OpenSongApp");
+                    song.setFilename("Welcome to DyslexaApp");
                     song.setFolder(mainfoldername);
                     updateSongMenu(song);
                     navHome();
@@ -4201,7 +4243,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void quickSongMenuBuild() {
-        if (getStorageAccess() != null && getSQLiteHelper() != null && getNonOpenSongSQLiteHelper() != null) {
+        if (getStorageAccess() != null && getSQLiteHelper() != null && getNonDyslexaSQLiteHelper() != null) {
             ArrayList<String> songIds = new ArrayList<>();
             try {
                 songIds = getStorageAccess().listSongs(false);
@@ -4224,7 +4266,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Persistent containing details of PDF/Image files only.  Pull in to main database at boot
             // Updated each time a file is created, deleted, moved.
             // Also updated when feature data (pad, autoscroll, metronome, etc.) is updated for these files
-            nonOpenSongSQLiteHelper.initialise();
+            nonDyslexaSQLiteHelper.initialise();
 
             // Add entries to the database that have songid, folder and filename fields
             // This is the minimum that we need for the song menu.
@@ -4400,9 +4442,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public OpenSongSetBundle getOpenSongSetBundle() {
+    public DyslexaSetBundle getDyslexaSetBundle() {
         if (openSongSetBundle == null) {
-            openSongSetBundle = new OpenSongSetBundle(this);
+            openSongSetBundle = new DyslexaSetBundle(this);
         }
         return openSongSetBundle;
     }
@@ -5077,8 +5119,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     protected void onPause() {
         super.onPause();
         // Copy the persistent database from app storage to user storage
-        if (nonOpenSongSQLiteHelper != null) {
-            nonOpenSongSQLiteHelper.copyUserDatabase();
+        if (nonDyslexaSQLiteHelper != null) {
+            nonDyslexaSQLiteHelper.copyUserDatabase();
         }
         if (autoscroll != null) {
             autoscroll.stopTimers();
@@ -5459,10 +5501,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 public void onResult(String text) {
                     android.util.Log.d("MainActivity", "Vosk Result: " + text);
                     
-                    // Cryo-Follow Bridge
-                    if (getPreferences().getMyPreferenceBoolean("aiCryoFollowEnabled", false) && performanceValid()) {
+                    // Dyslexa-Follow Bridge
+                    if (getPreferences().getMyPreferenceBoolean("aiDyslexaFollowEnabled", false) && performanceValid()) {
                         com.garethevans.church.opensongtablet.ai.AiAgentManager.getInstance(MainActivity.this)
-                            .findCurrentLine(text, performanceFragment.getCryoActiveLineIndex(), new com.garethevans.church.opensongtablet.ai.AiAgentManager.AiCallback() {
+                            .findCurrentLine(text, performanceFragment.getDyslexaActiveLineIndex(), new com.garethevans.church.opensongtablet.ai.AiAgentManager.AiCallback() {
                                 @Override
                                 public void onResult(String resultIndex) {
                                     try {

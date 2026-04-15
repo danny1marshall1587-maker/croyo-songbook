@@ -78,7 +78,7 @@ public class StorageManagementFragment extends Fragment {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             mainActivityInterface.getMainHandler().post(() -> {
                 myView.progressBar.setVisibility(View.VISIBLE);
-                String text = "OpenSong\n("+root_string+")";
+                String text = "Dyslexa\n("+root_string+")";
                 myView.rootFolder.setText(text);
                 myView.rootFolder.setOnClickListener(v -> showActionDialog(true,false,""));
                 text = songs_string+"\n("+mainfoldername_string+")";

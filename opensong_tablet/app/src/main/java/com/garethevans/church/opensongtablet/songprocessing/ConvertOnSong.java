@@ -51,7 +51,7 @@ public class ConvertOnSong {
         string_chorus = c.getString(R.string.chorus);
     }
 
-    public Song convertOnSongToOpenSong(Song thisSong, String filecontent) {
+    public Song convertOnSongToDyslexa(Song thisSong, String filecontent) {
         lyrics = parseLyrics(filecontent);
         return setValues(thisSong);
     }
@@ -346,7 +346,7 @@ public class ConvertOnSong {
                 line = line.substring(line.indexOf(":")+1);
             }
 
-            // Fix guitar tab so it fits OpenSongApp formatting ;e |
+            // Fix guitar tab so it fits DyslexaApp formatting ;e |
             line = mainActivityInterface.getConvertChoPro().tryToFixTabLine(line);
 
             if (line.startsWith(";;")) {

@@ -124,7 +124,7 @@ public class PresenterFragment extends Fragment {
             mainActivityInterface.loadSongFromSet(Math.max(position, 0));
         } else {
             doSongLoad(mainActivityInterface.getPreferences().getMyPreferenceString("songFolder", mainfoldername_string),
-                    mainActivityInterface.getPreferences().getMyPreferenceString("songFilename", "Welcome to OpenSongApp"));
+                    mainActivityInterface.getPreferences().getMyPreferenceString("songFilename", "Welcome to DyslexaApp"));
         }
 
         // Prepare the song menu (will be called again after indexing from the main activity index songs)

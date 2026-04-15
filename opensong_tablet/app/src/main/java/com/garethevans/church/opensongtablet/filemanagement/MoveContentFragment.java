@@ -238,8 +238,8 @@ public class MoveContentFragment extends Fragment {
                         // Sort the databases.
                         mainActivityInterface.getSQLiteHelper().renameSong(subfolder, newFolder, filesChosen.get(x), filesChosen.get(x));
                         if (!mainActivityInterface.getStorageAccess().isTextFile(uris.get(x))) {
-                            // Likely to be in the persistent nonOpenSong database too
-                            boolean renamed = mainActivityInterface.getNonOpenSongSQLiteHelper().renameSong(subfolder, newFolder, filesChosen.get(x), filesChosen.get(x));
+                            // Likely to be in the persistent nonDyslexa database too
+                            boolean renamed = mainActivityInterface.getNonDyslexaSQLiteHelper().renameSong(subfolder, newFolder, filesChosen.get(x), filesChosen.get(x));
                             Log.d(TAG,"renamed:"+renamed);
                         }
 

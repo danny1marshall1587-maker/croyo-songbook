@@ -1,0 +1,85 @@
+# APP STATE SUMMARY & DYSLEXA-SONGBOOK MISSION
+
+## 1. PROJECT OVERVIEW
+**Current Project Name:** Cryo Songbook (Fork of OpenSong Tablet)
+**Future Project Name:** DyslexaSongbook
+**Mission:** To create the world's most accessible, high-performance digital songbook for musicians, with a focus on dyslexia-friendly typography and AI-driven automation.
+
+---
+
+## 2. KEY FEATURES ADDED (CRYO-VERSION)
+The app has evolved significantly beyond the standard OpenSong Tablet:
+
+*   **AI Cryo-Follow:** 
+    *   Integrates **Gemma AI** with **Vosk ASR**.
+    *   Real-time listening that aligns lyrics/scrolling with the singer's voice.
+    *   Bridge logic in `MainActivity` and `AiAgentManager`.
+*   **Dyslexia-First Accessibility:**
+    *   Custom font loader for **OpenDyslexic** and other user-provided accessibility fonts.
+    *   High-contrast theme engine in `CryoSettingsFragment`.
+*   **Cryo-Flow Visuals:**
+    *   A dynamic micro-animation engine for the prompter.
+    *   Patterns like "Tide" provide a subconscious rhythmic reference without visual clutter.
+*   **Bluetooth Shield Service:**
+    *   `BluetoothShieldService.kt` runs in the background to ensure Bluetooth pedals (like Lekato WT-3) remain connected despite Android's aggressive battery management.
+*   **Face-Gesture Navigation:**
+    *   **MediaPipe Face Landmarker** integration.
+    *   Hands-free page turning via facial movements/gestures.
+*   **Storage Hardening:**
+    *   Custom SAF (Storage Access Framework) handling for Android 11+ ensuring "All Files Access" where possible to prevent permission-related crashes.
+
+---
+
+## 3. CURRENT STATE & BLOCKERS
+*   **The "Startup Bug":** The app is currently failing to launch for some users. 
+    *   **Location:** Likely within `BootUpFragment`, `StorageAccess`, or `AiAgentManager`.
+    *   **Symptom:** NullPointerException during the folder scanning process or AI model initialization.
+    *   **Version:** v6.7.0.8 (latest build state).
+*   **Rebranding Progress:** 
+    *   UI components are split between "OpenSong" and "Cryo" branding. 
+    *   Package names and internal strings still heavily reference the parent project.
+
+---
+
+## 4. REBRANDING TARGETS
+To transform into **DyslexaSongbook**, the following must be addressed:
+*   **Strings:** `strings.xml` contains hundreds of "OpenSong" references.
+*   **Paths:** The default folder on storage is currently `/OpenSong/`. This needs migration to `/DyslexaSongbook/`.
+*   **UI/Icons:** Logos and headers must be swapped to the new brand.
+*   **Code:** Fragments like `CryoSettingsFragment` should be unified under the DyslexaSongbook namespace.
+
+---
+
+## 5. MASTER AI PROMPT (FOR THE "FIX-ER")
+*Copy and paste the prompt below into an AI with full server/IDE access:*
+
+---
+
+### MISSION: FINALISE DYSLEXASONGBOOK
+**Objective:** You are the Lead Architect for **DyslexaSongbook**. Your goal is to take this broken fork of OpenSong Tablet and turn it into a premium, stable, and uniquely branded accessibility songbook.
+
+**ENV CONTEXT:**
+-   **Structure:** Android (Java/Kotlin) project.
+-   **Current State:** v6.7.0.8. Broken boot sequence. Partial AI integration.
+
+**PHASE 1: SURGICAL DEBUGGING**
+1.  Locate the startup crash. Inspect `BootUpFragment.java` and `MainActivity.java`.
+2.  Fix any NullPointerExceptions occurring during `storageIsCorrectlySet()` or `initialiseActivity()`.
+3.  Ensure the AI Model (Gemma) and ASR (Vosk) fail gracefully if resources are missing, rather than crashing the app.
+
+**PHASE 2: THE GREAT REBRAND**
+1.  Replace ALL user-facing instances of "OpenSong" or "Cryo Songbook" with "DyslexaSongbook".
+2.  Update `strings.xml`, `AndroidManifest.xml`, and all layout files.
+3.  Migrate the internal storage directory logic (currently looking for `/OpenSong/`) to safely look for or create `/DyslexaSongbook/`.
+4.  Ensure the "Accessibility" features (fonts/contrast) are presented as the "Hero" features of the app.
+
+**PHASE 3: FEATURE POLISH**
+1.  Verify the `BluetoothShieldService` is starting correctly on boot.
+2.  Ensure the Face Gesture navigation has a clear "Calibration" screen so users can set their turn-points.
+3.  Optimize the `AiAgentManager` to use minimal battery while still providing high-accuracy line tracking.
+
+**PHASE 4: VALIDATION**
+1.  Perform a "Full Build" to ensure no lint/compilation errors remain after rebranding.
+2.  Generate a release-ready APK named `DyslexaSongbook-v7.0.0-PRO.apk`.
+
+---

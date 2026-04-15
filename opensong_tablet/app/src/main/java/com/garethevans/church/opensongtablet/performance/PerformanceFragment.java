@@ -99,10 +99,10 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     private String mainfoldername="", mode_performance="", mode_presenter="", mode_stage="",
             not_allowed="", image_string="", nearby_large_file_string="", inline_set_string="";
     private int sendSongDelay = 0;
-    private int cryoActiveLineIndex = 0;
-    private boolean cryoPrompterEnabled = false;
-    private float cryoScale = 1.4f;
-    private int cryoActiveColor, cryoNextColor;
+    private int dyslexaActiveLineIndex = 0;
+    private boolean dyslexaPrompterEnabled = false;
+    private float dyslexaScale = 1.4f;
+    private int dyslexaActiveColor, dyslexaNextColor;
     @SuppressWarnings("FieldCanBeLocal")
     // GE - hidden this option, but reserving the right to reinstate even just for me
     private final int graceTime = 1500;
@@ -144,6 +144,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         actionInterface = (ActionInterface) context;
         displayInterface = (DisplayInterface) context;
         mainActivityInterface.registerFragment(this, "Performance");
+        mainActivityInterface.getBreadcrumbManager().add("PerformanceFragment: onAttach");
         
         cameraPermissionLauncher = registerForActivityResult(
                 new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
@@ -160,6 +161,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     @Override
     public void onResume() {
         super.onResume();
+        mainActivityInterface.getBreadcrumbManager().add("PerformanceFragment: onResume");
         prepareStrings();
         firstSongLoad = true;
         updateInlineSetSortTitles();
@@ -169,27 +171,27 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
             updateInlineSetVisibility();
         }
         checkFaceGestureProcessor();
-        checkCryoFlow();
+        checkDyslexaFlow();
     }
 
-    private void checkCryoFlow() {
-        if (myView != null && myView.cryoFlowBackground != null) {
-            boolean enabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("cryoFlowEnabled", false);
+    private void checkDyslexaFlow() {
+        if (myView != null && myView.dyslexaFlowBackground != null) {
+            boolean enabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("dyslexaFlowEnabled", false);
             if (enabled) {
-                myView.cryoFlowBackground.setVisibility(View.VISIBLE);
-                myView.cryoFlowBackground.setPatternMode(mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowPatternIndex", 0));
-                myView.cryoFlowBackground.setIntensity(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowIntensity", 1.0f));
-                myView.cryoFlowBackground.setSpeed(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowSpeed", 1.0f));
+                myView.dyslexaFlowBackground.setVisibility(View.VISIBLE);
+                myView.dyslexaFlowBackground.setPatternMode(mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaFlowPatternIndex", 0));
+                myView.dyslexaFlowBackground.setIntensity(mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaFlowIntensity", 1.0f));
+                myView.dyslexaFlowBackground.setSpeed(mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaFlowSpeed", 1.0f));
                 
-                int primary = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowPrimaryColor", Color.BLUE);
-                int secondary = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoFlowSecondaryColor", Color.CYAN);
+                int primary = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaFlowPrimaryColor", Color.BLUE);
+                int secondary = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaFlowSecondaryColor", Color.CYAN);
                 int background = mainActivityInterface.getMyThemeColors().getLyricsBackgroundColor();
                 
-                myView.cryoFlowBackground.setColors(primary, secondary, background);
-                myView.cryoFlowBackground.start();
+                myView.dyslexaFlowBackground.setColors(primary, secondary, background);
+                myView.dyslexaFlowBackground.start();
             } else {
-                myView.cryoFlowBackground.stop();
-                myView.cryoFlowBackground.setVisibility(View.GONE);
+                myView.dyslexaFlowBackground.stop();
+                myView.dyslexaFlowBackground.setVisibility(View.GONE);
             }
         }
     }
@@ -197,8 +199,9 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     @Override
     public void onPause() {
         super.onPause();
-        if (myView != null && myView.cryoFlowBackground != null) {
-            myView.cryoFlowBackground.stop();
+        mainActivityInterface.getBreadcrumbManager().add("PerformanceFragment: onPause");
+        if (myView != null && myView.dyslexaFlowBackground != null) {
+            myView.dyslexaFlowBackground.stop();
         }
     }
 
@@ -312,13 +315,13 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         if (action != null && !action.isEmpty()) {
             mainActivityInterface.getMainHandler().post(() -> {
                 if (!isAdded()) return;
-                triggerCryoFlipFlash();
+                triggerDyslexaFlipFlash();
                 mainActivityInterface.getPerformanceGestures().doAction(action, false);
             });
         }
     }
 
-    private void triggerCryoFlipFlash() {
+    private void triggerDyslexaFlipFlash() {
         if (myView == null || myView.getRoot() == null || getContext() == null) return;
         
         android.view.View flashView = new android.view.View(getContext());
@@ -464,7 +467,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         } else {
             processingTestView = false;
             String songFolder = mainActivityInterface.getPreferences().getMyPreferenceString("songFolder",mainfoldername);
-            String songFilename = mainActivityInterface.getPreferences().getMyPreferenceString("songFilename", "Welcome to OpenSongApp");
+            String songFilename = mainActivityInterface.getPreferences().getMyPreferenceString("songFilename", "Welcome to DyslexaApp");
             mainActivityInterface.getSetActions().indexSongInSet(songFolder,songFilename,null);
             doSongLoad(songFolder, songFilename);
         }
@@ -673,6 +676,8 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
 
     // This stuff loads the song and prepares the views
     public void doSongLoad(String folder, String filename) {
+        mainActivityInterface.getBreadcrumbManager().add("PerformanceFragment: doSongLoad: " + filename);
+        mainActivityInterface.getStorageAccess().updateGeneralLog("PerformanceFragment: doSongLoad: " + folder + "/" + filename);
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
                 !mainActivityInterface.getSong().getFolder().equals(folder) ||
@@ -684,9 +689,9 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         if (filename==null || filename.isEmpty() ||
                 mainActivityInterface.getSong().getFilename()==null || mainActivityInterface.getSong().getFilename().isEmpty()) {
             songChange = true;
-            filename = "Welcome to OpenSongApp";
+            filename = "Welcome to DyslexaApp";
             folder = mainfoldername;
-            mainActivityInterface.getSong().setFilename("Welcome to OpenSongApp");
+            mainActivityInterface.getSong().setFilename("Welcome to DyslexaApp");
             mainActivityInterface.getSong().setFolder(mainfoldername);
         }
 
@@ -1035,7 +1040,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
             // - PDF        PDF file. Use the recyclerView (not inside zoomLayout).  All sizes from image representations of pages
             // - IMG        Image file.  Use the imageView (inside pageHolder, inside zoomLayout).  All sizes from the bitmap file.
             // - **Image    Custom image slide (multiple images).  Same as PDF
-            // - XML        OpenSong song.  Views need to be drawn and measured. Stage mode uses recyclerView, Performance, the pageHolder
+            // - XML        Dyslexa song.  Views need to be drawn and measured. Stage mode uses recyclerView, Performance, the pageHolder
 
             // Reset the recycler view to vertical by default
             if (recyclerLayoutManager!=null) {
@@ -1371,11 +1376,11 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
 
     private void songIsReadyToDisplay() {
         if (myView!=null) {
-            cryoActiveLineIndex = 0;
-            cryoPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("cryoPrompterEnabled", false);
-            cryoScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoPrompterScale", 1.4f);
-            cryoActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
-            cryoNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
+            dyslexaActiveLineIndex = 0;
+            dyslexaPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("dyslexaPrompterEnabled", false);
+            dyslexaScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaPrompterScale", 1.4f);
+            dyslexaActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
+            dyslexaNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
 
             try {
                 // Set the page holder to fullscreen for now
@@ -2291,27 +2296,27 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     }
 
     public void updatePerformancePreferences() {
-        boolean wasEnabled = cryoPrompterEnabled;
-        cryoPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("cryoPrompterEnabled", false);
-        cryoScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoPrompterScale", 1.4f);
-        cryoActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
-        cryoNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("cryoPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
+        boolean wasEnabled = dyslexaPrompterEnabled;
+        dyslexaPrompterEnabled = mainActivityInterface.getPreferences().getMyPreferenceBoolean("dyslexaPrompterEnabled", false);
+        dyslexaScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaPrompterScale", 1.4f);
+        dyslexaActiveColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterActiveColor", android.graphics.Color.parseColor("#FFD700")); // Gold
+        dyslexaNextColor = mainActivityInterface.getPreferences().getMyPreferenceInt("dyslexaPrompterNextColor", android.graphics.Color.parseColor("#00FFFF")); // Cyan
         
         // If prompter was toggled, we need to reload the song to apply horizontal centering/gravity
-        if (wasEnabled != cryoPrompterEnabled && mainActivityInterface.getSong() != null) {
+        if (wasEnabled != dyslexaPrompterEnabled && mainActivityInterface.getSong() != null) {
             doSongLoad(mainActivityInterface.getSong().getFolder(), mainActivityInterface.getSong().getFilename());
         } else {
-            cryoUpdateHighlights();
-            checkCryoFlow();
+            dyslexaUpdateHighlights();
+            checkDyslexaFlow();
         }
     }
 
-    public void cryoJumpToLine(int index) {
-        if (myView == null || !cryoPrompterEnabled) return;
+    public void dyslexaJumpToLine(int index) {
+        if (myView == null || !dyslexaPrompterEnabled) return;
 
         // Ensure index is within bounds (handled by caller usually, but safe here)
         if (index < 0) index = 0;
-        cryoActiveLineIndex = index;
+        dyslexaActiveLineIndex = index;
 
         // Find the view with the prompter tag
         final View targetView = myView.songView.findViewWithTag("prompterLine_" + index);
@@ -2337,12 +2342,12 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
                 myView.zoomLayout.doScrollTo(0, Math.max(0, targetScrollY));
 
                 // Update Highlights
-                cryoUpdateHighlights();
+                dyslexaUpdateHighlights();
             });
         }
     }
 
-    private void cryoUpdateHighlights() {
+    private void dyslexaUpdateHighlights() {
         if (myView == null || myView.songView == null) return;
         updateViewHighlightsRecursive(myView.songView);
     }
@@ -2364,22 +2369,22 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     }
 
     private void applyPrompterStyle(View view, int lineIndex) {
-        if (lineIndex == cryoActiveLineIndex) {
-            view.setScaleX(cryoScale);
-            view.setScaleY(cryoScale);
+        if (lineIndex == dyslexaActiveLineIndex) {
+            view.setScaleX(dyslexaScale);
+            view.setScaleY(dyslexaScale);
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
-                tv.setTextColor(cryoActiveColor);
+                tv.setTextColor(dyslexaActiveColor);
                 // --- Halo Highlight: High contrast shadow for legibility ---
                 tv.setShadowLayer(15f, 0f, 0f, Color.BLACK);
                 view.setAlpha(1.0f);
             }
-        } else if (lineIndex == cryoActiveLineIndex + 1) {
+        } else if (lineIndex == dyslexaActiveLineIndex + 1) {
             view.setScaleX(1.0f);
             view.setScaleY(1.0f);
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
-                tv.setTextColor(cryoNextColor);
+                tv.setTextColor(dyslexaNextColor);
                 tv.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT); // Remove shadow
                 view.setAlpha(0.8f);
             }
@@ -2394,13 +2399,13 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
     }
 
     public void onAiLineAlignment(int index) {
-        if (index >= 0 && index != cryoActiveLineIndex) {
-            cryoJumpToLine(index);
+        if (index >= 0 && index != dyslexaActiveLineIndex) {
+            dyslexaJumpToLine(index);
         }
     }
 
-    public int getCryoActiveLineIndex() {
-        return cryoActiveLineIndex;
+    public int getDyslexaActiveLineIndex() {
+        return dyslexaActiveLineIndex;
     }
 
     private void syncAiSongContext() {
@@ -2433,7 +2438,7 @@ public class PerformanceFragment extends Fragment implements MyZoomLayout.OnScro
         }
     }
 
-    public boolean isCryoPrompterEnabled() {
-        return cryoPrompterEnabled;
+    public boolean isDyslexaPrompterEnabled() {
+        return dyslexaPrompterEnabled;
     }
 }

@@ -68,7 +68,7 @@ public class DrumCalculations {
             tempo = "";
         }
 
-        // Firstly, OpenSong (desktop) can use descriptions that we need to change
+        // Firstly, Dyslexa (desktop) can use descriptions that we need to change
         // Fix desktop text tempo values and make sure we only have numbers
         tempo = tempo.replace("Very Fast", "140").
                 replace("Fast", "120").

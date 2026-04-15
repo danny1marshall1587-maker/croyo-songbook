@@ -26,12 +26,12 @@ import java.util.Comparator;
 import java.util.UUID;
 
 public class CommonSQL {
-    // This is used to perform common tasks for the SQL database and NonOpenSongSQL database.
+    // This is used to perform common tasks for the SQL database and NonDyslexaSQL database.
     // Only the database itself is different, so as long as that is dealt with separately, we can proceed
     // When we return an SQLite object
 
-    // Update the table.  Called for the NonOpenSong database that is persistent.
-    // This is called if the db2 version is different to the version stated in NonOpenSongSQLiteHelper
+    // Update the table.  Called for the NonDyslexa database that is persistent.
+    // This is called if the db2 version is different to the version stated in NonDyslexaSQLiteHelper
     // This check we have the columns we need now
 
     private final String TAG = "CommonSQL";

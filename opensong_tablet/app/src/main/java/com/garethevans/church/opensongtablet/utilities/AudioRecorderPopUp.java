@@ -220,7 +220,7 @@ public class AudioRecorderPopUp {
         isRecording = false;
     }
     private void startMediaRecorder() {
-        tempFilename = mainActivityInterface.getStorageAccess().getAppSpecificFile("Audio", "", "OpenSongAudio"+fileExtension);
+        tempFilename = mainActivityInterface.getStorageAccess().getAppSpecificFile("Audio", "", "DyslexaAudio"+fileExtension);
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);

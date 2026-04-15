@@ -7,7 +7,7 @@ package com.garethevans.church.opensongtablet.sqlite;
 // If the database is good to go (after full index) we get songs from here = quicker
 // If the database isn't fully indexed, we load the song from the file
 // If we create, update, delete songs we do that to both the SQL database and the file
-// Non OpenSong songs (PDF, Images) have their details stored in a persistent database
+// Non Dyslexa songs (PDF, Images) have their details stored in a persistent database
 // This is stored in the Settings folder to allow syncing between devices
 // After indexing songs, PDFs and images will just have the songid, folder and filename to begin with
 // We then update their records in the SQL database using the persistent NonSQLDatabase entries
@@ -72,7 +72,7 @@ public class SQLite {
 
     // The table columns
     public static final String DATABASE_NAME = "Songs.db";
-    public static final String NON_OS_DATABASE_NAME = "NonOpenSongSongs.db";
+    public static final String NON_OS_DATABASE_NAME = "NonDyslexaSongs.db";
     public static final String TABLE_NAME = "songs";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_SONGID = "songid";
@@ -121,7 +121,7 @@ public class SQLite {
     public static final String COLUMN_UUID = "uuid";
     public static final String COLUMN_LAST_MODIFIED = "lastmodified";
 
-    // Create table SQL query.  Because this will have non OpenSong stuff too, include all useable fields
+    // Create table SQL query.  Because this will have non Dyslexa stuff too, include all useable fields
     static final String CREATE_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

@@ -172,8 +172,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "opensongapp://” -->
-                <data android:scheme="opensongapp" />
+                <!-- Accepts URIs that begin with "dyslexasongbook://” -->
+                <data android:scheme="dyslexasongbook" />
                 <data android:host="*"/>
             </intent-filter>
 

@@ -143,7 +143,7 @@ public class SongSectionsFragment extends Fragment {
                 myView.imageSlideLoop.setChecked(loop);
                 myView.songInfo.setOnClickListener(view -> {
                     if (!mainActivityInterface.getSong().getFolder().contains("**Image")) {
-                        if (!mainActivityInterface.getSong().getTitle().equals("Welcome to OpenSongApp")) {
+                        if (!mainActivityInterface.getSong().getTitle().equals("Welcome to DyslexaApp")) {
                             SongDetailsBottomSheet songDetailsBottomSheet = new SongDetailsBottomSheet();
                             songDetailsBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "songDetailsBottomSheet");
                         }

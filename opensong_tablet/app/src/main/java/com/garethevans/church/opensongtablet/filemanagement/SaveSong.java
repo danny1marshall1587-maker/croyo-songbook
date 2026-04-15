@@ -58,7 +58,7 @@ public class SaveSong {
                 mainActivityInterface.getSQLiteHelper().renameSong(oldFolder, newSong.getFolder(), oldFilename, newSong.getFilename());
                 if (newSong.getFiletype().equals("PDF") || newSong.getFiletype().equals("IMG")) {
                     // If it isn't an XML file, also update the persistent database
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().renameSong(
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().renameSong(
                             oldLocation[0], newSong.getFolder(), oldLocation[1], newSong.getFilename());
                     // Copy the pdf/img file now
                     mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" doSave move "
@@ -134,10 +134,10 @@ public class SaveSong {
             // First update the song database
             mainActivityInterface.getSQLiteHelper().updateSong(thisSong);
 
-            // If this is a non-OpenSong song (PDF, IMG), update the persistent database
+            // If this is a non-Dyslexa song (PDF, IMG), update the persistent database
             if (!thisSong.getFiletype().equals("XML")) {
                 // If update fails (due to no existing row, a new one is created)
-                mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(thisSong);
+                mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(thisSong);
             }
 
             // Update the CCLI log if required
@@ -176,6 +176,6 @@ public class SaveSong {
     }
 
     public boolean checkNotWelcomeSong(Song thisSong) {
-        return (!thisSong.getFilename().equals("Welcome to OpenSongApp"));
+        return (!thisSong.getFilename().equals("Welcome to DyslexaApp"));
     }
 }

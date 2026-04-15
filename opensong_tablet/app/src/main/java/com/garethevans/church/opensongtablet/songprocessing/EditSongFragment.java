@@ -223,10 +223,10 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
 
         // Send this off for processing in a new Thread
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // If we were editing the lyrics as ChoPro, convert to OpenSong
+            // If we were editing the lyrics as ChoPro, convert to Dyslexa
             if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
                 String lyrics = mainActivityInterface.getTempSong().getLyrics();
-                lyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(lyrics);
+                lyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(lyrics);
                 mainActivityInterface.getTempSong().setLyrics(lyrics);
                 mainActivityInterface.getTempSong().setEditingAsChoPro(false);
             }

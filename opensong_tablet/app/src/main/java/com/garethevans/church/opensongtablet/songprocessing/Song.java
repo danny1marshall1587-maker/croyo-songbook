@@ -518,10 +518,10 @@ public class Song implements Serializable {
 
     // The welcome song if there is a problem
     public Song showWelcomeSong(Context c, Song thisSong) {
-        thisSong.setFilename("Welcome to OpenSongApp");
+        thisSong.setFilename("Welcome to DyslexaApp");
         thisSong.setTitle(c.getString(R.string.welcome));
         thisSong.setLyrics(c.getString(R.string.user_guide_lyrics));
-        thisSong.setAuthor("Gareth Evans");
+        thisSong.setAuthor("Dan Marshall");
         thisSong.setKey("G");
         thisSong.setLinkweb("https://www.opensongapp.com");
         thisSong.setFiletype("XML");

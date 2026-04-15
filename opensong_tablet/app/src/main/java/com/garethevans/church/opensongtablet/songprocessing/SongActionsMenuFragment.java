@@ -243,10 +243,10 @@ public class SongActionsMenuFragment extends Fragment {
                 if (mainActivityInterface.getStorageAccess().copyFile(inputStream,outputStream)) {
                     // Success.  Add to the non-opensong database
                     mainActivityInterface.getShowToast().doIt(getString(R.string.success));
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(folder,newName);
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(folder,newName);
                     mainActivityInterface.getSong().setFilename(newName);
                     mainActivityInterface.getSong().setTitle(newName);
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(mainActivityInterface.getSong());
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(mainActivityInterface.getSong());
                     // Set the new filename to load and navHome (also trigger the menu rebuild)
                     loadNewSong();
                 } else {

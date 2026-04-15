@@ -316,13 +316,13 @@
                 style="@style/MyDividerLine"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
-                android:id="@+id/cryoPrompter"
+                android:id="@+id/dyslexaPrompter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/cryo_prompter"
-                android:hint="@string/cryo_prompter_info"/>
+                android:text="@string/dyslexa_prompter"
+                android:hint="@string/dyslexa_prompter_info"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
                 android:id="@+id/activeLineScaleLabel"
@@ -381,32 +381,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/cryo_flow_settings" />
+                android:text="@string/dyslexa_flow_settings" />
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
-                android:id="@+id/cryoFlowEnable"
+                android:id="@+id/dyslexaFlowEnable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/cryo_flow_enable"/>
+                android:text="@string/dyslexa_flow_enable"/>
 
             <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
-                android:id="@+id/cryoFlowPattern"
+                android:id="@+id/dyslexaFlowPattern"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:hint="@string/cryo_flow_pattern"/>
+                android:hint="@string/dyslexa_flow_pattern"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/cryo_flow_intensity" />
+                android:text="@string/dyslexa_flow_intensity" />
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
-                android:id="@+id/cryoFlowIntensity"
+                android:id="@+id/dyslexaFlowIntensity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0.1"
@@ -416,10 +416,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Cryo Flow Speed" />
+                android:text="Dyslexa Flow Speed" />
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
-                android:id="@+id/cryoFlowSpeed"
+                android:id="@+id/dyslexaFlowSpeed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0.1"
@@ -430,17 +430,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
-                    android:id="@+id/cryoFlowPrimaryColorBtn"
+                    android:id="@+id/dyslexaFlowPrimaryColorBtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/cryo_flow_color_primary"/>
+                    android:text="@string/dyslexa_flow_color_primary"/>
                 <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
-                    android:id="@+id/cryoFlowSecondaryColorBtn"
+                    android:id="@+id/dyslexaFlowSecondaryColorBtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/cryo_flow_color_secondary"/>
+                    android:text="@string/dyslexa_flow_color_secondary"/>
             </LinearLayout>
 
             <com.garethevans.church.opensongtablet.customviews.MyDivider
@@ -462,7 +462,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/cryo_ai_agent"
+                android:text="@string/dyslexa_ai_agent"
                 android:textStyle="bold" />
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
@@ -471,8 +471,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/cryo_ai_agent_enabled"
-                android:hint="@string/cryo_ai_agent_enabled_info"/>
+                android:text="@string/dyslexa_ai_agent_enabled"
+                android:hint="@string/dyslexa_ai_agent_enabled_info"/>
 
             <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
                 android:id="@+id/aiAgentModel"
@@ -480,16 +480,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:hint="@string/cryo_ai_agent_model"/>
+                android:hint="@string/dyslexa_ai_agent_model"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
-                android:id="@+id/aiCryoFollowEnabled"
+                android:id="@+id/aiDyslexaFollowEnabled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/cryo_ai_follow_enabled"
-                android:hint="@string/cryo_ai_follow_enabled_info"/>
+                android:text="@string/dyslexa_ai_follow_enabled"
+                android:hint="@string/dyslexa_ai_follow_enabled_info"/>
 
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialButton

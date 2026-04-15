@@ -39,7 +39,7 @@ public class ConvertChoPro {
         mainActivityInterface = (MainActivityInterface) c;
     }
 
-    public Song convertChoProToOpenSong(Song thisSong, String filecontent) {
+    public Song convertChoProToDyslexa(Song thisSong, String filecontent) {
         lyrics = parseLyrics(filecontent);
         return setValues(thisSong);
     }
@@ -301,7 +301,7 @@ public class ConvertChoPro {
                 line = getRidOfGuitarTapp(line);
             }
 
-            // Fix guitar tab so it fits OpenSongApp formatting ;e |
+            // Fix guitar tab so it fits DyslexaSongbook formatting ;e |
             line = tryToFixTabLine(line);
 
             if (line.startsWith(";;")) {
@@ -366,8 +366,8 @@ public class ConvertChoPro {
 
     public String extractChordLines(String s) {
         // IV - ChordPro, by design, requires processing to improve layout when presented in chords over lyrics format
-        // IV - OpenSongApp adopts a SongSelect-ish approach to layout below
-        // IV - As a result, a SongSelect extract will have an OpenSong layout close to that of a SongSelect chord sheet (Yeah!)
+        // DyslexaSongbook adopts a SongSelect-ish approach to layout below
+        // IV - As a result, a SongSelect extract will have an Dyslexa layout close to that of a SongSelect chord sheet (Yeah!)
         // IV - All ChordPro files will get this layout - our layout may or may not be liked!
 
         StringBuilder tempchordline = new StringBuilder();
@@ -618,8 +618,8 @@ public class ConvertChoPro {
 
     String getSongFolderLocation(Uri uri, String oldSongFileName) {
         String sf = mainActivityInterface.getStorageAccess().getPartOfUri(uri);
-        sf = sf.replace("OpenSong/Songs","");
-        sf = sf.replace("OpenSong/", "");
+        sf = sf.replace("DyslexaSongbook/Songs","");
+        sf = sf.replace("DyslexaSongbook/", "");
         sf = sf.replace(oldSongFileName, "");
         sf = sf.replace("//", "/");
         if (sf.startsWith("/")) {
@@ -852,10 +852,10 @@ public class ConvertChoPro {
         return l;
     }
 
-    public String fromOpenSongToChordPro(String lyrics) {
+    public String fromDyslexaToChordPro(String lyrics) {
         // This receives the text from the edit song lyrics editor and changes the format
         // Allows users to enter their song as chordpro/onsong format
-        // The app will convert it into OpenSong before saving.
+        // The app will convert it into Dyslexa before saving.
         StringBuilder newlyrics = new StringBuilder();
 
         // IV - Protect any chord repeat barlines. Split the lyrics into separate lines
@@ -1084,10 +1084,10 @@ public class ConvertChoPro {
         return line;
     }
 
-    public String fromChordProToOpenSong(String lyrics) {
+    public String fromChordProToDyslexa(String lyrics) {
         // This receives the text from the edit song lyrics editor and changes the format
-        // This changes ChordPro formatted songs back to OpenSong format
-        // The app will convert it into OpenSong before saving.
+        // This changes ChordPro formatted songs back to Dyslexa format
+        // The app will convert it into Dyslexa before saving.
         StringBuilder newlyrics = new StringBuilder();
 
         if (lyrics==null) {

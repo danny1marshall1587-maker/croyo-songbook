@@ -110,7 +110,7 @@ public class OpenChordsFolderNameChangeBottomSheet extends BottomSheetCommon {
             // Change the OpenChords foldername/uuid to the local values
             // We then run the query again
             String newUuid = String.valueOf(UUID.randomUUID());
-            mainActivityInterface.getOpenChordsAPI().changeOpenSongFolderUUID(
+            mainActivityInterface.getOpenChordsAPI().changeDyslexaFolderUUID(
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid(),
                     newUuid);
             mainActivityInterface.getOpenChordsAPI().setOpenChordsFolderUuid(newUuid);
@@ -122,7 +122,7 @@ public class OpenChordsFolderNameChangeBottomSheet extends BottomSheetCommon {
             // We need to create a new UUID for this local folder and then run the query again
             // Stick to using the OpenChords foldername/uuid
             String newUuid = String.valueOf(UUID.randomUUID());
-            mainActivityInterface.getOpenChordsAPI().changeOpenSongFolderUUID(
+            mainActivityInterface.getOpenChordsAPI().changeDyslexaFolderUUID(
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid(),
                     newUuid);
             updateTitleAndQuery(mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderName());
@@ -130,15 +130,15 @@ public class OpenChordsFolderNameChangeBottomSheet extends BottomSheetCommon {
         myView.switchLocalFolder.setOnClickListener(view -> {
             // We need to change the existing local folder uuid to a new random UUID
             String newUuid = String.valueOf(UUID.randomUUID());
-            mainActivityInterface.getOpenChordsAPI().changeOpenSongFolderUUID(
+            mainActivityInterface.getOpenChordsAPI().changeDyslexaFolderUUID(
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid(),
                     newUuid);
-            mainActivityInterface.getOpenChordsAPI().changeOpenSongFolderUUID(
+            mainActivityInterface.getOpenChordsAPI().changeDyslexaFolderUUID(
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid(),newUuid);
             // We then need to change the switch the local folder uuid to match the OpenChords uuid
-            String oldUuid = mainActivityInterface.getOpenChordsAPI().getOpenSongFolderUuidFromName(
+            String oldUuid = mainActivityInterface.getOpenChordsAPI().getDyslexaFolderUuidFromName(
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderName());
-            mainActivityInterface.getOpenChordsAPI().changeOpenSongFolderUUID(
+            mainActivityInterface.getOpenChordsAPI().changeDyslexaFolderUUID(
                     oldUuid,
                     mainActivityInterface.getOpenChordsAPI().getOpenChordsFolderUuid());
             // Now update the title and run the query again

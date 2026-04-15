@@ -42,7 +42,7 @@ import com.garethevans.church.opensongtablet.customviews.MyToolbar;
 import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.drummer.Drummer;
 import com.garethevans.church.opensongtablet.export.ExportActions;
-import com.garethevans.church.opensongtablet.export.OpenSongSetBundle;
+import com.garethevans.church.opensongtablet.export.DyslexaSetBundle;
 import com.garethevans.church.opensongtablet.export.PrepareFormats;
 import com.garethevans.church.opensongtablet.filemanagement.LoadSong;
 import com.garethevans.church.opensongtablet.filemanagement.SaveSong;
@@ -83,8 +83,9 @@ import com.garethevans.church.opensongtablet.songprocessing.ProcessSong;
 import com.garethevans.church.opensongtablet.songprocessing.Song;
 import com.garethevans.church.opensongtablet.songprocessing.SongSheetHeaders;
 import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
-import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
+import com.garethevans.church.opensongtablet.sqlite.NonDyslexaSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
+import com.garethevans.church.opensongtablet.utilities.BreadcrumbManager;
 import com.garethevans.church.opensongtablet.utilities.TimeTools;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
@@ -99,6 +100,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public interface MainActivityInterface {
 
     // Initialising the activity and settings
+    BreadcrumbManager getBreadcrumbManager();
     boolean getWaitingOnBootUpFragment();
     void initialiseActivity();
     void initialiseStartVariables();
@@ -175,7 +177,7 @@ public interface MainActivityInterface {
     int getSongWidth();
     Variations getVariations();
     SetMenuFragment getSetMenuFragment();
-    OpenSongSetBundle getOpenSongSetBundle();
+    DyslexaSetBundle getDyslexaSetBundle();
 
     // Menus
     void lockDrawer(boolean lock);
@@ -284,7 +286,7 @@ public interface MainActivityInterface {
 
     // Database
     SQLiteHelper getSQLiteHelper();
-    NonOpenSongSQLiteHelper getNonOpenSongSQLiteHelper();
+    NonDyslexaSQLiteHelper getNonDyslexaSQLiteHelper();
     CommonSQL getCommonSQL();
 
     // Web activities

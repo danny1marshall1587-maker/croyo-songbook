@@ -6,7 +6,7 @@ import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import java.util.List;
 
 /**
- * Singleton Manager for AI Services in Cryo-Songbook.
+ * Singleton Manager for AI Services in DyslexaSongbook.
  */
 public class AiAgentManager {
     private static final String TAG = "AiAgentManager";
@@ -48,7 +48,7 @@ public class AiAgentManager {
 
     public void setActiveAgent(AiAgent agent) {
         this.activeAgent = agent;
-        Log.d(TAG, "Active AI Agent switched to: " + agent.getDisplayName());
+        Log.i(TAG, "Active AI Agent switched to: " + agent.getDisplayName());
         
         if (agent == AiAgent.GEMMA_4) {
             initGemma();
@@ -63,7 +63,7 @@ public class AiAgentManager {
 
     public void setSongContext(List<String> lines) {
         this.currentSongLines = lines;
-        Log.d(TAG, "Song context set: " + (lines != null ? lines.size() : 0) + " lines.");
+        Log.i(TAG, "Song context set: " + (lines != null ? lines.size() : 0) + " lines for AI alignment.");
     }
 
     /**
@@ -85,6 +85,7 @@ public class AiAgentManager {
         prompt.append("Identify the index of the line currently being sung. ");
         prompt.append("Return ONLY the integer index. If uncertain, return the last known index.");
 
+        Log.d(TAG, "AI Alignment requested for: \"" + recognizedText + "\" (Last: " + lastIndex + ")");
         generateResponse(prompt.toString(), callback);
     }
 

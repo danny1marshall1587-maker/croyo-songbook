@@ -448,13 +448,13 @@ public class SyncNearbyFragment extends Fragment {
                                                 Log.d(TAG,"Create song in our database");
                                                 mainActivityInterface.getSQLiteHelper().createSong(thisNonOSSong.getFolder(), thisNonOSSong.getFilename());
                                             }
-                                            if (mainActivityInterface.getNonOpenSongSQLiteHelper().getSpecificSong(thisNonOSSong.getFolder(), thisNonOSSong.getFilename())==null) {
+                                            if (mainActivityInterface.getNonDyslexaSQLiteHelper().getSpecificSong(thisNonOSSong.getFolder(), thisNonOSSong.getFilename())==null) {
                                                 Log.d(TAG,"Create song in our NonOSSong database");
-                                                mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(thisNonOSSong.getFolder(), thisNonOSSong.getFilename());
+                                                mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(thisNonOSSong.getFolder(), thisNonOSSong.getFilename());
                                             }
                                             Log.d(TAG,"updating song in our database");
                                             mainActivityInterface.getSQLiteHelper().updateSong(thisNonOSSong);
-                                            mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(thisNonOSSong);
+                                            mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(thisNonOSSong);
                                         }
 
                                     } else if (filenameToUse.equals(mainActivityInterface.getNearbyActions().currentSetFile)) {

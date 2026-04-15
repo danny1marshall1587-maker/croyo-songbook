@@ -790,7 +790,7 @@ public class Midi {
             }
         }
         mainActivityInterface.getSong().setMidi(s.toString().trim());
-        if (!mainActivityInterface.getSong().getFilename().equals("Welcome to OpenSongApp")) {
+        if (!mainActivityInterface.getSong().getFilename().equals("Welcome to DyslexaApp")) {
             mainActivityInterface.getSaveSong().updateSong(mainActivityInterface.getSong(),false);
         }
     }

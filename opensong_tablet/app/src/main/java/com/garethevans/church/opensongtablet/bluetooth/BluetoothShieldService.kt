@@ -16,7 +16,7 @@ class BluetoothShieldService : Service() {
 
     private var wakeLock: PowerManager.WakeLock? = null
     private var timer: Timer? = null
-    private val CHANNEL_ID = "CryoShieldServiceChannel"
+    private val CHANNEL_ID = "DyslexaShieldServiceChannel"
     private val NOTIFICATION_ID = 888
 
     override fun onCreate() {
@@ -26,7 +26,7 @@ class BluetoothShieldService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Cryo-Shield Active")
+            .setContentTitle("Dyslexa-Shield Active")
             .setContentText("Maintaining pedal connection & CPU priority...")
             .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -47,9 +47,9 @@ class BluetoothShieldService : Service() {
 
     private fun acquireWakeLock() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CryoSongbook::BluetoothShieldLock")
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DyslexaSongbook::BluetoothShieldLock")
         wakeLock?.acquire()
-        Log.d("CryoShield", "WakeLock acquired")
+        Log.d("DyslexaShield", "WakeLock acquired")
     }
 
     private fun startHeartbeat() {
@@ -67,7 +67,7 @@ class BluetoothShieldService : Service() {
                                 this@BluetoothShieldService,
                                 android.Manifest.permission.BLUETOOTH_SCAN
                             ) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                            Log.w("CryoShield", "Skipping heartbeat: BLUETOOTH_SCAN permission not granted.")
+                            Log.w("DyslexaShield", "Skipping heartbeat: BLUETOOTH_SCAN permission not granted.")
                             return
                         }
                     }
@@ -84,17 +84,17 @@ class BluetoothShieldService : Service() {
                     android.os.Handler(mainLooper).postDelayed({
                         try {
                             scanner.stopScan(callback)
-                            Log.d("CryoShield", "Heartbeat scan cycle complete")
+                            Log.d("DyslexaShield", "Heartbeat scan cycle complete")
                         } catch (se: SecurityException) {
-                            Log.e("CryoShield", "Permission lost during stopScan")
+                            Log.e("DyslexaShield", "Permission lost during stopScan")
                         } catch (e: Exception) {
                             // Scanner might have been closed
                         }
                     }, 2000)
                 } catch (se: SecurityException) {
-                    Log.e("CryoShield", "Heartbeat failed due to SecurityException", se)
+                    Log.e("DyslexaShield", "Heartbeat failed due to SecurityException", se)
                 } catch (e: Exception) {
-                    Log.e("CryoShield", "Heartbeat failed", e)
+                    Log.e("DyslexaShield", "Heartbeat failed", e)
                 }
             }
         }, 0, 60000) // Every 60 seconds
@@ -104,7 +104,7 @@ class BluetoothShieldService : Service() {
         super.onDestroy()
         wakeLock?.release()
         timer?.cancel()
-        Log.d("CryoShield", "Shield service destroyed, locks released")
+        Log.d("DyslexaShield", "Shield service destroyed, locks released")
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -112,7 +112,7 @@ class BluetoothShieldService : Service() {
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(
             CHANNEL_ID,
-            "Cryo-Shield Background Service",
+            "Dyslexa-Shield Background Service",
             NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)

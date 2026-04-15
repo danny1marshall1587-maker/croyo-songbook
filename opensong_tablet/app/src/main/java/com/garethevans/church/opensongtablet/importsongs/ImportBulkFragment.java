@@ -31,8 +31,8 @@ import java.util.ArrayList;
 public class ImportBulkFragment extends Fragment {
 
     // This allows users to specify multiple song files in supported formats (unsupported are ignored)
-    // Each text based song (txt, chopro, onsong) song will be converted to OpenSong
-    // Songs with xml extension or no extension will be checked for OpenSong formatting
+    // Each text based song (txt, chopro, onsong) song will be converted to Dyslexa
+    // Songs with xml extension or no extension will be checked for Dyslexa formatting
     // PDF files will stay as they are
     // These files will then be saved into an 'Imported' folder and removed from the import folder
     // Users can choose the location of their 'import from' folder
@@ -233,11 +233,11 @@ public class ImportBulkFragment extends Fragment {
                         newSong.setFilename(newFilename);
                     } else if (chordpro) {
                         updateProgress(x, total, filename, chordpro_string);
-                        newSong = mainActivityInterface.getConvertChoPro().convertChoProToOpenSong(newSong, content);
+                        newSong = mainActivityInterface.getConvertChoPro().convertChoProToDyslexa(newSong, content);
                         newSong.setFilename(newFilename);
                     } else if (onsong) {
                         updateProgress(x, total, filename, onsong_string);
-                        newSong = mainActivityInterface.getConvertOnSong().convertOnSongToOpenSong(newSong, content);
+                        newSong = mainActivityInterface.getConvertOnSong().convertOnSongToDyslexa(newSong, content);
                         newSong.setFilename(newFilename);
                     } else if (imageorpdf) {
                         updateProgress(x, total, filename, image_or_pdf_string);
@@ -312,10 +312,10 @@ public class ImportBulkFragment extends Fragment {
                             success = mainActivityInterface.getStorageAccess().copyUriToUri(fileUri, newUri);
                             // Add the song to the database
                             if (success) {
-                                mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(imported_string, newFilename);
+                                mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(imported_string, newFilename);
                                 //mainActivityInterface.getSQLiteHelper().createSong(imported_string, newFilename);
                                 mainActivityInterface.getSQLiteHelper().updateSong(newSong);
-                                mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(newSong);
+                                mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(newSong);
                             }
                         } else if (text || chordpro || onsong || word || maybeopensong) {
                             String songXML = mainActivityInterface.getProcessSong().getXML(newSong);
@@ -362,7 +362,7 @@ public class ImportBulkFragment extends Fragment {
 
     private void importJustChordsFile(JustChordsSongObject justChordsSongObject) {
         if (justChordsSongObject!=null) {
-            Song jcImport = mainActivityInterface.getConvertJustChords().getOpenSongFromJustChordsSong(justChordsSongObject);
+            Song jcImport = mainActivityInterface.getConvertJustChords().getDyslexaFromJustChordsSong(justChordsSongObject);
             jcImport.setFolder(imported_string);
             // Create the new uri/file for writing
             //Uri newUri = mainActivityInterface.getStorageAccess().getUriForItem("Songs", imported_string, jcImport.getFilename());

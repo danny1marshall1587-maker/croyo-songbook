@@ -335,11 +335,11 @@ public class PresenterSettings {
     public void getImagePreferences() {
         setLogo(getUriFromString(mainActivityInterface.
                         getPreferences().getMyPreferenceString("customLogo",""),
-                "OpenSongApp_Logo.png"));
+                "DyslexaApp_Logo.png"));
         setLogoSize(mainActivityInterface.getPreferences().getMyPreferenceFloat("customLogoSize",0.5f));
         setBackgroundImage1(getUriFromString(mainActivityInterface.
                         getPreferences().getMyPreferenceString("backgroundImage1",""),
-                "OpenSongApp_Background.png"));
+                "DyslexaApp_Background.png"));
         setBackgroundImage2(getUriFromString(mainActivityInterface.
                         getPreferences().getMyPreferenceString("backgroundImage2",""),
                 null));

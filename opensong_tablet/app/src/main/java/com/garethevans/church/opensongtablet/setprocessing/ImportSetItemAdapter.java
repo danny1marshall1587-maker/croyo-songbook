@@ -115,7 +115,7 @@ public class ImportSetItemAdapter  extends RecyclerView.Adapter<ImportSetItemVie
     public void importSelectedSongs(ImportSetBundleSongFragment importSetBundleSongFragment, MyMaterialTextView progressTextView) {
         // Go through the selected array
         for (int i=0;i<itemsChecked.size();i++) {
-            if (itemsChecked.get(i) && mainActivityInterface.getOpenSongSetBundle().getAlive()) {
+            if (itemsChecked.get(i) && mainActivityInterface.getDyslexaSetBundle().getAlive()) {
                 // We want this file!
                 SetItemInfo si = mainActivityInterface.getCurrentSet().getSetItemInfo(i);
                 if (progressTextView != null) {
@@ -125,7 +125,7 @@ public class ImportSetItemAdapter  extends RecyclerView.Adapter<ImportSetItemVie
                         e.printStackTrace();
                     }
                 }
-                File itemFile = mainActivityInterface.getOpenSongSetBundle().getItemFile(si.songfolder, si.songfilename);
+                File itemFile = mainActivityInterface.getDyslexaSetBundle().getItemFile(si.songfolder, si.songfilename);
                 if (itemFile != null) {
                     // We have the file and we can now import it
                     Log.d(TAG, "itemFile:" + itemFile.getName());
@@ -146,9 +146,9 @@ public class ImportSetItemAdapter  extends RecyclerView.Adapter<ImportSetItemVie
                                 mainActivityInterface.getSQLiteHelper().createSong(si.songfolder, si.songfilename);
                             }
                             if (mainActivityInterface.getStorageAccess().isIMGorPDF(si.songfilename) &&
-                                    !mainActivityInterface.getNonOpenSongSQLiteHelper().songExists(si.songfolder, si.songfilename)) {
+                                    !mainActivityInterface.getNonDyslexaSQLiteHelper().songExists(si.songfolder, si.songfilename)) {
                                 // Add to the non-songs database
-                                mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(si.songfolder, si.songfilename);
+                                mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(si.songfolder, si.songfilename);
                             } else {
                                 tempSong = mainActivityInterface.getLoadSong().doLoadSongFile(tempSong, false);
                                 Log.d(TAG,"lyrics:"+tempSong.getLyrics());

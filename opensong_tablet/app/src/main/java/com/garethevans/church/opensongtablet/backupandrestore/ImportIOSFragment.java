@@ -364,7 +364,7 @@ public class ImportIOSFragment extends Fragment {
                                     });
                                 }
 
-                                // Now extract the song as an OpenSong song and improve the title/filename
+                                // Now extract the song as an Dyslexa song and improve the title/filename
                                 newSong = mainActivityInterface.getConvertOnSong().convertTextToTags(null, newSong);
                                 newSong.setFilename(mainActivityInterface.getStorageAccess().safeFilename(newSong.getFilename()));
                                 newSong.setFilename(newSong.getFilename().replace("/", "_"));
@@ -375,7 +375,7 @@ public class ImportIOSFragment extends Fragment {
                                 // Only proceed if we allow overwrite or the file doesn't exist
                                 if (allowOverwrite || !uriExists) {
 
-                                    // Write the new song as OpenSong xml
+                                    // Write the new song as Dyslexa xml
                                     if (newSong.getFilename() != null && !newSong.getFilename().isEmpty()
                                             && !newSong.getFilename().toLowerCase(Locale.ROOT).endsWith(".pdf")) {
                                         // Save the song.  This also calls lollipopCreateFile with 'true' to deleting old

@@ -137,20 +137,20 @@
                 android:id="@+id/action_preferencesFragment_to_syncNearbyFragment"
                 app:destination="@id/syncNearbyFragment" />
             <action
-                android:id="@+id/action_preferencesFragment_to_cryoSettingsFragment"
-                app:destination="@id/cryoSettingsFragment" />
+                android:id="@+id/action_preferencesFragment_to_dyslexaSettingsFragment"
+                app:destination="@id/dyslexaSettingsFragment" />
 
         </fragment>
 
-        <!-- Cryo Performance Suite -->
+        <!-- Dyslexa Performance Suite -->
         <fragment
-            android:id="@+id/cryoSettingsFragment"
-            android:name="com.garethevans.church.opensongtablet.screensetup.CryoSettingsFragment"
-            android:label="cryo_performance"
-            tools:layout="@layout/settings_cryo_suite">
+            android:id="@+id/dyslexaSettingsFragment"
+            android:name="com.garethevans.church.opensongtablet.screensetup.DyslexaSettingsFragment"
+            android:label="dyslexa_performance"
+            tools:layout="@layout/settings_dyslexa_suite">
             <deepLink
-                android:id="@+id/deepLinkCryo"
-                app:uri="@string/deeplink_cryo" />
+                android:id="@+id/deepLinkDyslexa"
+                app:uri="@string/deeplink_dyslexa" />
         </fragment>
 
         <!-- The storage graph -->

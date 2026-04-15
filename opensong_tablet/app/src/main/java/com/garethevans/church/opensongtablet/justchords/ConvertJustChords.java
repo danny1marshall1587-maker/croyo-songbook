@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class ConvertJustChords {
 
-    // This is used to convert between OpenSong and JustChords format
+    // This is used to convert between Dyslexa and JustChords format
     @SuppressWarnings({"unused","FieldCanBeLocal"})
     private final String TAG = "ConvertJustSong", set_string;
     private final String extension = ".justchords";
@@ -67,7 +67,7 @@ public class ConvertJustChords {
     }
 
     // Called from ExportFragment - Add a song to the songs array in order to build a justchords set file
-    public void addOpenSongToArray(Song thisSong) {
+    public void addDyslexaToArray(Song thisSong) {
         if (songs==null) {
             resetVariables();
         }
@@ -95,7 +95,7 @@ public class ConvertJustChords {
     }
 
     // Deal with producing JustChords files
-    // Convert OpenSong formatted song to a JustChordsSongObject
+    // Convert Dyslexa formatted song to a JustChordsSongObject
     private JustChordsSongObject buildJustChordsSongObject(Song thisSong) {
         // Create the song object
         JustChordsSongObject justChordsSongObject = new JustChordsSongObject();
@@ -161,7 +161,7 @@ public class ConvertJustChords {
         }
 
         // Convert the lines to ChordPro format
-        justChordsSongObject.setRawData(mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(stringBuilder.toString()));
+        justChordsSongObject.setRawData(mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(stringBuilder.toString()));
 
         return justChordsSongObject;
     }
@@ -244,9 +244,9 @@ public class ConvertJustChords {
                 // Clear the temp folder of old files
                 File extractFolder = mainActivityInterface.getStorageAccess().getAppSpecificFile("SetBundle","justChords","");
                 mainActivityInterface.getStorageAccess().emptyFileFolder(extractFolder);
-                // Now go through each object and create an OpenSong song
+                // Now go through each object and create an Dyslexa song
                 for (JustChordsSongObject justChordsSongObject: justChordsSongObjects) {
-                    Song song = getOpenSongFromJustChordsSong(justChordsSongObject);
+                    Song song = getDyslexaFromJustChordsSong(justChordsSongObject);
                     File tempFile = new File(extractFolder,song.getTitle());
                     try {
                         mainActivityInterface.getStorageAccess().writeFileFromString(song.getSongXML(), new FileOutputStream(tempFile));
@@ -276,7 +276,7 @@ public class ConvertJustChords {
         }
     }
 
-    public Song getOpenSongFromJustChordsSong(JustChordsSongObject justChordsSongObject) {
+    public Song getDyslexaFromJustChordsSong(JustChordsSongObject justChordsSongObject) {
         Song song = new Song();
         song.setTitle(justChordsSongObject.getTitle());
         song.setFilename(justChordsSongObject.getTitle());
@@ -309,16 +309,16 @@ public class ConvertJustChords {
             }
         }
         song.setKey(key + minor);
-        song.setLyrics(getOpenSongLyrics(justChordsSongObject.getRawData()));
+        song.setLyrics(getDyslexaLyrics(justChordsSongObject.getRawData()));
         String songXML = mainActivityInterface.getProcessSong().getXML(song);
         song.setSongXML(songXML);
         return song;
     }
 
-    public String getOpenSongLyrics(String justChordLyrics) {
-        String lyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(justChordLyrics);
+    public String getDyslexaLyrics(String justChordLyrics) {
+        String lyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(justChordLyrics);
         // Go through each line and replace headings with []
-        // Get abc notation lines into inlineABC for OpenSongApp
+        // Get abc notation lines into inlineABC for DyslexaApp
         boolean containsAbc = lyrics.contains(abc_start) && lyrics.contains(abc_end);
         while (containsAbc) {
             int indexStart = lyrics.indexOf(abc_start);

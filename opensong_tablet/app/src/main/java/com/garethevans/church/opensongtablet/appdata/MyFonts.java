@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.core.provider.FontRequest;
@@ -155,6 +156,8 @@ public class MyFonts {
                 Typeface typeface = Typeface.createFromFile(fontFile.getPath());
                 doSetDesiredFont(which, typeface, fontName, null);
             } catch (Exception e) {
+                Log.e(TAG, "Failed to load custom font: " + fontName, e);
+                mainActivityInterface.getBreadcrumbManager().add("Font Error: " + fontName);
                 e.printStackTrace();
             }
         } else if (fontName.startsWith("Vault/")) {
@@ -191,8 +194,11 @@ public class MyFonts {
                 if (fontFile.exists()) {
                     Typeface typeface = Typeface.createFromFile(fontFile.getPath());
                                 if (textView != null) textView.setTypeface(typeface);
+                } else {
+                    Log.w(TAG, "getTypeface: custom font file not found: " + fontName);
                 }
             } catch (Exception e) {
+                Log.e(TAG, "getTypeface error: " + fontName, e);
                 e.printStackTrace();
             }
         } else if (fontName.startsWith("Vault/")) {
@@ -215,9 +221,25 @@ public class MyFonts {
     }
 
     public void getGoogleFont(String fontName, String which, TextView textView, Handler handler) {
+        if (c == null) {
+            Log.e(TAG, "getGoogleFont called with null context");
+            return;
+        }
         FontRequest fontRequest = getFontRequest(fontName);
+        if (fontRequest == null) {
+            Log.e(TAG, "getGoogleFont: FontRequest is null for " + fontName);
+            return;
+        }
         FontsContractCompat.FontRequestCallback fontRequestCallback = getFontRequestCallback(fontName,which,textView);
-        FontsContractCompat.requestFont(c,fontRequest,fontRequestCallback,handler);
+        
+        // Use provided handler or fallback to main looper to prevent crash
+        Handler h = (handler != null) ? handler : new Handler(Looper.getMainLooper());
+        
+        try {
+            FontsContractCompat.requestFont(c, fontRequest, fontRequestCallback, h);
+        } catch (Exception e) {
+            Log.e(TAG, "Error requesting font: " + fontName, e);
+        }
     }
 
     private FontRequest getFontRequest(String fontnamechosen) {
@@ -506,7 +528,7 @@ public class MyFonts {
             }
         }
 
-        // --- Cryo-Vault: Add local TTF fonts from context.getExternalFilesDir("fonts") ---
+        // --- Dyslexa-Vault: Add local TTF fonts from context.getExternalFilesDir("fonts") ---
         try {
             File fontVaultDir = c.getExternalFilesDir("fonts");
             if (fontVaultDir != null && fontVaultDir.exists()) {

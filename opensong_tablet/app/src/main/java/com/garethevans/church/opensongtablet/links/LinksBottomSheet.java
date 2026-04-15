@@ -101,10 +101,10 @@ public class LinksBottomSheet extends BottomSheetCommon {
                     if (data != null) {
                         Uri contentUri = data.getData();
 
-                        // If this is a localised (i.e. inside OpenSong folder), we don't need to take the permissions
+                        // If this is a localised (i.e. inside Dyslexa folder), we don't need to take the permissions
                         // There is a limit of 128-512 permissions allowed (depending on Android version).
                         String localisedUri = mainActivityInterface.getStorageAccess().fixUriToLocal(contentUri);
-                        if (!localisedUri.contains("../OpenSong/") && getActivity()!=null) {
+                        if (!localisedUri.contains("../Dyslexa/") && getActivity()!=null) {
                             ContentResolver resolver = getActivity().getContentResolver();
                             resolver.takePersistableUriPermission(contentUri, mainActivityInterface.getStorageAccess().getTakePersistentWriteUriFlags());
                         }
@@ -198,7 +198,7 @@ public class LinksBottomSheet extends BottomSheetCommon {
     }
 
     private void searchFile(String mimeType) {
-        // Try to open at the default OpenSong location
+        // Try to open at the default Dyslexa location
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType(mimeType);
         intent.addFlags(mainActivityInterface.getStorageAccess().getAddPersistentWriteUriFlags());

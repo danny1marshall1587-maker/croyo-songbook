@@ -850,8 +850,8 @@ public class ImportOnlineFragment extends Fragment {
             // Update the main and nonopensong databases
             mainActivityInterface.getSQLiteHelper().createSong(folder,filename);
             mainActivityInterface.getSQLiteHelper().updateSong(newSong);
-            mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(folder, filename);
-            mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(newSong);
+            mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(folder, filename);
+            mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(newSong);
 
             // Add a record to the CCLI log if we are automatically logging activity
             if (mainActivityInterface.getPreferences().getMyPreferenceBoolean(
@@ -926,7 +926,7 @@ public class ImportOnlineFragment extends Fragment {
             InputStream inputStream = mainActivityInterface.getStorageAccess().getInputStream(downloadUri);
             String content = mainActivityInterface.getStorageAccess().readTextFileToString(inputStream);
             if (content.contains("{") && content.contains(":")) {
-                newSong = mainActivityInterface.getConvertChoPro().convertChoProToOpenSong(newSong, content);
+                newSong = mainActivityInterface.getConvertChoPro().convertChoProToDyslexa(newSong, content);
             } else {
                 newSong.setLyrics(mainActivityInterface.getConvertTextSong().convertText(content));
             }
@@ -945,7 +945,7 @@ public class ImportOnlineFragment extends Fragment {
         mainActivityInterface.getCurrentSet().setIndexSongInSet(-1);
         mainActivityInterface.getCurrentSet().setPrevIndexSongInSet(-1);
 
-        // If the song lyrics aren't empty, save the OpenSong formatted song
+        // If the song lyrics aren't empty, save the Dyslexa formatted song
         if (!newSong.getLyrics().isEmpty()) {
             if (mainActivityInterface.getSaveSong().doSave(newSong)) {
                 // Update the songid file (used later)
@@ -991,7 +991,7 @@ public class ImportOnlineFragment extends Fragment {
                 String content = mainActivityInterface.getStorageAccess().readTextFileToString(inputStream);
                 Log.d(TAG,"content"+content);
                 Log.d(TAG,"newSong before:"+newSong);
-                newSong = mainActivityInterface.getConvertChoPro().convertChoProToOpenSong(newSong,content);
+                newSong = mainActivityInterface.getConvertChoPro().convertChoProToDyslexa(newSong,content);
                 Log.d(TAG,"newSong after:"+newSong);
             }
         } else {

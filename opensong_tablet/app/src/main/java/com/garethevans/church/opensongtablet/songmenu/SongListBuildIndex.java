@@ -193,7 +193,7 @@ public class SongListBuildIndex {
                                 }
                             } else if (needToUpdate || fullIndexRequired) {
                                 // Look for data in the nonopensong persistent database import
-                                mainActivityInterface.setIndexingSong(mainActivityInterface.getNonOpenSongSQLiteHelper().getSpecificSong(mainActivityInterface.getIndexingSong().getFolder(), mainActivityInterface.getIndexingSong().getFilename()));
+                                mainActivityInterface.setIndexingSong(mainActivityInterface.getNonDyslexaSQLiteHelper().getSpecificSong(mainActivityInterface.getIndexingSong().getFolder(), mainActivityInterface.getIndexingSong().getFilename()));
                                 if (mainActivityInterface.getStorageAccess().isSpecificFileExtension("pdf", mainActivityInterface.getIndexingSong().getFilename())) {
                                     // This is a PDF
                                     mainActivityInterface.getIndexingSong().setFiletype("PDF");
@@ -240,7 +240,7 @@ public class SongListBuildIndex {
                                 // If not, add it.  Call update, if it fails (no match), the method catches it and creates the entry
                                 if (mainActivityInterface.getIndexingSong().getFiletype().equals("PDF") ||
                                         mainActivityInterface.getIndexingSong().getFiletype().equals("IMG")) {
-                                    mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(mainActivityInterface.getIndexingSong());
+                                    mainActivityInterface.getNonDyslexaSQLiteHelper().updateSong(mainActivityInterface.getIndexingSong());
                                 }
                             }
                         }

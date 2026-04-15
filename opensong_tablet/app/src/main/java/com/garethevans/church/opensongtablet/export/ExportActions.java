@@ -108,10 +108,10 @@ public class ExportActions {
         return setNames;
     }
 
-    public ArrayList<Uri> addOpenSongAppSetsToUris(ArrayList<String> setNames) {
+    public ArrayList<Uri> addDyslexaAppSetsToUris(ArrayList<String> setNames) {
         ArrayList<Uri> extraUris = new ArrayList<>();
         for (String setName : setNames) {
-            mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" addOpenSongAppSetsToUris CopyFromTo Sets/"+setName+" to Export/"+setName+".osts");
+            mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" addDyslexaAppSetsToUris CopyFromTo Sets/"+setName+" to Export/"+setName+".osts");
             extraUris.add(mainActivityInterface.getStorageAccess().copyFromTo(
                     "Sets", "", setName,
                     "Export", "", setName + ".osts"));
@@ -119,7 +119,7 @@ public class ExportActions {
         return extraUris;
     }
 
-    public ArrayList<Uri> addOpenSongSetsToUris(ArrayList<String> setNames) {
+    public ArrayList<Uri> addDyslexaSetsToUris(ArrayList<String> setNames) {
         ArrayList<Uri> extraUris = new ArrayList<>();
         for (String setName : setNames) {
             extraUris.add(mainActivityInterface.getStorageAccess().copyFromTo(

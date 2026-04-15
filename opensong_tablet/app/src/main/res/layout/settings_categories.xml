@@ -36,11 +36,11 @@
                 app:size="medium"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/cryoButton"
+                android:id="@+id/dyslexaButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/cryo_performance"
-                android:hint="@string/cryo_prompter"
+                android:text="@string/dyslexa_performance"
+                android:hint="@string/dyslexa_prompter"
                 android:drawableStart="@drawable/bullseye"
                 app:size="medium"/>
 

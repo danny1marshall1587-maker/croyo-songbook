@@ -130,7 +130,7 @@ public class EditSongFragmentLyrics extends Fragment {
             mainActivityInterface.getTranspose().checkChordFormat(mainActivityInterface.getTempSong());
         } else if (mainActivityInterface.getTempSong()!=null) {
             // Get the lyrics as choPro
-            String choProLyrics = mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(mainActivityInterface.getTempSong().getLyrics());
+            String choProLyrics = mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(mainActivityInterface.getTempSong().getLyrics());
             // Now detect the chord format from the lyrics
             mainActivityInterface.getTranspose().checkChordFormat(mainActivityInterface.getTempSong());
             // Now set the lyrics back as chordpro
@@ -351,14 +351,14 @@ public class EditSongFragmentLyrics extends Fragment {
             myView.imeBar.removeAllViews();
             editSongFragmentInterface.getSaveButton().setTranslationY((-mainActivityInterface.getDisplayDensity() * 48) + 12);
 
-            // Build the quick bar as OpenSong or ChordPro
+            // Build the quick bar as Dyslexa or ChordPro
             String[] strings;
             String[] chordsInKey = mainActivityInterface.getTranspose().getChordsInKey(mainActivityInterface.getTempSong().getKey());
             if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
                 // ChordPro options
                 strings = new String[]{"#[]", "#[V]", "#[P]", "#[C]", "#[B]", "#[T]", "{" + guitar_tab + "}"};
             } else {
-                // OpenSong options
+                // Dyslexa options
                 strings = new String[]{"[]", "[V]", "[P]", "[C]", "[B]", "[T]", "{" + guitar_tab + "}"};
             }
 
@@ -428,11 +428,11 @@ public class EditSongFragmentLyrics extends Fragment {
                         moveCursorBy = string.length();
                         addingChord = true;
                     } else if (!mainActivityInterface.getTempSong().getEditingAsChoPro() && !string.startsWith("[")) {
-                        // OpenSong chord
+                        // Dyslexa chord
                         moveCursorBy = string.length();
                         addingChord = true;
                     } else {
-                        // Standard OpenSong section heading
+                        // Standard Dyslexa section heading
                         moveCursorBy = string.length() - 1;
                         addingChord = false;
                     }
@@ -583,12 +583,12 @@ public class EditSongFragmentLyrics extends Fragment {
         // This keeps the original as we will replace that later
         String processedSelectedText = selectedText;
 
-        // If we are editing as choPro, we need to convert to OpenSong first
+        // If we are editing as choPro, we need to convert to Dyslexa first
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            processedSelectedText = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(processedSelectedText);
+            processedSelectedText = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(processedSelectedText);
         }
 
-        // Transpose the OpenSong lyrics using a temp song that only has the important stuff
+        // Transpose the Dyslexa lyrics using a temp song that only has the important stuff
         Song transposeSong = new Song();
         transposeSong.setLyrics(processedSelectedText);
         transposeSong.setDetectedChordFormat(mainActivityInterface.getTempSong().getDetectedChordFormat());
@@ -601,7 +601,7 @@ public class EditSongFragmentLyrics extends Fragment {
 
         // If we were using ChoPro, convert back
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            processedSelectedText =  mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(
+            processedSelectedText =  mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(
                     processedSelectedText);
         }
 
@@ -634,9 +634,9 @@ public class EditSongFragmentLyrics extends Fragment {
         // Break the song into sections for copying, not quite the same as used in ProcessSong
         String allLyrics = myView.lyrics.getText().toString();
 
-        // If we are editing as choPro, we need to convert to OpenSong first
+        // If we are editing as choPro, we need to convert to Dyslexa first
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            allLyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(allLyrics);
+            allLyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(allLyrics);
         }
 
         String splitIdentifier = "___SPLITHERE___";
@@ -661,9 +661,9 @@ public class EditSongFragmentLyrics extends Fragment {
 
     public void doCopyChords(String oldText, String newText) {
         String textToAdjust = myView.lyrics.getText().toString();
-        // If we are editing as choPro, we need to get as OpenSong format
+        // If we are editing as choPro, we need to get as Dyslexa format
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            textToAdjust = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(textToAdjust);
+            textToAdjust = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(textToAdjust);
         }
 
         // Do the changes
@@ -671,22 +671,22 @@ public class EditSongFragmentLyrics extends Fragment {
 
         // If we are editing as choPro, we need to convert back
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            textToAdjust = mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(textToAdjust);
+            textToAdjust = mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(textToAdjust);
         }
 
         myView.lyrics.setText(textToAdjust);
     }
 
-    public void convertToOpenSong() {
+    public void convertToDyslexa() {
         // Get the lyrics converted
-        String lyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(mainActivityInterface.getTempSong().getLyrics());
+        String lyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(mainActivityInterface.getTempSong().getLyrics());
         // Set them into the edit box - don't include an undo/redo step, so pretend we're carrying this out
         addUndoStep = false;
         myView.lyrics.setText(lyrics);
     }
     public void convertToChoPro() {
         // Get the lyrics converted
-        String lyrics = mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(mainActivityInterface.getTempSong().getLyrics());
+        String lyrics = mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(mainActivityInterface.getTempSong().getLyrics());
         // Set them into the edit box - don't include an undo/redo step, so pretend we're carrying this out
         addUndoStep = false;
         myView.lyrics.setText(lyrics);
@@ -695,7 +695,7 @@ public class EditSongFragmentLyrics extends Fragment {
     public void autoFix() {
         String fixedlyrics;
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            fixedlyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(mainActivityInterface.getTempSong().getLyrics());
+            fixedlyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(mainActivityInterface.getTempSong().getLyrics());
         } else {
             fixedlyrics = mainActivityInterface.getTempSong().getLyrics();
         }
@@ -705,7 +705,7 @@ public class EditSongFragmentLyrics extends Fragment {
 
         // Put back (includes undo step)
         if (mainActivityInterface.getTempSong().getEditingAsChoPro()) {
-            fixedlyrics = mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(fixedlyrics);
+            fixedlyrics = mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(fixedlyrics);
         }
         myView.lyrics.setText(fixedlyrics);
         mainActivityInterface.getShowToast().doIt(success_string);

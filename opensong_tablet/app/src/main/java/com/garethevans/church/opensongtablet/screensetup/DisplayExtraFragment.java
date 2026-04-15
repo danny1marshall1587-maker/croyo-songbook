@@ -173,31 +173,31 @@ public class DisplayExtraFragment extends Fragment {
         myView.dyslexiaFontDropdown.setText(dyslexiaFontName);
         mainActivityInterface.getMyFonts().getTypeface(dyslexiaFontName, myView.dyslexiaFontDropdown.getAutoCompleteTextView(), mainActivityInterface.getMainHandler());
 
-        // Cryo-Prompter
-        myView.cryoPrompter.setChecked(getChecked("cryoPrompterEnabled", false));
-        float prompterScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoPrompterScale", 1.4f);
+        // Dyslexa-Prompter
+        myView.dyslexaPrompter.setChecked(getChecked("dyslexaPrompterEnabled", false));
+        float prompterScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaPrompterScale", 1.4f);
         myView.activeLineScaleSlider.setValue(prompterScale);
         myView.activeLineScaleLabel.setText(getString(R.string.active_line_scale) + ": " + prompterScale + "x");
 
         if (getContext() != null) {
             ExposedDropDownArrayAdapter activeColorAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.activeLineColorDropdown, R.layout.view_exposed_dropdown_item, prompterColorNames);
             myView.activeLineColorDropdown.setAdapter(activeColorAdapter);
-            myView.activeLineColorDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("cryoPrompterActiveColorName", "Gold"));
+            myView.activeLineColorDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("dyslexaPrompterActiveColorName", "Gold"));
 
             ExposedDropDownArrayAdapter nextColorAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.nextLineColorDropdown, R.layout.view_exposed_dropdown_item, prompterColorNames);
             myView.nextLineColorDropdown.setAdapter(nextColorAdapter);
-            myView.nextLineColorDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("cryoPrompterNextColorName", "Cyan"));
+            myView.nextLineColorDropdown.setText(mainActivityInterface.getPreferences().getMyPreferenceString("dyslexaPrompterNextColorName", "Cyan"));
 
-            // Cryo-Flow
-            myView.cryoFlowEnable.setChecked(getChecked("cryoFlowEnabled", false));
-            myView.cryoFlowIntensity.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowIntensity", 1.0f));
+            // Dyslexa-Flow
+            myView.dyslexaFlowEnable.setChecked(getChecked("dyslexaFlowEnabled", false));
+            myView.dyslexaFlowIntensity.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaFlowIntensity", 1.0f));
             
-            String[] flowPatterns = getString(R.string.cryo_flow_patterns_array).split(",");
-            ExposedDropDownArrayAdapter flowPatternAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.cryoFlowPattern, R.layout.view_exposed_dropdown_item, flowPatterns);
-            myView.cryoFlowPattern.setAdapter(flowPatternAdapter);
-            myView.cryoFlowPattern.setText(mainActivityInterface.getPreferences().getMyPreferenceString("cryoFlowPatternName", "Tide"));
+            String[] flowPatterns = getString(R.string.dyslexa_flow_patterns_array).split(",");
+            ExposedDropDownArrayAdapter flowPatternAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.dyslexaFlowPattern, R.layout.view_exposed_dropdown_item, flowPatterns);
+            myView.dyslexaFlowPattern.setAdapter(flowPatternAdapter);
+            myView.dyslexaFlowPattern.setText(mainActivityInterface.getPreferences().getMyPreferenceString("dyslexaFlowPatternName", "Tide"));
             
-            myView.cryoFlowSpeed.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("cryoFlowSpeed", 1.0f));
+            myView.dyslexaFlowSpeed.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("dyslexaFlowSpeed", 1.0f));
             myView.faceGestureSensitivity.setValue(mainActivityInterface.getPreferences().getMyPreferenceFloat("faceGestureSensitivity", 0.5f));
 
             // --- Face Gesture Mappings ---
@@ -560,37 +560,37 @@ public class DisplayExtraFragment extends Fragment {
             }
         });
 
-        myView.cryoFlowPattern.addTextChangedListener(new TextWatcher() {
+        myView.dyslexaFlowPattern.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
                 String patternName = s.toString();
-                mainActivityInterface.getPreferences().setMyPreferenceString("cryoFlowPatternName", patternName);
-                String[] flowPatterns = getString(R.string.cryo_flow_patterns_array).split(",");
+                mainActivityInterface.getPreferences().setMyPreferenceString("dyslexaFlowPatternName", patternName);
+                String[] flowPatterns = getString(R.string.dyslexa_flow_patterns_array).split(",");
                 int index = 0;
                 for (int i=0; i<flowPatterns.length; i++) {
                     if (flowPatterns[i].equals(patternName)) index = i;
                 }
-                mainActivityInterface.getPreferences().setMyPreferenceInt("cryoFlowPatternIndex", index);
+                mainActivityInterface.getPreferences().setMyPreferenceInt("dyslexaFlowPatternIndex", index);
                 displayInterface.updateDisplay("setSongContentPrefs");
             }
         });
 
-        myView.cryoFlowIntensity.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        myView.dyslexaFlowIntensity.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override public void onStartTrackingTouch(@NonNull Slider slider) {}
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                mainActivityInterface.getPreferences().setMyPreferenceFloat("cryoFlowIntensity", slider.getValue());
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("dyslexaFlowIntensity", slider.getValue());
                 displayInterface.updateDisplay("setSongContentPrefs");
             }
         });
 
-        myView.cryoFlowSpeed.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        myView.dyslexaFlowSpeed.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override public void onStartTrackingTouch(@NonNull Slider slider) {}
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                mainActivityInterface.getPreferences().setMyPreferenceFloat("cryoFlowSpeed", slider.getValue());
+                mainActivityInterface.getPreferences().setMyPreferenceFloat("dyslexaFlowSpeed", slider.getValue());
                 displayInterface.updateDisplay("setSongContentPrefs");
             }
         });
@@ -603,19 +603,19 @@ public class DisplayExtraFragment extends Fragment {
             }
         });
 
-        myView.cryoFlowPrimaryColorBtn.setOnClickListener(v -> {
-            ChooseColorBottomSheet chooseColorBottomSheet = new ChooseColorBottomSheet(this, TAG, "cryoFlowPrimaryColor");
+        myView.dyslexaFlowPrimaryColorBtn.setOnClickListener(v -> {
+            ChooseColorBottomSheet chooseColorBottomSheet = new ChooseColorBottomSheet(this, TAG, "dyslexaFlowPrimaryColor");
             chooseColorBottomSheet.show(getParentFragmentManager(), "flow_primary_picker");
         });
 
-        myView.cryoFlowSecondaryColorBtn.setOnClickListener(v -> {
-            ChooseColorBottomSheet chooseColorBottomSheet = new ChooseColorBottomSheet(this, TAG, "cryoFlowSecondaryColor");
+        myView.dyslexaFlowSecondaryColorBtn.setOnClickListener(v -> {
+            ChooseColorBottomSheet chooseColorBottomSheet = new ChooseColorBottomSheet(this, TAG, "dyslexaFlowSecondaryColor");
             chooseColorBottomSheet.show(getParentFragmentManager(), "flow_secondary_picker");
         });
 
-        myView.aiCryoFollowEnabled.setChecked(mainActivityInterface.getPreferences().getMyPreferenceBoolean("aiCryoFollowEnabled", false));
-        myView.aiCryoFollowEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            updateBooleanPreference("aiCryoFollowEnabled", isChecked, null);
+        myView.aiDyslexaFollowEnabled.setChecked(mainActivityInterface.getPreferences().getMyPreferenceBoolean("aiDyslexaFollowEnabled", false));
+        myView.aiDyslexaFollowEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateBooleanPreference("aiDyslexaFollowEnabled", isChecked, null);
         });
 
         myView.aiAgentEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {

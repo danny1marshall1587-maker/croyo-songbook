@@ -180,7 +180,7 @@ public class DatabaseUtilitiesFragment extends Fragment {
             // Do this on a background thread
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
                 try {
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().exportDatabase();
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().exportDatabase();
                 } catch (Exception e) {
                     mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
                     mainActivityInterface.getShowToast().doIt(error_string);
@@ -207,7 +207,7 @@ public class DatabaseUtilitiesFragment extends Fragment {
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
                 // Copy the current appDB (not the userDB) file)
                 // Then prompt the user with an option to quick share the file
-                mainActivityInterface.getNonOpenSongSQLiteHelper().backupPersistentDatabase();
+                mainActivityInterface.getNonDyslexaSQLiteHelper().backupPersistentDatabase();
                 showProgressBar(false);
             });
         });
@@ -228,7 +228,7 @@ public class DatabaseUtilitiesFragment extends Fragment {
             // Do this in a background thread
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
                 try {
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().cleanDatabase(this);
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().cleanDatabase(this);
                 } catch (Exception e) {
                     e.printStackTrace();
                     mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
@@ -254,7 +254,7 @@ public class DatabaseUtilitiesFragment extends Fragment {
         showProgressBar(true);
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             try {
-                mainActivityInterface.getNonOpenSongSQLiteHelper().importDatabaseBackup();
+                mainActivityInterface.getNonDyslexaSQLiteHelper().importDatabaseBackup();
             } catch (Exception e) {
                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
                 mainActivityInterface.getShowToast().doIt(error_string);

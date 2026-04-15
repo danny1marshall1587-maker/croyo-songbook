@@ -110,7 +110,7 @@ public class PrepareFormats {
         return string;
     }
     public String getSongAsChoPro(Song thisSong) {
-        // This converts an OpenSong file into a ChordPro file
+        // This converts an Dyslexa file into a ChordPro file
 
         String string = "{new_song}\n" + replaceNulls("{title:", "}\n", thisSong.getTitle()) +
                 replaceNulls("{artist:", "}\n", thisSong.getAuthor()) +
@@ -120,7 +120,7 @@ public class PrepareFormats {
                 replaceNulls("{copyright:", "}\n", thisSong.getCopyright()) +
                 replaceNulls("{ccli:", "}\n", thisSong.getCcli()) +
                 "\n\n" +
-                mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(replaceNulls("\n", "", thisSong.getLyrics()));
+                mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(replaceNulls("\n", "", thisSong.getLyrics()));
         string = string.replace("\n\n\n", "\n\n");
 
         // IV - remove empty comments
@@ -150,7 +150,7 @@ public class PrepareFormats {
     }
 
     public String getSongAsOnSong(Song thisSong) {
-        // This converts an OpenSong file into a OnSong file
+        // This converts an Dyslexa file into a OnSong file
 
         String string = replaceNulls("", "\n", thisSong.getTitle()) +
                 replaceNulls("", "\n", thisSong.getAuthor()) +
@@ -160,7 +160,7 @@ public class PrepareFormats {
                 replaceNulls("Copyright: ", "\n", thisSong.getCopyright()) +
                 replaceNulls("CCLI: ", "\n", thisSong.getCcli()) +
                 "\n\n" +
-                mainActivityInterface.getConvertChoPro().fromOpenSongToChordPro(replaceNulls("\n", "", thisSong.getLyrics()));
+                mainActivityInterface.getConvertChoPro().fromDyslexaToChordPro(replaceNulls("\n", "", thisSong.getLyrics()));
         string = string.replace("\n\n\n", "\n\n");
 
         // IV - remove empty comments

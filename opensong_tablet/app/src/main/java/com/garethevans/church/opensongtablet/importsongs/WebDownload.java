@@ -43,7 +43,7 @@ public class WebDownload {
                 input = connection.getInputStream();
 
                 if (input != null) {
-                    // Put the file into our chosen OpenSong folder
+                    // Put the file into our chosen Dyslexa folder
                     File tempfile = ((MainActivityInterface)c).getStorageAccess().getAppSpecificFile("Files","",filename);
                     //File tempfile = new File(c.getExternalFilesDir("Files"),filename);
 

@@ -80,8 +80,8 @@ public class SongSelect {
         // End trim
         lyrics = lyrics.replaceAll("\\s+$", "");
 
-        // Convert to OpenSongFormat
-        lyrics = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(lyrics);
+        // Convert to DyslexaFormat
+        lyrics = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(lyrics);
         newSong.setLyrics(lyrics);
 
         return newSong;
@@ -320,8 +320,8 @@ public class SongSelect {
                 newSong.setTitle(lyrics.substring(0, end).trim());
                 lyrics = lyrics.substring(end).trim();
             }
-            // Convert to OpenSongFormat
-            newSong.setLyrics(mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(lyrics));
+            // Convert to DyslexaFormat
+            newSong.setLyrics(mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(lyrics));
         } else {
             newSong.setTitle(mainActivityInterface.getProcessSong().parseHTML(getTitle(s)));
         }

@@ -238,7 +238,7 @@ public class MultiTrackPopUp {
                 multiTrackSongFolderUri = alternativeSongFolderUri;
 
             } else {
-                myView.folderTextView.setHint("OpenSong/Multitrack/" + multiTrackSongFolder);
+                myView.folderTextView.setHint("Dyslexa/Multitrack/" + multiTrackSongFolder);
             }
 
             // Keep the record in the AudioProcessor class and use that from now on

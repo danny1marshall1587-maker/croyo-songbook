@@ -23,31 +23,31 @@ public class JustChordsSongObject {
 
     // The setters
     public void setTitle(String title) {
-        // Identical to OpenSong title
+        // Identical to Dyslexa title
         this.title = title;
     }
     public void setArtist(String artist) {
-        // Identical to OpenSong author
+        // Identical to Dyslexa author
         this.artist = artist;
     }
     public void setDuration(String duration) {
-        // Similar to OpenSong autoscrolllength but formatted as m:ss, not just s
+        // Similar to Dyslexa autoscrolllength but formatted as m:ss, not just s
         this.duration = duration;
     }
     public void setTempo(String tempo) {
-        // Identical to OpenSong tempo in bpm
+        // Identical to Dyslexa tempo in bpm
         this.tempo = tempo;
     }
     public void setNotes(String notes) {
-        // Identical to OpenSong notes
+        // Identical to Dyslexa notes
         this.notes = notes;
     }
     public void setCopyright(String copyright) {
-        // Identical to OpenSong copyright
+        // Identical to Dyslexa copyright
         this.copyright = copyright;
     }
     public void setTimeSignature(String timeSignature) {
-        // Identical to OpenSong timesig - might be escaped e.g. 4\/4
+        // Identical to Dyslexa timesig - might be escaped e.g. 4\/4
         // Must be set non-empty.  Default to 4/4
         if (timeSignature==null || timeSignature.isEmpty()) {
             timeSignature = "4/4";
@@ -55,7 +55,7 @@ public class JustChordsSongObject {
         this.timeSignature = timeSignature;
     }
     public void setCcli(String ccli) {
-        // Identical to OpenSong ccli
+        // Identical to Dyslexa ccli
         this.ccli = ccli;
     }
     public void setKeyChord(Map<String,Object> keyChord) {

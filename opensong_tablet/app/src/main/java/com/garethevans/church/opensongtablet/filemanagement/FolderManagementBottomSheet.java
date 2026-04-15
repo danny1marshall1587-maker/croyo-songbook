@@ -104,7 +104,7 @@ public class FolderManagementBottomSheet extends BottomSheetCommon {
             myView.changeLocation.setOnClickListener(new ActionClickListener("resetStorage"));
 
         } else if (songs) {
-            String s = "OpenSong/Songs";
+            String s = "Dyslexa/Songs";
             myView.dialogHeading.setText(s);
             myView.changeLocationLayout.setVisibility(View.GONE);
             myView.renameFolderLayout.setVisibility(View.GONE);
@@ -114,7 +114,7 @@ public class FolderManagementBottomSheet extends BottomSheetCommon {
 
 
         } else {
-            String s = "OpenSong/Songs/" + subdir;
+            String s = "Dyslexa/Songs/" + subdir;
             myView.dialogHeading.setText(s);
             myView.changeLocationLayout.setVisibility(View.GONE);
             myView.createSubdirectory.setOnClickListener(new ActionClickListener("createItem"));
@@ -154,7 +154,7 @@ public class FolderManagementBottomSheet extends BottomSheetCommon {
 
                 case "deleteItem":
                     if (callingFragment!=null) {
-                        String action = delete_string + ": " + "OpenSong/Songs/" + subdir + "\n" + delete_folder_warning_string;
+                        String action = delete_string + ": " + "Dyslexa/Songs/" + subdir + "\n" + delete_folder_warning_string;
                         ArrayList<String> arguments = new ArrayList<>();
                         arguments.add("Songs");
                         arguments.add(subdir);

@@ -186,7 +186,7 @@ public class CreateSongBottomSheet extends BottomSheetCommon {
                     mainActivityInterface.getStorageAccess().copyFile(inputStream, outputStream);
 
                     // Add to the databases
-                    mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(folder, filename);
+                    mainActivityInterface.getNonDyslexaSQLiteHelper().createSong(folder, filename);
                     mainActivityInterface.getSQLiteHelper().createSong(folder, filename);
 
                     // Update the created song to include the filetype as IMG

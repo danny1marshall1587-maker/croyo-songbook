@@ -118,11 +118,11 @@ public class WorshipTogether {
             }
         }
 
-        // Now process the chordpro lyrics into OpenSong format
+        // Now process the chordpro lyrics into Dyslexa format
         String lyricBits = mainActivityInterface.getProcessSong().removeHTMLTags(
                 lyrics.toString().trim().replace("\n","_NEWLINE_"));
         lyricBits = lyricBits.replace("_NEWLINE_","\n");
-        newSong.setLyrics(mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(lyricBits.trim()));
+        newSong.setLyrics(mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(lyricBits.trim()));
 
         // Add the other info the the song
         newSong.setFilename(filename);

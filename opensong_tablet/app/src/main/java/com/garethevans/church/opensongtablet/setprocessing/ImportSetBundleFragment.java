@@ -20,7 +20,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class ImportSetBundleFragment extends Fragment {
 
-    // This class is used to import an OpenSong Set Backup file (.ossb)
+    // This class is used to import an Dyslexa Set Backup file (.ossb)
     // It will also deal with a JustChords set file (.justchords)
 
     @SuppressWarnings({"unused","FieldCanBeLocal"})
@@ -111,21 +111,21 @@ public class ImportSetBundleFragment extends Fragment {
                     super.onPageSelected(position);
                 }
             });
-            mainActivityInterface.getOpenSongSetBundle().setImportFragments(
+            mainActivityInterface.getDyslexaSetBundle().setImportFragments(
                     importSetBundleSetFragment, importSetBundleSongFragment);
 
             // Now process the bundle zip file on a new thread
             mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                mainActivityInterface.getOpenSongSetBundle().resetVariables();
+                mainActivityInterface.getDyslexaSetBundle().resetVariables();
                 // Backup the current set as we need to temporarily use it
-                mainActivityInterface.getOpenSongSetBundle().getBackupOfCurrentSet();
+                mainActivityInterface.getDyslexaSetBundle().getBackupOfCurrentSet();
 
                 // Now do what we need to extract the content
                 if (mainActivityInterface.getImportFilename().endsWith(".ossb")) {
-                    mainActivityInterface.getOpenSongSetBundle().unzipFiles(mainActivityInterface.getImportUri(), "SetBundle", "openSong");
+                    mainActivityInterface.getDyslexaSetBundle().unzipFiles(mainActivityInterface.getImportUri(), "SetBundle", "openSong");
 
                 } else if (mainActivityInterface.getImportFilename().endsWith(".justchords")) {
-                    mainActivityInterface.getOpenSongSetBundle().unzipFiles(mainActivityInterface.getImportUri(), "SetBundle", "justChords");
+                    mainActivityInterface.getDyslexaSetBundle().unzipFiles(mainActivityInterface.getImportUri(), "SetBundle", "justChords");
                 }
             });
         });
@@ -134,7 +134,7 @@ public class ImportSetBundleFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mainActivityInterface.getOpenSongSetBundle().updateActualCurrentSet();
-        mainActivityInterface.getOpenSongSetBundle().resetVariables();
+        mainActivityInterface.getDyslexaSetBundle().updateActualCurrentSet();
+        mainActivityInterface.getDyslexaSetBundle().resetVariables();
     }
 }

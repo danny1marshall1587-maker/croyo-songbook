@@ -359,7 +359,7 @@ public class BBImportFragment extends Fragment {
                         OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(csvFileUri);
                         mainActivityInterface.getStorageAccess().writeFileFromString(newCSVText.toString(), outputStream);
 
-                        // Also add it to our OpenSong/Settings/ folder
+                        // Also add it to our Dyslexa/Settings/ folder
                         mainActivityInterface.getStorageAccess().writeFileFromString("Settings","","MyBeatBuddyProject.csv",newCSVText.toString());
                     }
                 }
@@ -537,7 +537,7 @@ public class BBImportFragment extends Fragment {
             myView.outcome.setHint(stringBuilder.toString());
             mainActivityInterface.getShowToast().doIt(success_string);
             mainActivityInterface.getBeatBuddy().setBeatBuddyUseImported(true);
-            // Make a copy in the OpenSong/Settings/ folder for future callback
+            // Make a copy in the Dyslexa/Settings/ folder for future callback
             mainActivityInterface.getStorageAccess().writeFileFromString("Settings","","MyBeatBuddyProject.csv",cachedContent);
         }
     }

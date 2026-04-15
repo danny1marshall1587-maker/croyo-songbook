@@ -225,8 +225,8 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
         String online = c.getString(R.string.online);
         String onsong = "OnSong"; // *
         String open = c.getString(R.string.open);
-        String opensong = "OpenSong"; // *
-        String opensongapp = "OpenSongApp"; // *
+        String opensong = "Dyslexa"; // *
+        String opensongapp = "DyslexaApp"; // *
         String order = c.getString(R.string.order);
         String osb = "osb"; // *
         String osbs = "osbs"; // *
@@ -482,7 +482,7 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
                         "action_camera",
                         settings+"/"+songactions+"/"+addsongs+"/"+c.getString(R.string.camera)),
 
-                // OpenSongApp backup import
+                // DyslexaApp backup import
                 new SettingItem(opensongapp + " ("+song+")",c.getString(R.string.import_osb),
                         Arrays.asList(song,songs,backup,import_string,restore,osb),
                         c.getString(R.string.deeplink_import_osb),

@@ -172,7 +172,7 @@ public class BibleDownloadFragment extends Fragment {
     // This is used to extract downloaded bible XML files from the zip
     private boolean extractBibleZipFile(Uri zipUri) {
         boolean success = true;
-        String folder = "OpenSong Scripture";
+        String folder = "Dyslexa Scripture";
         String subfolder = "";
 
         // This bit could be slow, so it will likely be called in an async task

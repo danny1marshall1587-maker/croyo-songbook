@@ -194,10 +194,10 @@ public class CustomSlideFragment extends Fragment {
                     Intent data = result.getData();
                     if (data != null) {
                         Uri contentUri = data.getData();
-                        // If this is a localised (i.e. inside OpenSong folder), we don't need to take the permissions
+                        // If this is a localised (i.e. inside Dyslexa folder), we don't need to take the permissions
                         // There is a limit of 128-512 permissions allowed (depending on Android version).
                         String localisedUri = mainActivityInterface.getStorageAccess().fixUriToLocal(contentUri);
-                        if (!localisedUri.contains("../OpenSong/") && getActivity()!=null) {
+                        if (!localisedUri.contains("../Dyslexa/") && getActivity()!=null) {
                             ContentResolver resolver = getActivity().getContentResolver();
                             resolver.takePersistableUriPermission(contentUri, mainActivityInterface.getStorageAccess().getTakePersistentReadUriFlags());
                         }
@@ -304,7 +304,7 @@ public class CustomSlideFragment extends Fragment {
                 Bitmap thumbImage;
                 BitmapDrawable bd;
 
-                if (uri.getPath().startsWith("../OpenSong/")) {
+                if (uri.getPath().startsWith("../Dyslexa/")) {
                     uri = mainActivityInterface.getStorageAccess().fixLocalisedUri(uri.getPath());
                 }
                 if (!mainActivityInterface.getStorageAccess().uriExists(uri)) {

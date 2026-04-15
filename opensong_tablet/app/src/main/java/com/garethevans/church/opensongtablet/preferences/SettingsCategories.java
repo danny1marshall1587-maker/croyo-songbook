@@ -197,7 +197,7 @@ public class SettingsCategories extends Fragment {
             mainActivityInterface.navigateToFragment(null, R.id.webServerFragment);
         });
         myView.modeButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.modeFragment));
-        myView.cryoButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.cryoSettingsFragment));
+        myView.dyslexaButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.dyslexaSettingsFragment));
         myView.midiButton.setOnClickListener(v -> {
             // This button is only available if we are running Marshmallow or later
             mainActivityInterface.navigateToFragment(null, R.id.midi_graph);

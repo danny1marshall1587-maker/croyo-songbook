@@ -3,7 +3,7 @@ package com.garethevans.church.opensongtablet.ai;
 import androidx.annotation.NonNull;
 
 /**
- * Definition of available AI Agents in the Cryo environment.
+ * Definition of available AI Agents in the Dyslexa environment.
  */
 public enum AiAgent {
     GEMINI_3_FLASH("Gemini 3 Flash", "gemini-3-flash", true),

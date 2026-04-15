@@ -48,7 +48,7 @@ public class Boiteachansons {
         Log.d(TAG,"webString:"+webString);
 
         // Send the lyrics off to chopro for processing
-        webString = mainActivityInterface.getConvertChoPro().fromChordProToOpenSong(webString);
+        webString = mainActivityInterface.getConvertChoPro().fromChordProToDyslexa(webString);
         Log.d(TAG,"webString:"+webString);
 
         newSong.setLyrics(webString);
