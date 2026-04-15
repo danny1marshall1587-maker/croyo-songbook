@@ -49,17 +49,19 @@
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
                 android:id="@+id/prompterButton"
-                style="@style/AppModeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/mode_prompter"
-                android:hint="@string/prompter_mode_info"
-                app:src="@drawable/keyboard_capslock" />
+                app:icon="@drawable/autoscroll" />
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
                 android:id="@+id/slipmodelButton"
-                style="@style/AppModeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/mode_slipmodel"
-                android:hint="Side-by-side lyrics/prompter and navigation drawer"
-                app:src="@drawable/view_quilt" />
+                app:icon="@drawable/ic_book_dyslexa" />
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
         </LinearLayout>
