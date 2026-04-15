@@ -75,6 +75,12 @@ public class ModeFragment extends Fragment {
         }
     }
     private void highlightMode() {
+        myView.performanceMode.showCheckmark(false);
+        myView.presenterMode.showCheckmark(false);
+        myView.stageMode.showCheckmark(false);
+        myView.prompterMode.showCheckmark(false);
+        myView.slipmodelMode.showCheckmark(false);
+
         switch (mainActivityInterface.getPreferences().getMyPreferenceString(
                 "whichMode","Performance")) {
             case "Performance":
@@ -89,6 +95,9 @@ public class ModeFragment extends Fragment {
             case "Prompter":
                 myView.prompterMode.showCheckmark(true);
                 break;
+            case "Slipmodel":
+                myView.slipmodelMode.showCheckmark(true);
+                break;
         }
     }
 
@@ -96,8 +105,8 @@ public class ModeFragment extends Fragment {
         myView.performanceMode.setOnClickListener(v -> updatePreference("Performance"));
         myView.stageMode.setOnClickListener(v -> updatePreference("Stage"));
         myView.presenterMode.setOnClickListener(v -> updatePreference("Presenter"));
-        myView.prompterButton.setOnClickListener(v -> updatePreference(mode_prompter));
-        myView.slipmodelButton.setOnClickListener(v -> updatePreference(mode_slipmodel));
+        myView.prompterMode.setOnClickListener(v -> updatePreference("Prompter"));
+        myView.slipmodelMode.setOnClickListener(v -> updatePreference("Slipmodel"));
     }
 
     private void updatePreference(String which) {

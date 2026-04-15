@@ -47,21 +47,25 @@
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
-                android:id="@+id/prompterButton"
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:id="@+id/prompterMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/mode_prompter"
-                app:icon="@drawable/autoscroll" />
+                android:hint="@string/prompter_mode_info"
+                app:size="large"
+                app:startIcon="@drawable/autoscroll" />
+            <com.garethevans.church.opensongtablet.customviews.MyDivider
+                style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
-                android:id="@+id/slipmodelButton"
+            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                android:id="@+id/slipmodelMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/mode_slipmodel"
-                app:icon="@drawable/ic_book_dyslexa" />
+                android:hint="Side-by-side lyrics/prompter and navigation drawer"
+                app:size="large"
+                app:startIcon="@drawable/ic_book_dyslexa" />
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
         </LinearLayout>
